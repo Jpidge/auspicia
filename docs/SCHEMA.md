@@ -19,6 +19,7 @@ Every row has `known_as_of` (UTC, `YYYY-MM-DDTHH:MM:SSZ`), `known_as_of_method`,
 
 | Rows | `known_as_of` | Method |
 |---|---|---|
+| Schedule (teams, week, kickoff; lines and scores null) | 15 May 16:00 UTC of that season | `schedule_released_may_15` |
 | Pregame lines (scores null) | kickoff − 1 h | `kickoff_minus_1h` |
 | Stats, PBP events, postgame score | kickoff + 6 h | `kickoff_plus_6h` |
 | Snap counts | kickoff + 24 h | `kickoff_plus_24h` |
@@ -27,7 +28,7 @@ Every row has `known_as_of` (UTC, `YYYY-MM-DDTHH:MM:SSZ`), `known_as_of_method`,
 | Injury with neither | team-week kickoff | `kickoff_proxy_missing_report_time` |
 | Depth chart or roster with `dt` | that timestamp | `snapshot_timestamp` |
 | Depth chart or roster with a team game | day before `gameday`, 23:59 Eastern | `day_before_gameday_2359_et` |
-| Roster with no team game | day before the week's earliest `gameday` | `day_before_week_anchor_2359_et` |
+| Depth chart or roster with no team game | day before the week's earliest `gameday` | `day_before_week_anchor_2359_et` |
 | Player identity | 1 September of `rookie_season` / `entry_year`, Eastern | `entry_year_sept_1_et` |
 | Undated crosswalk or DST identity | 1970-01-01 UTC | `crosswalk_undated` or `dst_identity` |
 
@@ -39,20 +40,22 @@ Positive `spread_line` means the home team is favored. Home implied total = tota
 
 | Table | Entity key for `as_of` | What a row is |
 |---|---|---|
-| `games` | `game_id` | Pregame lines, then the final score as a later version |
+| `games` | `game_id` | Schedule, then pregame lines, then the final score |
 | `players` | `player_id` | GSIS identity and display name. DST ids are `DEF:<TEAM>` |
 | `player_xref` | `source_system`, `external_id` | One unambiguous NFLverse id (`yahoo`, `espn`, `pfr`, `sleeper`) |
 | `identity_issues` | `source_system`, `external_id` | An external id that maps to more than one GSIS id |
-| `player_weeks` | `player_id`, `season`, `week`, `season_type` | Box score plus PBP events, scored with `ffc_yahoo_v1` |
-| `pbp_events` | `player_id`, `season`, `week`, `season_type`, `unit` | Play-level counts (`unit` is `player` or `dst`) |
-| `snap_counts` | `player_id`, `game_id` | Offense, defense, and special-teams snaps |
+| `player_weeks` | `player_id`, `season`, `week`, `season_type` | Box score, usage, and PBP events, scored with `ffc_yahoo_v1` |
+| `pbp_events` | `player_id`, `season`, `week`, `season_type`, `unit` | Play-level counts (`unit` is `player` or `dst`), including dropbacks, scrambles, and red-zone touches |
+| `snap_counts` | `player_id`, `game_id` | Offense, defense, and special-teams snaps, plus `offense_pct`, `defense_pct`, and `st_pct` when the file has them |
 | `injuries` | `player_id`, `season`, `week`, `season_type` | Latest report for that player-week |
 | `depth_charts` | `player_id`, `team`, `position` | Latest chart publication |
 | `rosters` | `player_id` | Latest weekly roster status |
 
 `player_weeks.interceptions` is passes thrown on an offensive row and takeaways on a `DEF:` row. The two never share a stat line. `fantasy_points` can be negative. `unavailable` lists scoring fields that were not observed. `opponent_score` on a DST row is the raw opponent total; `points_allowed` is the adjusted estimate in `docs/DESIGN.md` §17.
 
-Play-by-play is not stored play by play. `pbp_events` keeps the counts the scorer needs: 40+ yard touchdowns (`yards_gained >= 40`), kickoff and punt return touchdowns, offensive fumble-return touchdowns, made field-goal yards, made extra points, and team defense/special-teams events. A column that is absent from the file leaves that count null for the season.
+Play-by-play is not stored play by play. `pbp_events` keeps the counts the scorer and the feature pipeline need: 40+ yard touchdowns (`yards_gained >= 40`), kickoff and punt return touchdowns, offensive fumble-return touchdowns, made field-goal yards, made extra points, team defense/special-teams events, dropbacks, scrambles, and red-zone touches (`yardline_100 <= 20`). A column that is absent from the file leaves that count null for the season.
+
+`player_weeks` also stores `targets`, `carries`, `pass_attempts` (weekly `attempts`), `passing_air_yards`, `receiving_air_yards`, and the three PBP usage counts. Those columns are not passed to the scorer. A weekly column that is absent stays null. DST rows leave usage null.
 
 ## Sources
 
@@ -104,6 +107,25 @@ Counted from the GitHub release parquet while building M1. They are expectations
 | `snap_counts_2024.parquet` | 26,615 rows, 2,184 players, weeks 1–22 |
 | `players.parquet` | 24,854 rows |
 
+## Stored rows, 2023–2025
+
+Counted in this repo's ingest, not committed. The first load and the later re-ingest both keep every version, so tables whose payload changed grew. `as_of` key counts are the distinct entities, taken at 2030-01-01 UTC.
+
+| Table | Stored after the usage re-ingest | `as_of` keys at 2030-01-01 |
+|---|---|---|
+| `games` | 2,565 (855 of them are the May schedule version; 285 games × 3 seasons) | 855 |
+| `players` | 24,886 | 24,886 |
+| `player_xref` | 44,400 | 44,400 |
+| `identity_issues` | 9 | 9 |
+| `player_weeks` | 117,384 | 58,692 |
+| `snap_counts` | 159,262 | 79,631 |
+| `injuries` | 17,882 | 17,880 |
+| `depth_charts` | 622,445 | 8,692 |
+| `rosters` | 139,042 | 4,565 |
+| `pbp_events` | 16,727 | 12,649 |
+
+`player_weeks` and `snap_counts` doubled because usage and snap-percent columns changed the row hash. `pbp_events` grew because dropbacks, scrambles, and red-zone touches add player rows that the scoring-only extract skipped. Before that re-ingest the stored counts were games 1,710, player_weeks 58,692, snap_counts 79,631, depth_charts 615,353, pbp_events 4,078.
+
 ## Data-quality gaps
 
 - **2018, 2020, and 2024 injuries** have `date_modified` on every row, with a time of day. The span checked for 2018 is `2018-09-03 13:32:37+00` through `2019-02-01 13:02:39+00`.
@@ -113,3 +135,6 @@ Counted from the GitHub release parquet while building M1. They are expectations
 - **The players file is a current crosswalk.** `rookie_season` is the only date on it. Display names can move backward to that September. `latest_team` and status are not stored. Yahoo ids live on the weekly roster file.
 - **2022 has 271 regular-season games, not 272.** 2026 lines are mostly empty. Implied totals are null on those games.
 - **DST points allowed is an estimate** until it is checked against Yahoo (DESIGN §15 question 5). Safeties count. Six points are removed for each opponent return or defensive touchdown. The kick after that touchdown is left in.
+- **Weekly stats files have 22 rows with a null `player_id` each season** (2023–2025). Those rows are skipped. They are not a failed game join.
+- **Depth charts tagged SBBYE have no week.** They stay skipped. A week that does not match that team's game, including week-19 regular-season chart rows, uses the week's earliest kickoff as the anchor.
+- **Ambiguous PFR, ESPN, and Yahoo ids stay in `identity_issues`.** Snap rows that only have one of those PFR ids are dropped on purpose.

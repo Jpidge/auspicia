@@ -67,6 +67,16 @@ def season_open(year: int) -> datetime:
     return datetime(year, 9, 1, tzinfo=ET)
 
 
+def schedule_released(season: int) -> str:
+    """15 May 16:00 UTC, when teams, week, and kickoff are treated as knowable.
+
+    The release file's kickoff is the played time, including later flex moves,
+    so this clock can be earlier than the real announcement.
+    """
+
+    return f"{season:04d}-05-15T16:00:00Z"
+
+
 def parse_report_time(value: object) -> tuple[datetime, str] | None:
     """Return a report clock and the method name.
 

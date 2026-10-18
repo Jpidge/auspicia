@@ -22,8 +22,8 @@ from gridiron_lab.data.clock import (
 from gridiron_lab.data.errors import IngestError
 from gridiron_lab.data.fetch import FixtureFetch, HttpFetch, release_url
 from gridiron_lab.data.ingest import ingest
-from gridiron_lab.data.normalize import build_games, build_identity, build_snaps
-from gridiron_lab.data.pbp import adjusted_points_allowed
+from gridiron_lab.data.normalize import build_depth_charts, build_games, build_identity, build_snaps
+from gridiron_lab.data.pbp import adjusted_points_allowed, extract_events
 from gridiron_lab.data.store import ParquetStore, open_db
 from gridiron_lab.scoring import SCORING_VERSION
 
@@ -77,8 +77,14 @@ def test_unplayed_game_does_not_publish_a_result() -> None:
         ],
         2026,
     )
-    assert [row["record_kind"] for row in rows] == ["pregame"]
+    assert [row["record_kind"] for row in rows] == ["schedule", "pregame"]
+    assert rows[0]["spread_line"] is None
     assert rows[0]["home_score"] is None
+    assert rows[0]["known_as_of"] == "2026-05-15T16:00:00Z"
+    assert rows[0]["known_as_of_method"] == "schedule_released_may_15"
+    assert rows[0]["home_team"] == "A"
+    assert rows[1]["spread_line"] == 1
+    assert rows[1]["home_score"] is None
     assert clocks[0].spread_line == 1
 
 
@@ -109,7 +115,7 @@ def test_offline_ingest_scores_fixture_and_is_idempotent(tmp_path: Path) -> None
     assert all(source.appended == 0 for source in second[0].sources)
     assert second[0].table_counts == first[0].table_counts
     counts = first[0].table_counts
-    assert counts["games"] == 2
+    assert counts["games"] == 3
     assert counts["player_weeks"] == 5
     assert counts["players"] == 7
     assert counts["player_xref"] == 4
@@ -132,6 +138,8 @@ def test_offline_ingest_scores_fixture_and_is_idempotent(tmp_path: Path) -> None
     chiefs = weeks["DEF:KC"]
     ravens = weeks["DEF:BAL"]
     assert mahomes["passing_tds_40_plus"] == 1
+    assert mahomes["targets"] is None
+    assert mahomes["dropbacks"] is None
     assert mahomes["passing_yards"] == 250
     assert math.isclose(mahomes["fantasy_points"], 18.0)
     assert mahomes["score_complete"] is True
@@ -163,6 +171,16 @@ def test_as_of_never_returns_a_row_known_at_or_after_the_cutoff(tmp_path: Path) 
     assert pregame_only[0]["home_implied_total"] == 24.5
     assert db.as_of("player_weeks", postgame) == []
     assert db.as_of("snap_counts", kickoff + SNAPS_LAG) == []
+
+    thursday = datetime(2024, 9, 5, 20, tzinfo=UTC)
+    schedule = db.as_of("games", thursday)
+    assert len(schedule) == 1
+    assert schedule[0]["record_kind"] == "schedule"
+    assert schedule[0]["spread_line"] is None
+    assert schedule[0]["home_team"] == "KC"
+    assert schedule[0]["away_team"] == "BAL"
+    assert schedule[0]["kickoff_utc"] == KICKOFF
+    assert schedule[0]["home_score"] is None
 
     visible = db.as_of("games", kickoff)
     assert len(visible) == 1
@@ -397,6 +415,115 @@ def test_snap_counts_join_on_pfr_id() -> None:
     assert stored[0]["player_id"] == "00-0033873"
     assert stored[0]["known_as_of"] == "2024-09-07T00:20:00Z"
     assert notes["snap_without_player_or_game"] == 0
+
+
+def test_pbp_counts_dropbacks_scrambles_and_redzone_touches() -> None:
+    _rows, clocks, _notes = build_games(
+        [
+            {
+                "game_id": "2024_01_BAL_KC",
+                "season": 2024,
+                "game_type": "REG",
+                "week": 1,
+                "gameday": "2024-09-05",
+                "gametime": "20:20",
+                "home_team": "KC",
+                "away_team": "BAL",
+                "spread_line": 3,
+                "total_line": 46,
+                "home_score": 27,
+                "away_score": 20,
+            }
+        ],
+        2024,
+    )
+    shared = {
+        "game_id": "2024_01_BAL_KC",
+        "posteam": "KC",
+        "play_type": "pass",
+        "qb_dropback": 1,
+        "qb_scramble": 0,
+        "yardline_100": 15,
+        "rush_attempt": 0,
+        "pass_attempt": 1,
+        "passer_player_id": "00-0033873",
+        "rusher_player_id": "",
+        "receiver_player_id": "00-0030506",
+    }
+    scramble = {
+        **shared,
+        "play_type": "run",
+        "qb_scramble": 1,
+        "yardline_100": 10,
+        "rush_attempt": 1,
+        "pass_attempt": 0,
+        "rusher_player_id": "00-0033873",
+        "receiver_player_id": "",
+    }
+    extracted = extract_events([shared, scramble], clocks)
+    mahomes = extracted.player_counts[("00-0033873", "2024_01_BAL_KC")]
+    kelce = extracted.player_counts[("00-0030506", "2024_01_BAL_KC")]
+    assert mahomes["dropbacks"] == 2
+    assert mahomes["scrambles"] == 1
+    assert mahomes["redzone_touches"] == 1
+    assert kelce["redzone_touches"] == 1
+    assert "dropbacks" not in kelce
+
+
+def test_depth_chart_without_a_team_game_uses_the_week_anchor() -> None:
+    _rows, clocks, _notes = build_games(
+        [
+            {
+                "game_id": "2024_19_A_B",
+                "season": 2024,
+                "game_type": "WC",
+                "week": 19,
+                "gameday": "2025-01-11",
+                "gametime": "16:30",
+                "home_team": "A",
+                "away_team": "B",
+                "spread_line": 1,
+                "total_line": 40,
+                "home_score": 10,
+                "away_score": 7,
+            }
+        ],
+        2024,
+    )
+    stored, notes = build_depth_charts(
+        [
+            {
+                "season": 2024,
+                "week": 19,
+                "season_type": "REG",
+                "team": "KC",
+                "gsis_id": "00-1",
+                "depth_position": "WR",
+                "depth_team": 2,
+            }
+        ],
+        clocks,
+        2024,
+    )
+    assert notes["depth_without_clock"] == 0
+    assert stored[0]["known_as_of_method"] == "day_before_week_anchor_2359_et"
+    assert stored[0]["known_as_of"] == "2025-01-11T04:59:00Z"
+    assert stored[0]["depth_rank"] == 2
+    skipped, skipped_notes = build_depth_charts(
+        [
+            {
+                "season": 2024,
+                "week": "",
+                "team": "KC",
+                "gsis_id": "00-1",
+                "depth_position": "WR",
+            }
+        ],
+        clocks,
+        2024,
+    )
+    assert skipped == []
+    assert skipped_notes["depth_without_clock"] == 1
 
 
 def test_feature_modules_can_only_read_through_as_of() -> None:

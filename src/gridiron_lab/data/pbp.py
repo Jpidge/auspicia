@@ -16,6 +16,9 @@ from gridiron_lab.data.schema import SOURCE_NAME
 from gridiron_lab.data.values import as_flag, as_float, as_text
 
 PLAYER_FIELDS = (
+    "dropbacks",
+    "scrambles",
+    "redzone_touches",
     "passing_tds_40_plus",
     "rushing_tds_40_plus",
     "receiving_tds_40_plus",
@@ -160,6 +163,24 @@ def event_availability(columns: set[str]) -> tuple[set[str], set[str], dict[str,
         team.add("points_allowed")
     else:
         notes["pbp_missing_points_allowed_columns"] = 1
+    if {"qb_dropback", "passer_player_id"} <= columns:
+        player.add("dropbacks")
+    else:
+        notes["pbp_missing_dropback_columns"] = 1
+    if "qb_scramble" in columns and ({"rusher_player_id", "passer_player_id"} & columns):
+        player.add("scrambles")
+    else:
+        notes["pbp_missing_scramble_columns"] = 1
+    redzone_rush = {"yardline_100", "rush_attempt", "rusher_player_id"} <= columns
+    redzone_pass = (
+        "yardline_100" in columns
+        and "receiver_player_id" in columns
+        and ("play_type" in columns or "pass_attempt" in columns)
+    )
+    if redzone_rush or redzone_pass:
+        player.add("redzone_touches")
+    else:
+        notes["pbp_missing_redzone_columns"] = 1
     return player, team, notes
 
 
@@ -307,6 +328,45 @@ def _player_play(
         if kicker:
             _bump(counts, (kicker, game_id), "extra_points_made", 1)
             _remember(teams, kicker, game_id, posteam)
+    _opportunity_play(play, game_id, play_type, posteam, available, counts, teams)
+
+
+def _opportunity_play(
+    play: dict[str, object],
+    game_id: str,
+    play_type: str,
+    posteam: str | None,
+    available: set[str],
+    counts: dict[tuple[str, str], dict[str, float]],
+    teams: dict[tuple[str, str], str],
+) -> None:
+    if "dropbacks" in available and as_flag(play.get("qb_dropback")):
+        passer = as_text(play.get("passer_player_id"))
+        if passer:
+            _bump(counts, (passer, game_id), "dropbacks", 1)
+            _remember(teams, passer, game_id, posteam)
+    if "scrambles" in available and as_flag(play.get("qb_scramble")):
+        scrambler = as_text(play.get("rusher_player_id")) or as_text(play.get("passer_player_id"))
+        if scrambler:
+            _bump(counts, (scrambler, game_id), "scrambles", 1)
+            _remember(teams, scrambler, game_id, posteam)
+    if "redzone_touches" not in available:
+        return
+    yardline = as_float(play.get("yardline_100"))
+    if yardline is None or yardline > 20:
+        return
+    if as_flag(play.get("rush_attempt")):
+        rusher = as_text(play.get("rusher_player_id"))
+        if rusher:
+            _bump(counts, (rusher, game_id), "redzone_touches", 1)
+            _remember(teams, rusher, game_id, posteam)
+        return
+    targeted = play_type == "pass" or as_flag(play.get("pass_attempt"))
+    if targeted:
+        receiver = as_text(play.get("receiver_player_id"))
+        if receiver:
+            _bump(counts, (receiver, game_id), "redzone_touches", 1)
+            _remember(teams, receiver, game_id, posteam)
 
 
 def _team_play(

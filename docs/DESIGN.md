@@ -108,7 +108,7 @@ Live ingests set `known_as_of = ingested_at`. Historical backfill uses conservat
 
 ## 6. Feature pipeline
 
-**Contract.** For player *p* in week *W*, `as_of ≤ kickoff(p, W)`, and every input has `known_as_of < as_of`. Training and serving call the same `build_features(season, week, as_of_policy)`.
+**Contract.** For player *p* in week *W*, `as_of ≤ kickoff(p, W)`, and every input has `known_as_of < as_of`. Training and serving call the same `build_features(season, week, as_of_policy)`. The column list and the clock for each group are in [`docs/FEATURES.md`](FEATURES.md).
 
 There are two policies:
 
@@ -317,7 +317,7 @@ The point values in §3 are the league rules, stored in `gridiron_lab.toml`. `sr
 
 The column list, entity keys, and the release files that were counted are in [`docs/SCHEMA.md`](SCHEMA.md). These are the readings §5 does not pin down.
 
-1. **One game row is visible at a time.** Pregame lines use `known_as_of = kickoff − 1 h` and null scores. The final score is a second version of the same `game_id` at `kickoff + 6 h`. `as_of` keeps the later version only after that instant, so a line and a result never share one clock.
+1. **One game row is visible at a time.** The schedule (teams, week, kickoff; lines and scores null) is knowable at 15 May 16:00 UTC. Pregame lines use `known_as_of = kickoff − 1 h` and null scores. The final score is a later version of the same `game_id` at `kickoff + 6 h`. `as_of` keeps the latest version only after that instant, so a Thursday capture sees the opponent and not the closing line or the result.
 
 2. **Positive `spread_line` means the home team is favored.** Home implied total = `total_line / 2 + spread_line / 2`. Away = `total_line / 2 − spread_line / 2`. A missing line leaves both implied totals null. The 2024 opener (home KC, spread 3, total 46) is the unit-test case: home 24.5, away 21.5.
 
@@ -325,13 +325,25 @@ The column list, entity keys, and the release files that were counted are in [`d
 
 4. **Injury reports.** A `date_modified` value with a time of day is that timestamp. A calendar date with no time is 23:59 America/New_York. The 2025 injuries file dropped `date_modified` and has no report date. Those rows use the team-week kickoff (`kickoff_proxy_missing_report_time`), so a read taken before kickoff cannot see them.
 
-5. **Depth charts and weekly rosters.** A `dt` timestamp is the snapshot clock. A week with no clock uses 23:59 America/New_York on the day before that team's `gameday`. A roster week with no team game uses the earliest `gameday` in that season-week. Season-level rosters are not ingested; they keep only the latest week. Depth-chart `as_of` keys are `(player_id, team, position)`, and roster keys are `(player_id,)`, so the latest publication before the cutoff wins.
+5. **Depth charts and weekly rosters.** A `dt` timestamp is the snapshot clock. A week with no clock uses 23:59 America/New_York on the day before that team's `gameday`. A depth or roster week with no team game uses the earliest `gameday` in that season-week. A depth row with no week (the SBBYE tag) is skipped. Season-level rosters are not ingested; weekly rosters keep only the latest week. Depth-chart `as_of` keys are `(player_id, team, position)`, and roster keys are `(player_id,)`, so the latest publication before the cutoff wins.
 
 6. **Identity.** `player_id` is `gsis_id`. DST is `DEF:<TEAM>`. The players file has `pfr_id`, `espn_id`, and `rookie_season` (used as the entry-year proxy: 1 September, America/New_York). It does not carry `yahoo_id`. Yahoo and Sleeper ids are read from weekly rosters when those columns are present. An external id that points at two GSIS ids is written to `identity_issues` and is not assigned. Current team and status are not copied onto the player dimension.
 
-7. **Weekly `passing_40` is not a 40-yard touchdown count.** Long touchdowns, return touchdowns, offensive fumble-return touchdowns, and DST events come from play-by-play. A missing PBP column leaves that event null. Fumbles lost sum the sack, rushing, and receiving columns. `fg_made_distance` is the sum of made field-goal yards. NFLverse fantasy-point columns are ignored.
+7. **Weekly `passing_40` is not a 40-yard touchdown count.** Long touchdowns, return touchdowns, offensive fumble-return touchdowns, and DST events come from play-by-play. The same file supplies dropbacks (`qb_dropback` on the passer), scrambles (`qb_scramble`), and red-zone touches (`yardline_100 <= 20`). A missing PBP column leaves that event null. Weekly `targets`, `carries`, `attempts`, and air yards are stored on `player_weeks` and are not scoring inputs. Fumbles lost sum the sack, rushing, and receiving columns. `fg_made_distance` is the sum of made field-goal yards. NFLverse fantasy-point columns are ignored.
 
 8. **DST points allowed is still an open Yahoo question (§15 item 5).** The stored estimate is the opponent's final score minus 6 for each opponent kickoff/punt return touchdown and each opponent defensive touchdown. Safeties stay in the total. The extra point after an excluded touchdown is not removed. A negative result, or a game with no play-by-play touchdown columns, leaves `points_allowed` null rather than using the raw score. `opponent_score` is stored beside it.
 
 9. **Downloads and the DuckDB file stay out of git.** `HttpFetch` is the only module that opens a release URL. Tests use `FixtureFetch` and CSV files. Output goes under the data directory (the parent of `paths.raw`, or `--data-dir`).
+
+## 18. M2 feature assumptions
+
+The column list is in [`docs/FEATURES.md`](FEATURES.md). These are the readings §6 does not pin down.
+
+1. **Thursday capture** is 20:00 UTC on the Thursday of the NFL week (Thursday through Wednesday, America/New_York) that contains the earliest kickoff. Each player is then clamped to their own kickoff. A bye keeps the policy time.
+2. **Week W player-weeks and snaps are dropped** even if they were stamped before the cutoff. Opponent strength uses the same rule, so a Thursday-night result is not a feature for anyone else that week.
+3. **The May 15 schedule version** is what makes opponent, home/away, and rest knowable on Thursday. Flex kickoffs in the release file are the played time, so the stamp can be earlier than the real announcement. Closing lines stay at kickoff − 1 h, and a Thursday row usually has `vegas_missing=1`.
+4. **Rolling history is regular season only** and crosses seasons. `carryover_weight` is `0.5 ** (week - 1)` when the previous season's last team matches, else 0. Personal rolls still include games from the old team.
+5. **EWMA alpha is 0.3.** Designed QB rushes are carries minus scrambles. Other positions store a true 0 on games they played. Snap share prefers `offense_pct`.
+6. **`force_zero` is the bye and Out gate.** No model multiplies it yet. The adversarial test compares feature rows, not predictions.
+7. **Week-1 Thursday capture** often misses Sunday rosters, because those rows are stamped the evening before Sunday. Depth charts with a real `dt` (2025) can fill some of that gap. Earlier seasons cannot, without backdating a chart that was not knowable yet.
 
