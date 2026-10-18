@@ -8,7 +8,7 @@ This public repository holds the code and the GitHub Pages site. Weekly capture 
 
 ## Status
 
-**M3 — models and evaluation.** One LightGBM model per skill position, a Vegas OLS for K and DST, and the previous tool's baseline. `python -m gridiron_lab evaluate` runs a rolling-origin backtest and writes JSON. The feature contract is in [`docs/FEATURES.md`](docs/FEATURES.md). Yahoo and the dashboard are later milestones.
+**M3.1 — bias amendment and interval calibration.** Promotion bias uses the mean head. The 10/90 interval is adjusted with a trailing conformal window that never sees the test week. The feature contract is in [`docs/FEATURES.md`](docs/FEATURES.md). Yahoo and the dashboard are later milestones.
 
 ## Quick start
 

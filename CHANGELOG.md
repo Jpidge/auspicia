@@ -4,6 +4,13 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.4.1] — 2026-10-18
+
+### Changed
+
+- Promotion bias uses the mean head. q50 bias is reported and does not gate promotion. The change is the 2026-10-18 amendment in `docs/DESIGN.md`, decided after the M3 backtest.
+- The 10/90 interval is shifted with split conformalized quantile regression on the last 8 weeks before each test week. Raw and adjusted coverage are both reported. LightGBM hyperparameters are unchanged.
+
 ## [0.4.0] — 2026-10-18
 
 ### Added

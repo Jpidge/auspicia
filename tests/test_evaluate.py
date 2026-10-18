@@ -10,6 +10,9 @@ from pathlib import Path
 from gridiron_lab.cli import run
 from gridiron_lab.evaluate import (
     bootstrap_mae_diff,
+    calibration_window,
+    choose_primary_mae,
+    conformal_quantile,
     promotion_rule,
     rolling_origin,
 )
@@ -221,6 +224,7 @@ def _fold(
             "mae": mae,
             "mae_baseline": base,
             "bias": bias,
+            "bias_q50": 5.0,
             "coverage": 0.8,
         }
         if interval is not None:
@@ -324,6 +328,115 @@ def test_promotion_rule_passes_only_when_every_criterion_holds() -> None:
     assert negative["promoted"] is False
 
 
+class _MeanAboveMedian:
+    def fit(self, rows: Sequence[Mapping[str, object]], *, trained_through: str) -> None:
+        del rows, trained_through
+
+    def predict(self, rows: Sequence[Mapping[str, object]]) -> list[Prediction]:
+        return [
+            Prediction(
+                mean=4.0,
+                q10=0.0,
+                q50=1.0,
+                q90=2.0,
+                model_version="split",
+                feature_version="v2.0",
+                scoring_version="ffc_yahoo_v1",
+                trained_through=None,
+                regime="gbm",
+            )
+            for _ in rows
+        ]
+
+
+def test_reported_bias_is_the_mean_head() -> None:
+    weeks = {(2022, 1): [_player(2022, 1, "QB", 0)]}
+    report = rolling_origin(
+        weeks,
+        [2022],
+        seed=0,
+        n_boot=5,
+        teams=1,
+        make_model=_MeanAboveMedian,
+        make_baseline=_Flat,
+    )
+    folds = report["folds"]
+    assert isinstance(folds, list)
+    positions = folds[0]["positions"]
+    assert isinstance(positions, dict)
+    qb = positions["QB"]
+    assert isinstance(qb, dict)
+    assert qb["bias"] == 3.0
+    assert qb["bias_q50"] == 0.0
+    assert qb["mae"] == 0.0
+    assert qb["mae_mean"] == 3.0
+    assert qb["coverage"] == qb["coverage_raw"]
+
+
+def test_q50_bias_does_not_gate_promotion() -> None:
+    folds = [
+        _fold(season, model=4.0, baseline=4.4, ci=(-0.5, -0.1), bias=0.0)
+        for season in (2022, 2023, 2024, 2025)
+    ]
+    verdict = promotion_rule(_report(folds))
+    assert verdict["promoted"] is True
+    bias = verdict["bias"]
+    assert isinstance(bias, dict)
+    assert bias["head"] == "mean"
+    assert bias["failures"] == []
+
+
+def test_conformal_quantile_uses_the_finite_sample_index() -> None:
+    assert conformal_quantile([0.0] * 29) is None
+    assert conformal_quantile(list(range(30))) == 24.0
+
+
+def test_calibration_window_drops_the_test_week_and_later() -> None:
+    history: list[dict[str, object]] = []
+    for week in range(1, 11):
+        history.append(_player(2021, week, "QB", 1))
+    history.append(_player(2022, 1, "QB", 7))
+    history.append(_player(2022, 3, "QB", 8))
+    rows, weeks = calibration_window(history, (2022, 1), n_weeks=8)
+    assert weeks == [(2021, week) for week in range(3, 11)]
+    assert all(key < (2022, 1) for key in weeks)
+    assert all((int(row["season"]), int(row["week"])) < (2022, 1) for row in rows)
+    assert all(row["player_id"] != "QB7" for row in rows)
+
+
+def test_rolling_origin_calibration_stays_before_the_test_week() -> None:
+    report = rolling_origin(_weeks(), [2022], seed=0, n_boot=5, teams=1)
+    folds = report["folds"]
+    assert isinstance(folds, list)
+    seen = 0
+    for fold in folds:
+        assert isinstance(fold, dict)
+        entries = fold["weeks"]
+        assert isinstance(entries, list)
+        for entry in entries:
+            assert isinstance(entry, dict)
+            labels = entry["calibration_weeks"]
+            assert isinstance(labels, list)
+            assert labels
+            seen += 1
+            for label in labels:
+                assert isinstance(label, str)
+                season = int(label[:4])
+                week = int(label[-2:])
+                assert (season, week) < (int(entry["season"]), int(entry["week"]))
+    assert seen == 2
+
+
+def test_primary_mae_switches_only_after_three_mean_wins() -> None:
+    def pooled(q50: float, mean_mae: float) -> dict[str, object]:
+        return {"pooled_offense": {"mae": q50, "mae_mean": mean_mae}}
+
+    mean_wins = [pooled(4.0, 3.5), pooled(4.0, 3.5), pooled(4.0, 3.5), pooled(4.0, 4.2)]
+    assert choose_primary_mae(mean_wins) == "mean"
+    q50_wins = [pooled(3.0, 3.5), pooled(3.0, 3.5), pooled(4.0, 3.5), pooled(4.0, 3.5)]
+    assert choose_primary_mae(q50_wins) == "q50"
+
+
 def test_empty_evaluation_does_not_promote() -> None:
     verdict = promotion_rule({"folds": [], "calibration": {}, "lineup": {}})
     assert verdict["promoted"] is False
@@ -353,7 +466,7 @@ def test_evaluate_command_writes_json(tmp_path: Path) -> None:
     assert "NaN" not in text
     payload = json.loads(text)
     assert payload["promotion"]["promoted"] is False
-    assert payload["calibration"]["method"] == "deferred_to_m7"
+    assert payload["calibration"]["method"] == "cqr_trailing_weeks"
     assert payload["experiment"]["tuned_on_test"] is False
     assert payload["experiment"]["model_version"] == "lgbm_skill_v1"
     assert (tmp_path / "data" / "experiments.jsonl").is_file()
