@@ -4,6 +4,13 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.4.2] — 2026-10-18
+
+### Added
+
+- QB, K, and DST get a trailing residual-mean offset on the same 8 weeks used for conformal calibration. The offset is added to the mean and to q10, q50, and q90. Fewer than 30 residuals leaves it at 0. The rule is the 2026-10-18 M3.2 amendment in `docs/DESIGN.md`, written after the M3.1 backtest and before this refit.
+- Leave-one-season-out stability. The results JSON and the evaluate log carry a flag that passes only when the bias stays inside ±0.3, or shrinks by more than 0.05, in every dropped-season variant.
+
 ## [0.4.1] — 2026-10-18
 
 ### Changed

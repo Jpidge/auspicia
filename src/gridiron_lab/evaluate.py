@@ -3,8 +3,10 @@
 Training rows for a test week are earlier weeks, and nothing from that week
 or a later one. The last 8 of those weeks are a calibration window and are
 not fit rows. Metrics ignore ``force_zero`` rows and rows with no actual.
-Promotion bias uses the mean head. The 10/90 interval is shifted by a
-split-conformal quantile computed on the calibration window.
+Promotion bias uses the mean head. QB, K, and DST get a residual-mean offset
+on that same window, added to the mean and to every quantile. The 10/90
+interval is then shifted by a split-conformal quantile computed on the
+offset predictions.
 
 A season counts toward the MAE rule only when the model MAE is lower than the
 baseline and the week-bootstrap 95% interval of (model − baseline) lies
@@ -19,7 +21,7 @@ import math
 import random
 import subprocess
 from collections import defaultdict
-from collections.abc import Callable, Mapping, Sequence
+from collections.abc import Callable, Collection, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from pathlib import Path
@@ -46,6 +48,7 @@ logger = get_logger("evaluate")
 
 OFFENSE = ("QB", "RB", "WR", "TE")
 POSITIONS = ("QB", "RB", "WR", "TE", "K", "DST")
+OFFSET_POSITIONS = ("QB", "K", "DST")
 COVERAGE_LOW = 0.77
 COVERAGE_HIGH = 0.83
 BIAS_LIMIT = 0.3
@@ -62,6 +65,18 @@ CALIBRATION_REASON = (
     "Split conformalized quantile regression on the last 8 weeks before each "
     "test week. The model is fit only on weeks before that window. Both are "
     "strictly before the test week. Fewer than 30 scores leaves the raw interval."
+)
+OFFSET_REASON = (
+    "For QB, K, and DST the offset is the mean of actual minus the mean head "
+    "on the same 8 weeks. It is added to the mean and to q10, q50, and q90 "
+    "before the conformal quantile is fit. Fewer than 30 residuals leaves the "
+    "offset at 0. The 2026-10-18 amendment was written after the M3.1 backtest."
+)
+STABILITY_RULE = (
+    "A QB, K, or DST position-season holds when the absolute bias after the "
+    "offset is at most 0.3, or when that absolute bias is smaller than the "
+    "pre-offset absolute bias by more than 0.05. The flag passes only when "
+    "every drop-one-season variant holds."
 )
 
 ModelFactory = Callable[[], object]
@@ -83,6 +98,8 @@ class Scored:
     baseline: Prediction
     q10_raw: float
     q90_raw: float
+    mean_before: float
+    q50_before: float
 
 
 def _jsonable(value: object) -> object:
@@ -247,21 +264,255 @@ def adjust_interval(prediction: Prediction, delta: float) -> Prediction:
     )
 
 
+def shift_prediction(prediction: Prediction, offset: float) -> Prediction:
+    """Add one location shift to the mean and to every quantile."""
+
+    if offset == 0.0:
+        return prediction
+    return Prediction(
+        mean=prediction.mean + offset,
+        q10=prediction.q10 + offset,
+        q50=prediction.q50 + offset,
+        q90=prediction.q90 + offset,
+        model_version=prediction.model_version,
+        feature_version=prediction.feature_version,
+        scoring_version=prediction.scoring_version,
+        trained_through=prediction.trained_through,
+        fallback=prediction.fallback,
+        regime=prediction.regime,
+    )
+
+
+def residual_offsets(
+    rows: Sequence[Mapping[str, object]],
+    predictions: Sequence[Prediction],
+) -> tuple[dict[str, float], dict[str, int]]:
+    """Mean of ``actual − mean`` for QB, K, and DST. Below 30 residuals, 0.
+
+    The mean uses only the rows passed in. Callers must pass a window that
+    ends before the test week. No other constant is added.
+    """
+
+    if len(rows) != len(predictions):
+        raise EvalError("residual offset needs one prediction per calibration row")
+    buckets: dict[str, list[float]] = {position: [] for position in OFFSET_POSITIONS}
+    for row, prediction in zip(rows, predictions, strict=True):
+        if _is_force_zero(row) or not _has_actual(row) or prediction.fallback == "force_zero":
+            continue
+        position = _position(row)
+        if position not in buckets:
+            continue
+        actual = float(row["actual"])  # type: ignore[arg-type]
+        buckets[position].append(actual - prediction.mean)
+    offsets: dict[str, float] = {}
+    counts: dict[str, int] = {}
+    for position, values in buckets.items():
+        counts[position] = len(values)
+        if len(values) < MIN_CALIBRATION_SCORES:
+            offsets[position] = 0.0
+        else:
+            offsets[position] = math.fsum(values) / len(values)
+    return offsets, counts
+
+
+def bias_holds(before: float | None, after: float | None) -> bool:
+    """True when the offset leaves bias inside ±0.3 or clearly smaller.
+
+    "Clearly smaller" reuses the 0.05 position-MAE tolerance. A missing
+    after-offset bias does not hold.
+    """
+
+    if after is None or not math.isfinite(float(after)):
+        return False
+    after_value = float(after)
+    if abs(after_value) <= BIAS_LIMIT + 1e-12:
+        return True
+    if before is None or not math.isfinite(float(before)):
+        return False
+    return abs(after_value) < abs(float(before)) - WORSE_MAE
+
+
+def _spread(values: Sequence[float]) -> dict[str, float | int | None]:
+    count = len(values)
+    if count == 0:
+        return {"n": 0, "mean": None, "std": None, "min": None, "max": None}
+    center = math.fsum(values) / count
+    if count == 1:
+        std = 0.0
+    else:
+        variance = math.fsum((value - center) ** 2 for value in values) / (count - 1)
+        std = math.sqrt(variance)
+    return {
+        "n": count,
+        "mean": center,
+        "std": std,
+        "min": min(values),
+        "max": max(values),
+    }
+
+
+def offset_spread(folds: Sequence[Mapping[str, object]]) -> dict[str, object]:
+    """Mean, sample std, min, and max of the weekly offsets, overall and by season."""
+
+    overall: dict[str, list[float]] = {position: [] for position in OFFSET_POSITIONS}
+    by_season: dict[str, dict[int, list[float]]] = {
+        position: defaultdict(list) for position in OFFSET_POSITIONS
+    }
+    for fold in folds:
+        entries = fold.get("weeks")
+        if not isinstance(entries, list):
+            continue
+        for entry in entries:
+            if not isinstance(entry, dict):
+                continue
+            offset = entry.get("offset")
+            season = entry.get("season")
+            if (
+                not isinstance(offset, dict)
+                or isinstance(season, bool)
+                or not isinstance(season, int)
+            ):
+                continue
+            for position in OFFSET_POSITIONS:
+                value = offset.get(position)
+                if isinstance(value, bool) or not isinstance(value, (int, float)):
+                    continue
+                if not math.isfinite(float(value)):
+                    continue
+                overall[position].append(float(value))
+                by_season[position][season].append(float(value))
+    report: dict[str, object] = {}
+    for position in OFFSET_POSITIONS:
+        seasons = {
+            str(season): _spread(by_season[position][season])
+            for season in sorted(by_season[position])
+        }
+        block = _spread(overall[position])
+        block["by_season"] = seasons
+        report[position] = block
+    return report
+
+
+def offset_effect(folds: Sequence[Mapping[str, object]]) -> dict[str, object]:
+    """Before/after bias and error for the three offset positions."""
+
+    effect: dict[str, object] = {}
+    for position in OFFSET_POSITIONS:
+        seasons: dict[str, object] = {}
+        for fold in folds:
+            if not isinstance(fold, Mapping):
+                continue
+            season = fold.get("season")
+            positions = fold.get("positions")
+            if (
+                isinstance(season, bool)
+                or not isinstance(season, int)
+                or not isinstance(positions, dict)
+            ):
+                continue
+            block = positions.get(position)
+            if not isinstance(block, dict):
+                continue
+            seasons[str(season)] = {
+                "n": block.get("n"),
+                "bias_before": block.get("bias_before_offset"),
+                "bias_after": block.get("bias"),
+                "mae_q50_before": block.get("mae_q50_before_offset"),
+                "mae_q50_after": block.get("mae"),
+                "rmse_q50_before": block.get("rmse_q50_before_offset"),
+                "rmse_q50_after": block.get("rmse"),
+                "mae_mean_before": block.get("mae_mean_before_offset"),
+                "mae_mean_after": block.get("mae_mean"),
+                "rmse_mean_before": block.get("rmse_mean_before_offset"),
+                "rmse_mean_after": block.get("rmse_mean"),
+                "coverage": block.get("coverage"),
+                "holds": bias_holds(
+                    _as_float(block.get("bias_before_offset")),
+                    _as_float(block.get("bias")),
+                )
+                if block.get("n")
+                else None,
+            }
+        effect[position] = seasons
+    return effect
+
+
+def _as_float(value: object) -> float | None:
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        return None
+    number = float(value)
+    if not math.isfinite(number):
+        return None
+    return number
+
+
+def leave_one_season_summary(
+    dropped_season: int, report: Mapping[str, object]
+) -> dict[str, object]:
+    """Compact bias and promotion result for one dropped season."""
+
+    folds = report.get("folds")
+    if not isinstance(folds, list):
+        folds = []
+    effect = offset_effect(folds)
+    holds = True
+    scored = 0
+    for position in OFFSET_POSITIONS:
+        seasons = effect.get(position)
+        if not isinstance(seasons, dict):
+            continue
+        for cell in seasons.values():
+            if not isinstance(cell, dict) or not cell.get("n"):
+                continue
+            scored += 1
+            if cell.get("holds") is not True:
+                holds = False
+    promotion = report.get("promotion")
+    promoted = isinstance(promotion, dict) and promotion.get("promoted") is True
+    return {
+        "dropped_season": int(dropped_season),
+        "pass": holds and scored > 0,
+        "scored_cells": scored,
+        "promotion_promoted": promoted,
+        "positions": effect,
+        "offset_spread": offset_spread(folds),
+    }
+
+
+def stability_flag(variants: Sequence[Mapping[str, object]]) -> dict[str, object]:
+    """Pass only when every drop-one-season variant improves or contains the bias."""
+
+    ready = [variant for variant in variants if variant.get("pass") is True]
+    return {
+        "pass": bool(variants) and len(ready) == len(variants),
+        "rule": STABILITY_RULE,
+        "variants": [dict(variant) for variant in variants],
+    }
+
+
 def calibration_window(
     history: Sequence[Mapping[str, object]],
     test_key: tuple[int, int],
     n_weeks: int = CALIBRATION_WEEKS,
+    exclude_seasons: Collection[int] | None = None,
 ) -> tuple[list[Mapping[str, object]], list[tuple[int, int]]]:
     """Trailing weeks strictly before ``test_key`` that have an actual.
 
     A row whose own season and week are at or after the test week is dropped
-    even if it was stored under an earlier key.
+    even if it was stored under an earlier key. ``exclude_seasons`` drops
+    those seasons before the last ``n_weeks`` are chosen.
     """
 
+    banned = {int(season) for season in (exclude_seasons or ())}
     eligible: list[Mapping[str, object]] = []
     for row in history:
         row_key = _row_key(row)
-        if row_key >= test_key or _is_force_zero(row) or not _has_actual(row):
+        if (
+            row_key >= test_key
+            or row_key[0] in banned
+            or _is_force_zero(row)
+            or not _has_actual(row)
+        ):
             continue
         eligible.append(row)
     weeks = sorted({_row_key(row) for row in eligible})
@@ -296,6 +547,11 @@ def _empty_metrics() -> dict[str, object]:
         "rmse_mean": None,
         "bias": None,
         "bias_q50": None,
+        "bias_before_offset": None,
+        "mae_q50_before_offset": None,
+        "rmse_q50_before_offset": None,
+        "mae_mean_before_offset": None,
+        "rmse_mean_before_offset": None,
         "coverage": None,
         "coverage_raw": None,
         "median_ae": None,
@@ -314,6 +570,8 @@ def _metric_dict(rows: Sequence[Scored]) -> dict[str, object]:
         return _empty_metrics()
     errors = [row.model.q50 - row.actual for row in rows]
     mean_errors = [row.model.mean - row.actual for row in rows]
+    q50_before = [row.q50_before - row.actual for row in rows]
+    mean_before = [row.mean_before - row.actual for row in rows]
     baseline_errors = [abs(row.baseline.q50 - row.actual) for row in rows]
     absolute = [abs(error) for error in errors]
     absolute_mean = [abs(error) for error in mean_errors]
@@ -337,6 +595,11 @@ def _metric_dict(rows: Sequence[Scored]) -> dict[str, object]:
         "rmse_mean": math.sqrt(sum(error * error for error in mean_errors) / count),
         "bias": sum(mean_errors) / count,
         "bias_q50": sum(errors) / count,
+        "bias_before_offset": sum(mean_before) / count,
+        "mae_q50_before_offset": sum(abs(error) for error in q50_before) / count,
+        "rmse_q50_before_offset": math.sqrt(sum(error * error for error in q50_before) / count),
+        "mae_mean_before_offset": sum(abs(error) for error in mean_before) / count,
+        "rmse_mean_before_offset": math.sqrt(sum(error * error for error in mean_before) / count),
         "coverage": covered / count,
         "coverage_raw": covered_raw / count,
         "median_ae": median,
@@ -752,6 +1015,7 @@ def rolling_origin(
     make_model: ModelFactory | None = None,
     make_baseline: BaselineFactory | None = None,
     calibration_weeks: int = CALIBRATION_WEEKS,
+    exclude_offset_seasons: Collection[int] = (),
 ) -> dict[str, object]:
     """Fit before each test week and score that week.
 
@@ -782,13 +1046,22 @@ def rolling_origin(
         rows = list(weeks[key])
         if season in test_set:
             calibrating, cal_weeks = calibration_window(history, key, calibration_weeks)
-            cal_keys = set(cal_weeks)
+            if exclude_offset_seasons:
+                offset_rows, offset_weeks = calibration_window(
+                    history,
+                    key,
+                    calibration_weeks,
+                    exclude_seasons=exclude_offset_seasons,
+                )
+            else:
+                offset_rows, offset_weeks = calibrating, cal_weeks
+            held_out = set(cal_weeks) | set(offset_weeks)
             train: list[Mapping[str, object]] = []
             for row in history:
                 row_key = _row_key(row)
                 if row_key >= key:
                     raise EvalError(f"training row {row_key} is not strictly before {key}")
-                if row_key in cal_keys or _is_force_zero(row) or not _has_actual(row):
+                if row_key in held_out or _is_force_zero(row) or not _has_actual(row):
                     continue
                 train.append(row)
             through = _trained_through(train)
@@ -804,12 +1077,23 @@ def rolling_origin(
             baseline_predict = getattr(baseline, "predict", None)
             if not callable(predict) or not callable(baseline_predict):
                 raise EvalError("predictors need fit() and predict()")
-            cal_preds = list(predict(calibrating)) if calibrating else []
+            offset_preds = list(predict(offset_rows)) if offset_rows else []
+            if len(offset_preds) != len(offset_rows):
+                raise EvalError("predict() must return one row per calibration input")
+            offsets, offset_counts = residual_offsets(offset_rows, offset_preds)
+            if offset_rows is calibrating:
+                cal_preds = offset_preds
+            else:
+                cal_preds = list(predict(calibrating)) if calibrating else []
             if len(cal_preds) != len(calibrating):
                 raise EvalError("predict() must return one row per calibration input")
+            shifted_cal = [
+                shift_prediction(prediction, offsets.get(_position(row), 0.0))
+                for row, prediction in zip(calibrating, cal_preds, strict=True)
+            ]
             deltas = {
                 position: conformal_quantile(values)
-                for position, values in _cqr_scores(calibrating, cal_preds).items()
+                for position, values in _cqr_scores(calibrating, shifted_cal).items()
             }
             raw_preds = list(predict(rows))
             baseline_preds = list(baseline_predict(rows))
@@ -817,11 +1101,15 @@ def rolling_origin(
                 raise EvalError("predict() must return one row per input")
             model_preds: list[Prediction] = []
             for row, raw in zip(rows, raw_preds, strict=True):
-                delta = deltas.get(_position(row))
-                if delta is None or _is_force_zero(row):
+                if _is_force_zero(row) or raw.fallback == "force_zero":
                     model_preds.append(raw)
+                    continue
+                shifted = shift_prediction(raw, offsets.get(_position(row), 0.0))
+                delta = deltas.get(_position(row))
+                if delta is None:
+                    model_preds.append(shifted)
                 else:
-                    model_preds.append(adjust_interval(raw, delta))
+                    model_preds.append(adjust_interval(shifted, delta))
             fallbacks: dict[str, int] = defaultdict(int)
             for row, raw, model_pred, baseline_pred in zip(
                 rows, raw_preds, model_preds, baseline_preds, strict=True
@@ -839,6 +1127,8 @@ def rolling_origin(
                     baseline=baseline_pred,
                     q10_raw=raw.q10,
                     q90_raw=raw.q90,
+                    mean_before=raw.mean,
+                    q50_before=raw.q50,
                 )
                 by_season[season].append(scored)
                 digest_rows.append(scored)
@@ -862,6 +1152,9 @@ def rolling_origin(
                     "train_rows": len(train),
                     "trained_through": through,
                     "calibration_weeks": [f"{item[0]:04d}-W{item[1]:02d}" for item in cal_weeks],
+                    "offset_weeks": [f"{item[0]:04d}-W{item[1]:02d}" for item in offset_weeks],
+                    "offset": offsets,
+                    "offset_n": offset_counts,
                     "conformal_delta": deltas,
                     "fallbacks": dict(sorted(fallbacks.items())),
                 }
@@ -953,6 +1246,8 @@ def rolling_origin(
                 "Promotion bias is the mean head. q50 bias is informational.",
                 "Primary MAE stays on q50 unless the mean head wins at least 3 seasons.",
                 "Intervals are CQR-adjusted on the last 8 weeks before the test week.",
+                "QB, K, and DST add the trailing residual mean to the mean and the quantiles.",
+                "The offset was specified after the M3.1 backtest and before this refit.",
                 "min_data_in_leaf is min(40, max(5, n // 10)) so a small history can still split.",
                 "Lineup expected value uses the mean head.",
                 "force_zero rows predict 0 and are excluded from fit and from metrics.",
@@ -971,6 +1266,16 @@ def rolling_origin(
             "alpha": CONFORMAL_ALPHA,
             "coverage_by_position": coverage_by_position,
             "coverage_raw_by_position": coverage_raw_by_position,
+        },
+        "offset": {
+            "method": "trailing_residual_mean",
+            "reason": OFFSET_REASON,
+            "positions": list(OFFSET_POSITIONS),
+            "weeks": calibration_weeks,
+            "min_residuals": MIN_CALIBRATION_SCORES,
+            "exclude_seasons": sorted(int(season) for season in exclude_offset_seasons),
+            "spread": offset_spread(folds),
+            "effect": offset_effect(folds),
         },
         "lineup": {
             "method": "seeded_synthetic_rosters",
@@ -1088,6 +1393,29 @@ def run_evaluation(
         n_boot=n_boot,
         teams=teams,
         lineup=lineup,
+    )
+    variants: list[dict[str, object]] = []
+    for dropped in test_seasons:
+        logger.info("Leave-one-season-out dropping %s", dropped)
+        variant = rolling_origin(
+            weeks,
+            test_seasons,
+            seed=seed,
+            n_boot=n_boot,
+            teams=teams,
+            lineup=lineup,
+            exclude_offset_seasons=(int(dropped),),
+        )
+        variants.append(leave_one_season_summary(int(dropped), variant))
+    flag = stability_flag(variants)
+    report["stability"] = flag
+    promotion = report.get("promotion")
+    promoted = isinstance(promotion, dict) and promotion.get("promoted") is True
+    report["accepted"] = promoted and flag["pass"] is True
+    logger.info(
+        "Stability %s · accepted %s",
+        "pass" if flag["pass"] else "fail",
+        report["accepted"],
     )
     experiment = report.get("experiment")
     if isinstance(experiment, dict):

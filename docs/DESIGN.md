@@ -186,6 +186,16 @@ The ridge and XGBoost layers and the hand-tuned blend are dropped. Every predict
 
 **Amendment (2026-10-18, M3.1).** Written after the M3 backtest, not before it. M3 applied criterion 3 to q50. Those medians sat about 0.8 to 1.8 points below the actual mean for QB, RB, WR, and TE. Weekly fantasy scores are right-skewed, so a median forecast lies below the mean even when the mean head is centered. From this date, criterion 3 is the mean (squared-error) head: the average of `mean − actual` in each position-season has absolute value ≤ 0.3. q50 bias is still computed and reported, and it does not gate promotion. Criteria 1, 2, 4, and 5 are unchanged. A verdict under this wording is an amended rule, applied post-hoc to seasons M3 had already shown. The M3 q50-bias failures are not re-labeled as passes under the old wording.
 
+**Amendment (2026-10-18, M3.2).** Written after the M3.1 backtest, not before it. M3.1 left the mean head high for QB (about +0.66 to +0.72 in three seasons) and low for K (about −0.55 in 2024 and 2025) and DST (2025, −1.51). This amendment adds a residual offset for those three positions only. TE interval calibration is not part of it. Criteria 1 through 5 are unchanged.
+
+For each test week, and for each of QB, K, and DST, the offset is the mean of `actual − mean-head prediction` on the same trailing 8-week window the conformal step already uses. Every residual is from a week strictly before the test week. The model is fit only on weeks before that window, so the mean is not an in-sample residual. The offset is added to the mean, q10, q50, and q90. The conformal shift is then fit on those shifted calibration predictions, so the interval moves with the point forecast. RB, WR, and TE get offset 0.
+
+The window may reach into the previous season. If fewer than 8 earlier weeks exist, the weeks that do exist are used. If a position has fewer than 30 residuals in the window, the same floor as the conformal quantile, the offset is 0. That 0 is the withheld correction. It is not a hand-picked bias target, and there is no shrinkage weight.
+
+q50 stays the primary accuracy metric. Shifting q50 for QB, K, and DST will change that MAE. The change is reported. It is not a reason to retune the trees.
+
+**Stability check (same date, before the refit).** For each dropped season D in {2022, 2023, 2024, 2025}, the offset is recomputed with every week from D removed from the offset window. The window is then the last 8 earlier weeks that are not in D, still strictly before the test week, with the same 30-residual floor. All four test seasons are still scored, so D is predicted with an offset that never saw D. A QB, K, or DST position-season holds when the absolute bias after the offset is ≤ 0.3, or when that absolute bias is smaller than the pre-offset absolute bias by more than 0.05 (the tolerance already used for position MAE). A variant holds when every scored QB, K, and DST position-season holds. The stability flag passes only when all four variants hold. The offset candidate is treated as promoted only when the five criteria pass and this flag passes.
+
 Every run is logged to an `experiments` table: id, git SHA, folds, features, params, metrics.
 
 ## 9. Yahoo benchmark — The Gridiron Lab Challenge
@@ -375,4 +385,12 @@ Decided before the M3.1 refit, and after the M3 results were known. Tree depth, 
 2. **Primary accuracy stays q50 MAE** for criteria 1 and 2, unless the mean head has a lower pooled-offense MAE in at least 3 of the 4 test seasons. That comparison is the only switch, and it is fixed here before the refit. Either way the report says which head was primary.
 3. **Intervals are adjusted with split conformalized quantile regression.** For each test week and each position, the last 8 earlier weeks are a calibration window. The model is fit only on weeks before that window. Both the fit and the window are strictly before the test week. The score is `max(q10 − y, y − q90)`. The finite-sample quantile is the `ceil((n+1) × 0.8)`-th ordered score, and it needs at least 30 scores or the raw interval is kept. The adjusted interval is `[q10 − q, q90 + q]`, clipped so q50 stays inside. Criterion 4 is unchanged and is applied to this adjusted interval, pooled across seasons. Raw coverage is reported next to it. Tail rates are reported and do not gate promotion.
 4. **A negative score shrinks a too-wide interval. A positive score widens a too-narrow one.** Whether QB, TE, and DST land inside 80% ± 3 pp is an outcome of this rule, not a second pass over the window length.
+
+## 21. M3.2 residual-offset assumptions
+
+Decided after the M3.1 results and before the M3.2 refit. LightGBM depth, leaves, L2, learning rate, round cap, and patience stay at the M3 values.
+
+1. **The offset is the sample mean of `actual − mean` on the trailing window.** Positions are QB, K, and DST. The window is the 8-week conformal window. Fewer than 30 residuals yields exactly 0. No other constant enters the formula.
+2. **The same number is added to the mean and to q10, q50, and q90** before the conformal quantile is computed on the calibration rows. Test-week intervals receive the offset and then the conformal shift.
+3. **Leave-one-season-out drops that season from the offset window only.** Training still excludes the held-out offset weeks and the conformal weeks. The spread of the weekly offsets (mean, sample standard deviation, min, max) is reported for QB, K, and DST. A variant that makes bias worse, and leaves it outside ±0.3, fails the stability flag.
 

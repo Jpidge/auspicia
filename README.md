@@ -8,7 +8,7 @@ This public repository holds the code and the GitHub Pages site. Weekly capture 
 
 ## Status
 
-**M3.1 — bias amendment and interval calibration.** Promotion bias uses the mean head. The 10/90 interval is adjusted with a trailing conformal window that never sees the test week. The feature contract is in [`docs/FEATURES.md`](docs/FEATURES.md). Yahoo and the dashboard are later milestones.
+**M3.2 — residual offset.** QB, K, and DST shift by the mean residual on the trailing 8-week window. A leave-one-season-out flag has to pass before that offset is treated as promoted. The feature contract is in [`docs/FEATURES.md`](docs/FEATURES.md). Yahoo and the dashboard are later milestones.
 
 ## Quick start
 

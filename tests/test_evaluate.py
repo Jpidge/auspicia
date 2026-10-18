@@ -9,12 +9,16 @@ from pathlib import Path
 
 from gridiron_lab.cli import run
 from gridiron_lab.evaluate import (
+    bias_holds,
     bootstrap_mae_diff,
     calibration_window,
     choose_primary_mae,
     conformal_quantile,
+    leave_one_season_summary,
     promotion_rule,
+    residual_offsets,
     rolling_origin,
+    stability_flag,
 )
 from gridiron_lab.models import Prediction
 
@@ -466,7 +470,202 @@ def test_evaluate_command_writes_json(tmp_path: Path) -> None:
     assert "NaN" not in text
     payload = json.loads(text)
     assert payload["promotion"]["promoted"] is False
+    assert payload["accepted"] is False
+    assert payload["stability"]["pass"] is False
     assert payload["calibration"]["method"] == "cqr_trailing_weeks"
     assert payload["experiment"]["tuned_on_test"] is False
     assert payload["experiment"]["model_version"] == "lgbm_skill_v1"
     assert (tmp_path / "data" / "experiments.jsonl").is_file()
+
+
+class _Constant:
+    def __init__(self, train_keys: list[list[tuple[int, int]]]) -> None:
+        self._train_keys = train_keys
+
+    def fit(self, rows: Sequence[Mapping[str, object]], *, trained_through: str) -> None:
+        del trained_through
+        keys: list[tuple[int, int]] = []
+        for row in rows:
+            season = row["season"]
+            week = row["week"]
+            if isinstance(season, int) and isinstance(week, int):
+                keys.append((season, week))
+        self._train_keys.append(sorted(set(keys)))
+
+    def predict(self, rows: Sequence[Mapping[str, object]]) -> list[Prediction]:
+        return [
+            Prediction(
+                mean=1.0,
+                q10=0.0,
+                q50=1.0,
+                q90=2.0,
+                model_version="constant",
+                feature_version="v2.0",
+                scoring_version="ffc_yahoo_v1",
+                trained_through=None,
+                regime="gbm",
+            )
+            for _ in rows
+        ]
+
+
+def _constant_model() -> _Constant:
+    return _Constant([])
+
+
+def _actual(season: int, week: int, position: str, index: int, actual: float) -> dict[str, object]:
+    row = _player(season, week, position, index)
+    row["actual"] = actual
+    return row
+
+
+def _offset_weeks() -> dict[tuple[int, int], list[dict[str, object]]]:
+    frames: dict[tuple[int, int], list[dict[str, object]]] = {}
+    for week in range(1, 9):
+        frames[(2020, week)] = [_actual(2020, week, "QB", index, 100.0) for index in range(4)]
+        frames[(2021, week)] = [_actual(2021, week, "QB", index, 4.0) for index in range(4)]
+    frames[(2022, 1)] = [_actual(2022, 1, "QB", index, 4.0) for index in range(4)]
+    frames[(2022, 1)].append(_actual(2022, 1, "RB", 0, 10.0))
+    return frames
+
+
+def _constant_prediction() -> Prediction:
+    return Prediction(
+        mean=0.0,
+        q10=0.0,
+        q50=0.0,
+        q90=0.0,
+        model_version="t",
+        feature_version="v2.0",
+        scoring_version="ffc_yahoo_v1",
+        trained_through=None,
+    )
+
+
+def test_residual_offset_is_the_trailing_mean_or_zero() -> None:
+    rows = [_actual(2021, 1, "QB", index, float(index + 1)) for index in range(30)]
+    rows.append(_actual(2021, 1, "RB", 0, 50.0))
+    rows.append(_player(2021, 1, "QB", 99, force_zero=1))
+    predictions = [_constant_prediction() for _ in rows]
+    offsets, counts = residual_offsets(rows, predictions)
+    assert counts["QB"] == 30
+    assert offsets["QB"] == 15.5
+    assert "RB" not in offsets
+    short_offsets, short_counts = residual_offsets(rows[:29], predictions[:29])
+    assert short_counts["QB"] == 29
+    assert short_offsets["QB"] == 0.0
+    again, _ = residual_offsets(rows, predictions)
+    assert again == offsets
+
+
+def test_offset_ignores_the_test_week_and_matches_the_residual_mean() -> None:
+    history = [row for week in range(1, 9) for row in _offset_weeks()[(2021, week)]]
+    history.append(_actual(2022, 1, "QB", 50, 100.0))
+    history.append(_actual(2022, 2, "QB", 51, 100.0))
+    window, weeks = calibration_window(history, (2022, 1), n_weeks=8)
+    offsets, _ = residual_offsets(window, [_constant_prediction() for _ in window])
+    assert weeks == [(2021, week) for week in range(1, 9)]
+    assert all(key < (2022, 1) for key in weeks)
+    assert offsets["QB"] == 4.0
+
+    train_keys: list[list[tuple[int, int]]] = []
+
+    def make_model() -> _Constant:
+        return _Constant(train_keys)
+
+    report = rolling_origin(
+        _offset_weeks(),
+        [2022],
+        seed=0,
+        n_boot=5,
+        teams=1,
+        make_model=make_model,
+        make_baseline=_Flat,
+    )
+    folds = report["folds"]
+    assert isinstance(folds, list)
+    positions = folds[0]["positions"]
+    assert isinstance(positions, dict)
+    qb = positions["QB"]
+    rb = positions["RB"]
+    assert isinstance(qb, dict) and isinstance(rb, dict)
+    assert qb["bias_before_offset"] == -3.0
+    assert qb["bias"] == 0.0
+    assert qb["mae_q50_before_offset"] == 3.0
+    assert qb["mae"] == 0.0
+    assert rb["bias_before_offset"] == rb["bias"] == -9.0
+    assert rb["mae_q50_before_offset"] == rb["mae"] == 9.0
+    entry = folds[0]["weeks"]
+    assert isinstance(entry, list)
+    offset = entry[0]["offset"]
+    labels = entry[0]["offset_weeks"]
+    assert isinstance(offset, dict) and isinstance(labels, list)
+    assert offset["QB"] == 3.0
+    for label in labels:
+        assert isinstance(label, str)
+        assert (int(label[:4]), int(label[-2:])) < (2022, 1)
+        assert label.startswith("2021-")
+    assert train_keys == [[(2020, week) for week in range(1, 9)]]
+    repeat = rolling_origin(
+        _offset_weeks(),
+        [2022],
+        seed=0,
+        n_boot=5,
+        teams=1,
+        make_model=_constant_model,
+        make_baseline=_Flat,
+    )
+    assert repeat["prediction_digest"] == report["prediction_digest"]
+
+
+def test_dropped_season_is_absent_from_the_offset_window() -> None:
+    report = rolling_origin(
+        _offset_weeks(),
+        [2022],
+        seed=0,
+        n_boot=5,
+        teams=1,
+        make_model=_constant_model,
+        make_baseline=_Flat,
+        exclude_offset_seasons=(2021,),
+    )
+    folds = report["folds"]
+    assert isinstance(folds, list)
+    entry = folds[0]["weeks"]
+    assert isinstance(entry, list)
+    labels = entry[0]["offset_weeks"]
+    offset = entry[0]["offset"]
+    assert isinstance(labels, list) and isinstance(offset, dict)
+    assert labels == [f"2020-W{week:02d}" for week in range(1, 9)]
+    assert offset["QB"] == 99.0
+    positions = folds[0]["positions"]
+    assert isinstance(positions, dict)
+    qb = positions["QB"]
+    assert isinstance(qb, dict)
+    assert qb["bias_before_offset"] == -3.0
+    assert qb["bias"] == 96.0
+    summary = leave_one_season_summary(2021, report)
+    assert summary["pass"] is False
+
+
+def test_calibration_window_can_drop_a_season() -> None:
+    history = [_player(2021, week, "QB", 1) for week in range(1, 11)]
+    history.extend(_player(2022, week, "QB", 1) for week in range(1, 5))
+    history.append(_player(2023, 1, "QB", 1))
+    _, weeks = calibration_window(history, (2023, 1), n_weeks=8, exclude_seasons={2022})
+    assert weeks == [(2021, week) for week in range(3, 11)]
+    assert all(item[0] != 2022 and item < (2023, 1) for item in weeks)
+
+
+def test_bias_hold_and_stability_flag() -> None:
+    assert bias_holds(0.4, 0.2) is True
+    assert bias_holds(0.8, 0.7) is True
+    assert bias_holds(-1.2, -1.0) is True
+    assert bias_holds(0.8, 0.76) is False
+    assert bias_holds(0.2, 0.4) is False
+    assert bias_holds(None, None) is False
+    passing = {"pass": True, "scored_cells": 12}
+    failing = {"pass": False, "scored_cells": 12}
+    assert stability_flag([passing, passing, passing, passing])["pass"] is True
+    assert stability_flag([passing, passing, failing, passing])["pass"] is False
+    assert stability_flag([])["pass"] is False
