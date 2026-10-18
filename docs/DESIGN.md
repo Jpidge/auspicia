@@ -313,3 +313,25 @@ The point values in §3 are the league rules, stored in `gridiron_lab.toml`. `sr
 
 12. **The scoring-table hash covers rates and tiers only.** `scoring_version` stays `ffc_yahoo_v1`. `require_scoring_hash` refuses a mismatch. League name and roster slots are not part of the hash.
 
+## 17. M1 data assumptions
+
+The column list, entity keys, and the release files that were counted are in [`docs/SCHEMA.md`](SCHEMA.md). These are the readings §5 does not pin down.
+
+1. **One game row is visible at a time.** Pregame lines use `known_as_of = kickoff − 1 h` and null scores. The final score is a second version of the same `game_id` at `kickoff + 6 h`. `as_of` keeps the later version only after that instant, so a line and a result never share one clock.
+
+2. **Positive `spread_line` means the home team is favored.** Home implied total = `total_line / 2 + spread_line / 2`. Away = `total_line / 2 − spread_line / 2`. A missing line leaves both implied totals null. The 2024 opener (home KC, spread 3, total 46) is the unit-test case: home 24.5, away 21.5.
+
+3. **Kickoff is `gameday` plus `gametime` in America/New_York**, then UTC. A date with no clock uses 23:59 Eastern. Stats, play-event counts, and the postgame score use kickoff + 6 h. Snaps use kickoff + 24 h.
+
+4. **Injury reports.** A `date_modified` value with a time of day is that timestamp. A calendar date with no time is 23:59 America/New_York. The 2025 injuries file dropped `date_modified` and has no report date. Those rows use the team-week kickoff (`kickoff_proxy_missing_report_time`), so a read taken before kickoff cannot see them.
+
+5. **Depth charts and weekly rosters.** A `dt` timestamp is the snapshot clock. A week with no clock uses 23:59 America/New_York on the day before that team's `gameday`. A roster week with no team game uses the earliest `gameday` in that season-week. Season-level rosters are not ingested; they keep only the latest week. Depth-chart `as_of` keys are `(player_id, team, position)`, and roster keys are `(player_id,)`, so the latest publication before the cutoff wins.
+
+6. **Identity.** `player_id` is `gsis_id`. DST is `DEF:<TEAM>`. The players file has `pfr_id`, `espn_id`, and `rookie_season` (used as the entry-year proxy: 1 September, America/New_York). It does not carry `yahoo_id`. Yahoo and Sleeper ids are read from weekly rosters when those columns are present. An external id that points at two GSIS ids is written to `identity_issues` and is not assigned. Current team and status are not copied onto the player dimension.
+
+7. **Weekly `passing_40` is not a 40-yard touchdown count.** Long touchdowns, return touchdowns, offensive fumble-return touchdowns, and DST events come from play-by-play. A missing PBP column leaves that event null. Fumbles lost sum the sack, rushing, and receiving columns. `fg_made_distance` is the sum of made field-goal yards. NFLverse fantasy-point columns are ignored.
+
+8. **DST points allowed is still an open Yahoo question (§15 item 5).** The stored estimate is the opponent's final score minus 6 for each opponent kickoff/punt return touchdown and each opponent defensive touchdown. Safeties stay in the total. The extra point after an excluded touchdown is not removed. A negative result, or a game with no play-by-play touchdown columns, leaves `points_allowed` null rather than using the raw score. `opponent_score` is stored beside it.
+
+9. **Downloads and the DuckDB file stay out of git.** `HttpFetch` is the only module that opens a release URL. Tests use `FixtureFetch` and CSV files. Output goes under the data directory (the parent of `paths.raw`, or `--data-dir`).
+

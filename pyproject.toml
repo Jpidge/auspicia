@@ -4,17 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gridiron-lab"
-version = "0.1.0"
+version = "0.2.0"
 description = "Fantasy-football analytics for the Yahoo league Fantasy Football Coalition."
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "duckdb==1.4.1",
+    "pyarrow==21.0.0",
+]
 
 [project.optional-dependencies]
 dev = [
     "pytest==9.1.1",
     "ruff==0.17.1",
 ]
+
+[project.scripts]
+gridiron-lab = "gridiron_lab.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

@@ -8,7 +8,8 @@ oauth_tokens.json
 secrets/
 
 # Local captures and caches. Weekly data belongs in Jpidge/gridiron-lab-data.
-data/
+# Anchored so this does not ignore the src/gridiron_lab/data package.
+/data/
 *.parquet
 *.duckdb
 

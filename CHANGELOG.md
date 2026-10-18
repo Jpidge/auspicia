@@ -4,6 +4,19 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.2.0] — 2026-10-18
+
+### Added
+
+- Append-only Parquet storage and a rebuildable DuckDB file. `open_db(data_dir).as_of(table, ts)` returns, per entity key, the latest row whose `known_as_of` is strictly before the cutoff.
+- NFLverse ingestion for schedules, weekly player stats, snap counts, injuries, depth charts, weekly rosters, player ids, and the play-by-play events the scorer needs. `python -m gridiron_lab ingest --season 2025` is idempotent. Network access stays in `HttpFetch`; tests use CSV fixtures.
+- Canonical tables documented in `docs/SCHEMA.md`. `player_weeks` are scored with the M0 engine (`ffc_yahoo_v1`).
+- M1 clock and identity assumptions in `docs/DESIGN.md` §17, including the home-favorite spread sign and the DST points-allowed estimate.
+
+### Fixed
+
+- `.gitignore` anchors `data/` at the repository root so the `gridiron_lab.data` package is not ignored.
+
 ## [0.1.0] — 2026-10-18
 
 ### Added
