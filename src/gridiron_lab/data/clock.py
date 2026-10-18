@@ -7,13 +7,12 @@ Every instant is converted to UTC and serialized as
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from gridiron_lab.data.errors import IngestError
 
 ET = ZoneInfo("America/New_York")
-UTC = timezone.utc
 
 STATS_LAG = timedelta(hours=6)
 SNAPS_LAG = timedelta(hours=24)

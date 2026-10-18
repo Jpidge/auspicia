@@ -301,9 +301,7 @@ def build_player_weeks(
                 "team": team,
                 "opponent_team": clock.opponent(team),
             }
-            rows.append(
-                _scored_week(identity, clock, f"DEF:{team}", None, defense, rules, notes)
-            )
+            rows.append(_scored_week(identity, clock, f"DEF:{team}", None, defense, rules, notes))
     return rows, notes
 
 
@@ -332,7 +330,9 @@ def build_snaps(
                 "season_type": clock.season_type,
                 "game_id": clock.game_id,
                 "team": as_text(row.get("team")) or "",
-                "opponent": as_text(row.get("opponent")) or clock.opponent(as_text(row.get("team")) or ""),
+                "opponent": (
+                    as_text(row.get("opponent")) or clock.opponent(as_text(row.get("team")) or "")
+                ),
                 "offense_snaps": as_int(row.get("offense_snaps")) or 0,
                 "defense_snaps": as_int(row.get("defense_snaps")) or 0,
                 "st_snaps": as_int(row.get("st_snaps")) or 0,
@@ -632,7 +632,11 @@ def _scored_week(
         row[name] = None if defense is None else defense.get(name)
     stat_line = _present(offense if offense is not None else defense or {})
     try:
-        result = score_offense(stat_line, rules) if offense is not None else score_defense(stat_line, rules)
+        result = (
+            score_offense(stat_line, rules)
+            if offense is not None
+            else score_defense(stat_line, rules)
+        )
     except ScoringError as exc:
         raise ScoringError(f"{player_id} {clock.game_id}: {exc}") from exc
     row["fantasy_points"] = result.fantasy_points
@@ -686,7 +690,12 @@ def _practice_status(row: dict[str, object]) -> str | None:
     if direct:
         return direct
     parts = []
-    for key in ("practice_primary_injury", "practice_status_wed", "practice_status_thu", "practice_status_fri"):
+    for key in (
+        "practice_primary_injury",
+        "practice_status_wed",
+        "practice_status_thu",
+        "practice_status_fri",
+    ):
         value = as_text(row.get(key))
         if value:
             parts.append(value)

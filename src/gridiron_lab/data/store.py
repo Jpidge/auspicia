@@ -13,7 +13,7 @@ import json
 import math
 import uuid
 from collections.abc import Callable, Mapping, Sequence
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import duckdb
@@ -45,9 +45,7 @@ def _canon(value: object) -> object:
 
 def row_hash(row: Mapping[str, object]) -> str:
     payload = {
-        key: _canon(value)
-        for key, value in row.items()
-        if key not in {"row_hash", "ingested_at"}
+        key: _canon(value) for key, value in row.items() if key not in {"row_hash", "ingested_at"}
     }
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), allow_nan=False)
     return hashlib.sha256(encoded.encode("utf-8")).hexdigest()
@@ -63,7 +61,7 @@ class ParquetStore:
 
     def __init__(self, data_dir: Path, *, clock: Clock | None = None) -> None:
         self.data_dir = Path(data_dir)
-        self.clock = clock or (lambda: datetime.now(timezone.utc))
+        self.clock = clock or (lambda: datetime.now(UTC))
 
     @property
     def duckdb_path(self) -> Path:
@@ -104,9 +102,7 @@ class ParquetStore:
             return []
         connection = duckdb.connect()
         try:
-            found = connection.execute(
-                f"SELECT {column} FROM {_parquet_list(files)}"
-            ).fetchall()
+            found = connection.execute(f"SELECT {column} FROM {_parquet_list(files)}").fetchall()
         finally:
             connection.close()
         return [row[0] for row in found]
@@ -155,9 +151,7 @@ class ParquetStore:
             return set()
         connection = duckdb.connect()
         try:
-            found = connection.execute(
-                f"SELECT row_hash FROM {_parquet_list(files)}"
-            ).fetchall()
+            found = connection.execute(f"SELECT row_hash FROM {_parquet_list(files)}").fetchall()
         finally:
             connection.close()
         return {str(row[0]) for row in found}

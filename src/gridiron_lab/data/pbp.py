@@ -230,12 +230,22 @@ def extract_events(plays: list[dict[str, object]], clocks: list[GameClock]) -> P
     )
 
 
-def _bump(bucket: dict[tuple[str, str], dict[str, float]], key: tuple[str, str], field: str, amount: float) -> None:
+def _bump(
+    bucket: dict[tuple[str, str], dict[str, float]],
+    key: tuple[str, str],
+    field: str,
+    amount: float,
+) -> None:
     current = bucket[key]
     current[field] = current.get(field, 0.0) + amount
 
 
-def _remember(teams: dict[tuple[str, str], str], player_id: str, game_id: str, team: str | None) -> None:
+def _remember(
+    teams: dict[tuple[str, str], str],
+    player_id: str,
+    game_id: str,
+    team: str | None,
+) -> None:
     if team and (player_id, game_id) not in teams:
         teams[(player_id, game_id)] = team
 
@@ -266,7 +276,11 @@ def _player_play(
                 if rusher:
                     _bump(counts, (rusher, game_id), "rushing_tds_40_plus", 1)
                     _remember(teams, rusher, game_id, posteam)
-    if "return_tds" in available and play_type in _KICK_PLAYS and as_flag(play.get("return_touchdown")):
+    if (
+        "return_tds" in available
+        and play_type in _KICK_PLAYS
+        and as_flag(play.get("return_touchdown"))
+    ):
         returner = _returner(play)
         if returner:
             _bump(counts, (returner, game_id), "return_tds", 1)
@@ -330,7 +344,11 @@ def _team_play(
             _bump(counts, (return_team, game_id), "return_yards", yards)
         if "return_tds" in available and as_flag(play.get("return_touchdown")):
             _bump(counts, (return_team, game_id), "return_tds", 1)
-    if "extra_point_returns" in available and defteam and as_flag(play.get("defensive_extra_point_conv")):
+    if (
+        "extra_point_returns" in available
+        and defteam
+        and as_flag(play.get("defensive_extra_point_conv"))
+    ):
         _bump(counts, (defteam, game_id), "extra_point_returns", 1)
     if "points_allowed" in available and as_flag(play.get("touchdown")) and td_team:
         defensive = td_team == defteam and td_team != posteam and not kick_return
