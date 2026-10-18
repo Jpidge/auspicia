@@ -3,6 +3,8 @@
 ``python -m gridiron_lab ingest --season 2025``
 
 ``python -m gridiron_lab features --season 2024 --week 1``
+
+``python -m gridiron_lab evaluate --season 2018-2025 --test-season 2022-2025 --output results.json``
 """
 
 from __future__ import annotations
@@ -12,10 +14,11 @@ import re
 import sys
 from pathlib import Path
 
-from gridiron_lab.config import ConfigError, default_config_path
+from gridiron_lab.config import ConfigError, default_config_path, load_config
 from gridiron_lab.data.errors import FetchError, IngestError
 from gridiron_lab.data.fetch import FixtureFetch, HttpFetch
 from gridiron_lab.data.ingest import ingest
+from gridiron_lab.evaluate import EvalError, run_evaluation
 from gridiron_lab.features import FeatureError, build_features
 from gridiron_lab.logging import configure_logging, get_logger
 from gridiron_lab.scoring import ScoringError
@@ -39,6 +42,8 @@ def run(argv: list[str] | None = None) -> int:
         return _run_ingest(args)
     if args.command == "features":
         return _run_features(args)
+    if args.command == "evaluate":
+        return _run_evaluate(args)
     parser.print_help()
     return 2
 
@@ -97,6 +102,40 @@ def _run_features(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_evaluate(args: argparse.Namespace) -> int:
+    try:
+        seasons = parse_seasons(args.seasons)
+        test_seasons = parse_seasons(args.test_seasons)
+        data_dir = _data_dir(args.data_dir, args.config)
+        config = load_config(args.config)
+        run_evaluation(
+            data_dir=data_dir,
+            seasons=seasons,
+            test_seasons=test_seasons,
+            output=args.output,
+            seed=args.seed,
+            n_boot=args.bootstrap,
+            teams=config.league.teams,
+            lineup=config.lineup,
+        )
+    except ConfigError as exc:
+        logger.error("%s", exc)
+        return 2
+    except EvalError as exc:
+        logger.error("%s", exc)
+        return 2
+    except IngestError as exc:
+        logger.error("%s", exc)
+        return 2
+    except FeatureError as exc:
+        logger.error("%s", exc)
+        return 2
+    except OSError as exc:
+        logger.error("Could not write the evaluation file: %s", exc.strerror or exc)
+        return 1
+    return 0
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="gridiron-lab")
     sub = parser.add_subparsers(dest="command")
@@ -134,6 +173,38 @@ def _parser() -> argparse.ArgumentParser:
         help="Directory for Parquet and DuckDB. Defaults to the parent of paths.raw.",
     )
     features_parser.add_argument("--config", type=Path, help="Path to gridiron_lab.toml")
+    evaluate_parser = sub.add_parser(
+        "evaluate",
+        help="Rolling-origin backtest. Writes a JSON results file and no model artifact.",
+    )
+    evaluate_parser.add_argument(
+        "--season",
+        action="append",
+        dest="seasons",
+        required=True,
+        help="Seasons to build, including training history. Example: 2018-2025.",
+    )
+    evaluate_parser.add_argument(
+        "--test-season",
+        action="append",
+        dest="test_seasons",
+        required=True,
+        help="Seasons to score. Example: 2022-2025.",
+    )
+    evaluate_parser.add_argument(
+        "--data-dir",
+        type=Path,
+        help="Directory for Parquet and DuckDB. Defaults to the parent of paths.raw.",
+    )
+    evaluate_parser.add_argument("--config", type=Path, help="Path to gridiron_lab.toml")
+    evaluate_parser.add_argument("--output", type=Path, required=True, help="JSON results path")
+    evaluate_parser.add_argument("--seed", type=int, default=0)
+    evaluate_parser.add_argument(
+        "--bootstrap",
+        type=int,
+        default=1000,
+        help="Week resamples for the MAE-difference interval.",
+    )
     return parser
 
 

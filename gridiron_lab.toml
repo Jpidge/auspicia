@@ -95,4 +95,4 @@ start = 2018
 end = 2026
 
 [models]
-# M3 chooses the booster. M0 does not train a model.
+# M3 chose LightGBM 4.6.0 (lgbm_skill_v1). Params are pre-registered in models.py.

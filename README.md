@@ -8,7 +8,7 @@ This public repository holds the code and the GitHub Pages site. Weekly capture 
 
 ## Status
 
-**M2 — features.** One `build_features` path for training and serving. It reads only through `as_of`, at a Thursday 20:00 UTC cutoff for backtests and at `now` (clamped to kickoff) for serving. The contract and the column list are in [`docs/FEATURES.md`](docs/FEATURES.md). Models, Yahoo, and the dashboard are later milestones.
+**M3 — models and evaluation.** One LightGBM model per skill position, a Vegas OLS for K and DST, and the previous tool's baseline. `python -m gridiron_lab evaluate` runs a rolling-origin backtest and writes JSON. The feature contract is in [`docs/FEATURES.md`](docs/FEATURES.md). Yahoo and the dashboard are later milestones.
 
 ## Quick start
 
@@ -41,9 +41,10 @@ print(result.fantasy_points)  # 20.0; negative totals are kept
 python -m gridiron_lab ingest --season 2025
 python -m gridiron_lab ingest --season 2018-2025 --data-dir data
 python -m gridiron_lab features --season 2024 --week 1 --policy simulated_capture --data-dir data
+python -m gridiron_lab evaluate --season 2018-2025 --test-season 2022-2025 --data-dir data --output /tmp/eval.json
 ```
 
-Downloads and the DuckDB file stay in that data directory and are gitignored. Re-running a season appends nothing when the payload is unchanged. The features command logs a row count and does not write a file.
+Downloads, the DuckDB file, and the evaluation JSON stay out of git. Re-running a season appends nothing when the payload is unchanged. The features command logs a row count and does not write a file. Evaluate does not write a model file.
 
 ## Later commands
 
@@ -59,8 +60,8 @@ All configuration lives in `gridiron_lab.toml`. Secrets come only from environme
 ## Layout
 
 ```
-src/gridiron_lab/     scoring engine, config, logging, data layer, features, CLI
-tests/                scoring, ingestion, and leakage tests
+src/gridiron_lab/     scoring engine, config, logging, data layer, features, models, evaluation, CLI
+tests/                scoring, ingestion, leakage, model, and harness tests
 docs/DESIGN.md        architecture, roadmap, scoring and data assumptions
 docs/SCHEMA.md        canonical tables, clocks, and observed row counts
 docs/FEATURES.md      feature contract and column list

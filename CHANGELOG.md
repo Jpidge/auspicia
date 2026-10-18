@@ -4,6 +4,14 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-10-18
+
+### Added
+
+- One LightGBM model per skill position (`lgbm_skill_v1`) with a mean head and q10/q50/q90 heads. K and DST use a small OLS model that fits rows with a line and rows without a line separately. `force_zero` rows predict 0 and are not training rows.
+- `legacy_baseline_v1`, the previous tool's projection blend on the v2.0 feature row.
+- Rolling-origin evaluation for 2022–2025: MAE, RMSE, bias, 80% interval coverage, a week bootstrap of the MAE difference, synthetic-roster lineup points gained, and `promotion_rule`. `python -m gridiron_lab evaluate` writes a JSON results file. Conformal calibration is left to M7. Model files are not written.
+
 ## [0.3.0] — 2026-10-18
 
 ### Added
