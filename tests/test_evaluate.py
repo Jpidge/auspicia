@@ -618,6 +618,59 @@ def test_offset_ignores_the_test_week_and_matches_the_residual_mean() -> None:
     assert repeat["prediction_digest"] == report["prediction_digest"]
 
 
+def test_memo_reuses_an_identical_week_and_refits_when_the_window_changes() -> None:
+    train_keys: list[list[tuple[int, int]]] = []
+    memo: dict[object, dict[str, object]] = {}
+
+    def make_model() -> _Constant:
+        return _Constant(train_keys)
+
+    first = rolling_origin(
+        _offset_weeks(),
+        [2022],
+        seed=0,
+        n_boot=5,
+        teams=1,
+        make_model=make_model,
+        make_baseline=_Flat,
+        memo=memo,
+    )
+    fresh = rolling_origin(
+        _offset_weeks(),
+        [2022],
+        seed=0,
+        n_boot=5,
+        teams=1,
+        make_model=_constant_model,
+        make_baseline=_Flat,
+    )
+    assert len(train_keys) == 1
+    assert first["prediction_digest"] == fresh["prediction_digest"]
+    rolling_origin(
+        _offset_weeks(),
+        [2022],
+        seed=0,
+        n_boot=5,
+        teams=1,
+        make_model=make_model,
+        make_baseline=_Flat,
+        memo=memo,
+    )
+    assert len(train_keys) == 1
+    rolling_origin(
+        _offset_weeks(),
+        [2022],
+        seed=0,
+        n_boot=5,
+        teams=1,
+        make_model=make_model,
+        make_baseline=_Flat,
+        exclude_offset_seasons=(2021,),
+        memo=memo,
+    )
+    assert len(train_keys) == 2
+
+
 def test_dropped_season_is_absent_from_the_offset_window() -> None:
     report = rolling_origin(
         _offset_weeks(),

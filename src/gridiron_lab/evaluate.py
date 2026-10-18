@@ -1016,6 +1016,7 @@ def rolling_origin(
     make_baseline: BaselineFactory | None = None,
     calibration_weeks: int = CALIBRATION_WEEKS,
     exclude_offset_seasons: Collection[int] = (),
+    memo: dict[object, dict[str, object]] | None = None,
 ) -> dict[str, object]:
     """Fit before each test week and score that week.
 
@@ -1056,6 +1057,24 @@ def rolling_origin(
             else:
                 offset_rows, offset_weeks = calibrating, cal_weeks
             held_out = set(cal_weeks) | set(offset_weeks)
+            cache_key = (tuple(sorted(held_out)), key)
+            cached = memo.get(cache_key) if memo is not None else None
+            if cached is not None:
+                scored_rows = cached["scored"]
+                cached_lineup = cached["lineup"]
+                week_log = cached["log"]
+                if (
+                    isinstance(scored_rows, list)
+                    and isinstance(cached_lineup, dict)
+                    and isinstance(week_log, dict)
+                ):
+                    by_season[season].extend(scored_rows)
+                    digest_rows.extend(scored_rows)
+                    lineup_weeks.append(cached_lineup)
+                    week_logs[season].append(week_log)
+                    logger.info("Reused %s week %s", season, week)
+                    history.extend(rows)
+                    continue
             train: list[Mapping[str, object]] = []
             for row in history:
                 row_key = _row_key(row)
@@ -1111,6 +1130,7 @@ def rolling_origin(
                 else:
                     model_preds.append(adjust_interval(shifted, delta))
             fallbacks: dict[str, int] = defaultdict(int)
+            week_scored: list[Scored] = []
             for row, raw, model_pred, baseline_pred in zip(
                 rows, raw_preds, model_preds, baseline_preds, strict=True
             ):
@@ -1132,6 +1152,7 @@ def rolling_origin(
                 )
                 by_season[season].append(scored)
                 digest_rows.append(scored)
+                week_scored.append(scored)
             lineup_weeks.append(
                 _lineup_week(
                     rows,
@@ -1159,6 +1180,12 @@ def rolling_origin(
                     "fallbacks": dict(sorted(fallbacks.items())),
                 }
             )
+            if memo is not None:
+                memo[cache_key] = {
+                    "scored": week_scored,
+                    "lineup": lineup_weeks[-1],
+                    "log": week_logs[season][-1],
+                }
             logger.info(
                 "Evaluated %s week %s · train rows %s · through %s",
                 season,
@@ -1386,6 +1413,7 @@ def run_evaluation(
     if policy != "simulated_capture":
         raise EvalError("the backtest policy is simulated_capture")
     weeks = collect_weeks(data_dir, seasons, policy=policy)
+    memo: dict[object, dict[str, object]] = {}
     report = rolling_origin(
         weeks,
         test_seasons,
@@ -1393,6 +1421,7 @@ def run_evaluation(
         n_boot=n_boot,
         teams=teams,
         lineup=lineup,
+        memo=memo,
     )
     variants: list[dict[str, object]] = []
     for dropped in test_seasons:
@@ -1405,6 +1434,7 @@ def run_evaluation(
             teams=teams,
             lineup=lineup,
             exclude_offset_seasons=(int(dropped),),
+            memo=memo,
         )
         variants.append(leave_one_season_summary(int(dropped), variant))
     flag = stability_flag(variants)
