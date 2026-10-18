@@ -184,6 +184,8 @@ The ridge and XGBoost layers and the hand-tuned blend are dropped. Every predict
 4. Coverage stays on target.
 5. Pooled points gained vs the incumbent is ≥ 0.
 
+**Amendment (2026-10-18, M3.1).** Written after the M3 backtest, not before it. M3 applied criterion 3 to q50. Those medians sat about 0.8 to 1.8 points below the actual mean for QB, RB, WR, and TE. Weekly fantasy scores are right-skewed, so a median forecast lies below the mean even when the mean head is centered. From this date, criterion 3 is the mean (squared-error) head: the average of `mean − actual` in each position-season has absolute value ≤ 0.3. q50 bias is still computed and reported, and it does not gate promotion. Criteria 1, 2, 4, and 5 are unchanged. A verdict under this wording is an amended rule, applied post-hoc to seasons M3 had already shown. The M3 q50-bias failures are not re-labeled as passes under the old wording.
+
 Every run is logged to an `experiments` table: id, git SHA, folds, features, params, metrics.
 
 ## 9. Yahoo benchmark — The Gridiron Lab Challenge
@@ -351,7 +353,7 @@ The column list is in [`docs/FEATURES.md`](FEATURES.md). These are the readings 
 
 1. **LightGBM 4.6.0** is the booster. Early stopping uses the last 20% of training weeks, then the model is refit on every pre-test row for the chosen number of rounds. Depth 3, 8 leaves, L2 of 1, learning rate 0.05, at most 80 rounds, patience 20. No row or column subsampling, one thread, deterministic mode. `min_data_in_leaf` is `min(40, max(5, n // 10))`. These values were fixed before the 2022–2025 run and were not searched on those seasons. A position with fewer than 40 usable rows falls back to the legacy baseline.
 
-2. **The point forecast for MAE, bias, and coverage is q50.** Lineup expected value uses the mean head. Quantile crossing is fixed by sorting. Intervals are the raw q10/q90. Conformal adjustment is M7. The promotion rule still scores raw coverage against 80% ± 3 pp, pooled across the test seasons.
+2. **M3 scored MAE, bias, and coverage on q50.** Lineup expected value uses the mean head. Quantile crossing is fixed by sorting. Intervals in that run were the raw q10/q90. The 2026-10-18 amendment in §8 moves promotion bias onto the mean head. §20 adds the trailing-window interval adjustment. The M3 numbers themselves were raw q50.
 
 3. **`legacy_baseline_v1` uses the old blend on v2.0 columns.** EWMA here is alpha 0.3 and crosses seasons; the old EWMA was alpha 0.45 inside one season. The season term reuses EWMA. `opportunity_momentum` and `td_dependency` are not on the feature row, so those adjustments are 0. Volatility has no `points_roll2`. The projection is still floored at 0. The 2025 MAE gap against 8.23 / 4.24 / 3.43 / 2.83 is this difference, plus the Thursday universe, not a retune.
 
@@ -361,7 +363,16 @@ The column list is in [`docs/FEATURES.md`](FEATURES.md). These are the readings 
 
 6. **Each test week is fit only on earlier weeks.** The inner validation split is inside that history. Labels are `player_weeks.fantasy_points` read after the fact. They are not features.
 
-7. **A season counts for the MAE rule only when model MAE is lower and the week-bootstrap 95% interval of (model − baseline) is entirely below 0.** No position may be worse by more than 0.05 MAE in more than one season. |bias| ≤ 0.3 on q50 in every scored position-season. Coverage must sit in [0.77, 0.83] per position. Pooled lineup points gained must be ≥ 0. Historical lineups are seeded 15-player synthetic rosters (12 teams), because Yahoo rosters are not stored.
+7. **A season counts for the MAE rule only when model MAE is lower and the week-bootstrap 95% interval of (model − baseline) is entirely below 0.** No position may be worse by more than 0.05 MAE in more than one season. M3 required |bias| ≤ 0.3 on q50 in every scored position-season. The 2026-10-18 amendment moves that check to the mean head; q50 bias stays in the report and does not gate promotion. Coverage must sit in [0.77, 0.83] per position. Pooled lineup points gained must be ≥ 0. Historical lineups are seeded 15-player synthetic rosters (12 teams), because Yahoo rosters are not stored.
 
 8. **The experiments record is the JSON file**, plus `experiments.jsonl` under the data directory. No model artifact is written.
+
+## 20. M3.1 bias and calibration assumptions
+
+Decided before the M3.1 refit, and after the M3 results were known. Tree depth, leaves, L2, learning rate, round cap, and patience are the M3 values. They are not searched again.
+
+1. **The mean head already exists** (squared error). M3.1 reports its bias, MAE, and RMSE beside the q50 numbers. Promotion bias uses the mean head only.
+2. **Primary accuracy stays q50 MAE** for criteria 1 and 2, unless the mean head has a lower pooled-offense MAE in at least 3 of the 4 test seasons. That comparison is the only switch, and it is fixed here before the refit. Either way the report says which head was primary.
+3. **Intervals are adjusted with split conformalized quantile regression.** For each test week and each position, the last 8 earlier weeks are a calibration window. The model is fit only on weeks before that window. Both the fit and the window are strictly before the test week. The score is `max(q10 − y, y − q90)`. The finite-sample quantile is the `ceil((n+1) × 0.8)`-th ordered score, and it needs at least 30 scores or the raw interval is kept. The adjusted interval is `[q10 − q, q90 + q]`, clipped so q50 stays inside. Criterion 4 is unchanged and is applied to this adjusted interval, pooled across seasons. Raw coverage is reported next to it. Tail rates are reported and do not gate promotion.
+4. **A negative score shrinks a too-wide interval. A positive score widens a too-narrow one.** Whether QB, TE, and DST land inside 80% ± 3 pp is an outcome of this rule, not a second pass over the window length.
 

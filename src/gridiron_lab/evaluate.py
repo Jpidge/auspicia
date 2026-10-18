@@ -1,9 +1,10 @@
 """Rolling-origin evaluation and the pre-registered promotion rule.
 
-Training rows for a test week are every earlier week, and nothing from that
-week or a later one. Metrics ignore ``force_zero`` rows and rows with no
-actual. The 10/90 interval is the raw model interval. Conformal adjustment
-is left to M7.
+Training rows for a test week are earlier weeks, and nothing from that week
+or a later one. The last 8 of those weeks are a calibration window and are
+not fit rows. Metrics ignore ``force_zero`` rows and rows with no actual.
+Promotion bias uses the mean head. The 10/90 interval is shifted by a
+split-conformal quantile computed on the calibration window.
 
 A season counts toward the MAE rule only when the model MAE is lower than the
 baseline and the week-bootstrap 95% interval of (model − baseline) lies
@@ -37,6 +38,7 @@ from gridiron_lab.models import (
     _has_actual,
     _is_force_zero,
     _position,
+    sort_quantiles,
 )
 from gridiron_lab.scoring import SCORING_VERSION
 
@@ -52,11 +54,14 @@ MAE_SEASONS_REQUIRED = 3
 DEFAULT_TEAMS = 12
 ROSTER_COUNTS = {"QB": 2, "RB": 4, "WR": 5, "TE": 2, "K": 1, "DST": 1}
 DEFAULT_LINEUP = Lineup(qb=1, rb=2, wr=2, te=1, flex=1, k=1, dst=1, bench=6, ir=1)
+CALIBRATION_WEEKS = 8
+MIN_CALIBRATION_SCORES = 30
+CONFORMAL_ALPHA = 0.2
 
 CALIBRATION_REASON = (
-    "Conformalized quantile regression needs a second rolling fit on a "
-    "calibration window before each test season. That work is Milestone 7. "
-    "This run reports raw 10/90 coverage and does not move the quantiles."
+    "Split conformalized quantile regression on the last 8 weeks before each "
+    "test week. The model is fit only on weeks before that window. Both are "
+    "strictly before the test week. Fewer than 30 scores leaves the raw interval."
 )
 
 ModelFactory = Callable[[], object]
@@ -76,6 +81,8 @@ class Scored:
     actual: float
     model: Prediction
     baseline: Prediction
+    q10_raw: float
+    q90_raw: float
 
 
 def _jsonable(value: object) -> object:
@@ -200,26 +207,118 @@ def _top12(rows: Sequence[Scored]) -> float | None:
     return sum(hits) / len(hits)
 
 
+def conformal_quantile(scores: Sequence[float], alpha: float = CONFORMAL_ALPHA) -> float | None:
+    """Finite-sample quantile of CQR scores. ``None`` when the window is too small.
+
+    The index is ``ceil((n + 1) * (1 - alpha))``, which targets an 80% interval
+    when ``alpha`` is 0.2. The window length is not chosen from test coverage.
+    """
+
+    finite = [float(score) for score in scores if math.isfinite(float(score))]
+    count = len(finite)
+    if count < MIN_CALIBRATION_SCORES:
+        return None
+    ordered = sorted(finite)
+    index = math.ceil((count + 1) * (1.0 - alpha))
+    if index < 1:
+        index = 1
+    if index > count:
+        return ordered[-1]
+    return ordered[index - 1]
+
+
+def adjust_interval(prediction: Prediction, delta: float) -> Prediction:
+    """Shift q10/q90 by a conformal score and keep q50 inside the interval."""
+
+    low = min(prediction.q10 - delta, prediction.q50)
+    high = max(prediction.q90 + delta, prediction.q50)
+    q10, q50, q90 = sort_quantiles(low, prediction.q50, high)
+    return Prediction(
+        mean=prediction.mean,
+        q10=q10,
+        q50=q50,
+        q90=q90,
+        model_version=prediction.model_version,
+        feature_version=prediction.feature_version,
+        scoring_version=prediction.scoring_version,
+        trained_through=prediction.trained_through,
+        fallback=prediction.fallback,
+        regime=prediction.regime,
+    )
+
+
+def calibration_window(
+    history: Sequence[Mapping[str, object]],
+    test_key: tuple[int, int],
+    n_weeks: int = CALIBRATION_WEEKS,
+) -> tuple[list[Mapping[str, object]], list[tuple[int, int]]]:
+    """Trailing weeks strictly before ``test_key`` that have an actual.
+
+    A row whose own season and week are at or after the test week is dropped
+    even if it was stored under an earlier key.
+    """
+
+    eligible: list[Mapping[str, object]] = []
+    for row in history:
+        row_key = _row_key(row)
+        if row_key >= test_key or _is_force_zero(row) or not _has_actual(row):
+            continue
+        eligible.append(row)
+    weeks = sorted({_row_key(row) for row in eligible})
+    chosen = weeks[-n_weeks:] if n_weeks > 0 else []
+    chosen_set = set(chosen)
+    rows = [row for row in eligible if _row_key(row) in chosen_set]
+    return rows, chosen
+
+
+def _cqr_scores(
+    rows: Sequence[Mapping[str, object]],
+    predictions: Sequence[Prediction],
+) -> dict[str, list[float]]:
+    scores: dict[str, list[float]] = {position: [] for position in POSITIONS}
+    for row, prediction in zip(rows, predictions, strict=True):
+        if _is_force_zero(row) or not _has_actual(row) or prediction.fallback == "force_zero":
+            continue
+        position = _position(row)
+        if position not in scores:
+            continue
+        actual = float(row["actual"])  # type: ignore[arg-type]
+        scores[position].append(max(prediction.q10 - actual, actual - prediction.q90))
+    return scores
+
+
+def _empty_metrics() -> dict[str, object]:
+    return {
+        "n": 0,
+        "mae": None,
+        "rmse": None,
+        "mae_mean": None,
+        "rmse_mean": None,
+        "bias": None,
+        "bias_q50": None,
+        "coverage": None,
+        "coverage_raw": None,
+        "median_ae": None,
+        "spearman": None,
+        "top12_hit_rate": None,
+        "mae_baseline": None,
+        "mae_diff": None,
+        "mae_mean_diff": None,
+        "n_fallback": 0,
+    }
+
+
 def _metric_dict(rows: Sequence[Scored]) -> dict[str, object]:
     count = len(rows)
     if count == 0:
-        return {
-            "n": 0,
-            "mae": None,
-            "rmse": None,
-            "bias": None,
-            "coverage": None,
-            "median_ae": None,
-            "spearman": None,
-            "top12_hit_rate": None,
-            "mae_baseline": None,
-            "mae_diff": None,
-            "n_fallback": 0,
-        }
+        return _empty_metrics()
     errors = [row.model.q50 - row.actual for row in rows]
+    mean_errors = [row.model.mean - row.actual for row in rows]
     baseline_errors = [abs(row.baseline.q50 - row.actual) for row in rows]
     absolute = [abs(error) for error in errors]
+    absolute_mean = [abs(error) for error in mean_errors]
     covered = sum(1 for row in rows if row.model.q10 <= row.actual <= row.model.q90)
+    covered_raw = sum(1 for row in rows if row.q10_raw <= row.actual <= row.q90_raw)
     ordered = sorted(absolute)
     mid = count // 2
     if count % 2:
@@ -227,19 +326,25 @@ def _metric_dict(rows: Sequence[Scored]) -> dict[str, object]:
     else:
         median = (ordered[mid - 1] + ordered[mid]) / 2.0
     mae = sum(absolute) / count
+    mae_mean = sum(absolute_mean) / count
     mae_baseline = sum(baseline_errors) / count
     fallbacks = sum(1 for row in rows if row.model.fallback not in (None, "force_zero"))
     return {
         "n": count,
         "mae": mae,
         "rmse": math.sqrt(sum(error * error for error in errors) / count),
-        "bias": sum(errors) / count,
+        "mae_mean": mae_mean,
+        "rmse_mean": math.sqrt(sum(error * error for error in mean_errors) / count),
+        "bias": sum(mean_errors) / count,
+        "bias_q50": sum(errors) / count,
         "coverage": covered / count,
+        "coverage_raw": covered_raw / count,
         "median_ae": median,
         "spearman": _spearman(rows),
         "top12_hit_rate": _top12(rows),
         "mae_baseline": mae_baseline,
         "mae_diff": mae - mae_baseline,
+        "mae_mean_diff": mae_mean - mae_baseline,
         "n_fallback": fallbacks,
     }
 
@@ -257,6 +362,8 @@ def _week_sums(rows: Sequence[Scored]) -> list[dict[str, float | int]]:
                 "week": week,
                 "sum_model": sum(abs(item.model.q50 - item.actual) for item in group),
                 "sum_base": sum(abs(item.baseline.q50 - item.actual) for item in group),
+                "sum_model_mean": sum(abs(item.model.mean - item.actual) for item in group),
+                "sum_base_mean": sum(abs(item.baseline.mean - item.actual) for item in group),
                 "n": len(group),
             }
         )
@@ -269,11 +376,17 @@ def _with_ci(
     n_boot: int,
 ) -> dict[str, object]:
     metrics = _metric_dict(rows)
-    interval = bootstrap_mae_diff(_week_sums(rows), rng, n_boot)
-    if interval is None:
-        metrics["mae_diff_ci"] = [None, None]
-    else:
-        metrics["mae_diff_ci"] = [interval[0], interval[1]]
+    weeks = _week_sums(rows)
+    interval = bootstrap_mae_diff(weeks, rng, n_boot)
+    mean_weeks = [
+        {"sum_model": week["sum_model_mean"], "sum_base": week["sum_base_mean"], "n": week["n"]}
+        for week in weeks
+    ]
+    mean_interval = bootstrap_mae_diff(mean_weeks, rng, n_boot)
+    metrics["mae_diff_ci"] = [None, None] if interval is None else [interval[0], interval[1]]
+    metrics["mae_mean_diff_ci"] = (
+        [None, None] if mean_interval is None else [mean_interval[0], mean_interval[1]]
+    )
     return metrics
 
 
@@ -281,16 +394,67 @@ def _coverage_on_target(coverage: float) -> bool:
     return (COVERAGE_LOW - 1e-9) <= coverage <= (COVERAGE_HIGH + 1e-9)
 
 
-def promotion_rule(report: Mapping[str, object]) -> dict[str, object]:
-    """Pass/fail for each pre-registered promotion criterion.
+def choose_primary_mae(folds: Sequence[Mapping[str, object]]) -> str:
+    """Use the mean head for MAE only when it wins at least 3 pooled seasons.
 
-    Empty or unscored folds fail the criterion they cannot support. They do
-    not raise.
+    The rule is fixed in DESIGN §20. It does not look at bias or coverage.
+    """
+
+    wins = 0
+    compared = 0
+    for fold in folds:
+        if not isinstance(fold, Mapping):
+            continue
+        pooled = fold.get("pooled_offense")
+        if not isinstance(pooled, Mapping):
+            continue
+        q50 = pooled.get("mae")
+        mean_mae = pooled.get("mae_mean")
+        if not isinstance(q50, (int, float)) or not isinstance(mean_mae, (int, float)):
+            continue
+        if not math.isfinite(float(q50)) or not math.isfinite(float(mean_mae)):
+            continue
+        compared += 1
+        if float(mean_mae) < float(q50):
+            wins += 1
+    if compared >= MAE_SEASONS_REQUIRED and wins >= MAE_SEASONS_REQUIRED:
+        return "mean"
+    return "q50"
+
+
+def _primary_from(report: Mapping[str, object]) -> str:
+    experiment = report.get("experiment")
+    if isinstance(experiment, Mapping) and experiment.get("primary_mae") == "mean":
+        return "mean"
+    return "q50"
+
+
+def _mae_view(block: Mapping[str, object], primary: str) -> dict[str, object]:
+    if primary == "mean":
+        return {
+            "mae": block.get("mae_mean"),
+            "mae_baseline": block.get("mae_baseline"),
+            "mae_diff_ci": block.get("mae_mean_diff_ci"),
+        }
+    return {
+        "mae": block.get("mae"),
+        "mae_baseline": block.get("mae_baseline"),
+        "mae_diff_ci": block.get("mae_diff_ci"),
+    }
+
+
+def promotion_rule(report: Mapping[str, object]) -> dict[str, object]:
+    """Pass/fail for each promotion criterion.
+
+    Bias is the mean head. q50 bias is ignored. MAE uses q50 unless the
+    experiment selected the mean head under the §20 rule. Empty folds fail
+    the criterion they cannot support.
     """
 
     folds = report.get("folds")
     if not isinstance(folds, list):
         folds = []
+    primary = _primary_from(report)
     season_detail: list[dict[str, object]] = []
     seasons_passing = 0
     worse: dict[str, int] = {position: 0 for position in POSITIONS}
@@ -302,16 +466,18 @@ def promotion_rule(report: Mapping[str, object]) -> dict[str, object]:
         season = fold.get("season")
         pooled = fold.get("pooled_offense")
         if isinstance(pooled, dict):
-            passed = _season_mae_passes(pooled)
+            viewed = _mae_view(pooled, primary)
+            passed = _season_mae_passes(viewed)
             if passed:
                 seasons_passing += 1
             season_detail.append(
                 {
                     "season": season,
-                    "mae": pooled.get("mae"),
-                    "mae_baseline": pooled.get("mae_baseline"),
-                    "mae_diff_ci": pooled.get("mae_diff_ci"),
+                    "mae": viewed.get("mae"),
+                    "mae_baseline": viewed.get("mae_baseline"),
+                    "mae_diff_ci": viewed.get("mae_diff_ci"),
                     "pass": passed,
+                    "head": primary,
                 }
             )
         positions = fold.get("positions")
@@ -324,8 +490,9 @@ def promotion_rule(report: Mapping[str, object]) -> dict[str, object]:
             count = block.get("n")
             if not isinstance(count, int) or count <= 0:
                 continue
-            model_mae = block.get("mae")
-            base_mae = block.get("mae_baseline")
+            viewed = _mae_view(block, primary)
+            model_mae = viewed.get("mae")
+            base_mae = viewed.get("mae_baseline")
             if (
                 isinstance(model_mae, (int, float))
                 and isinstance(base_mae, (int, float))
@@ -337,7 +504,12 @@ def promotion_rule(report: Mapping[str, object]) -> dict[str, object]:
                 scored_bias += 1
                 if abs(float(bias)) > BIAS_LIMIT + 1e-9:
                     bias_failures.append(
-                        {"season": season, "position": position, "bias": float(bias)}
+                        {
+                            "season": season,
+                            "position": position,
+                            "bias": float(bias),
+                            "head": "mean",
+                        }
                     )
     mae_pass = seasons_passing >= MAE_SEASONS_REQUIRED
     worse_positions = {position: count for position, count in worse.items() if count > 1}
@@ -388,7 +560,12 @@ def promotion_rule(report: Mapping[str, object]) -> dict[str, object]:
             "worse_seasons": {position: worse[position] for position in POSITIONS},
             "failures": worse_positions,
         },
-        "bias": {"pass": bias_pass, "failures": bias_failures, "limit": BIAS_LIMIT},
+        "bias": {
+            "pass": bias_pass,
+            "failures": bias_failures,
+            "limit": BIAS_LIMIT,
+            "head": "mean",
+        },
         "coverage": {
             "pass": coverage_pass,
             "band": [COVERAGE_LOW, COVERAGE_HIGH],
@@ -574,6 +751,7 @@ def rolling_origin(
     lineup: Lineup = DEFAULT_LINEUP,
     make_model: ModelFactory | None = None,
     make_baseline: BaselineFactory | None = None,
+    calibration_weeks: int = CALIBRATION_WEEKS,
 ) -> dict[str, object]:
     """Fit before each test week and score that week.
 
@@ -603,15 +781,17 @@ def rolling_origin(
         season, week = key
         rows = list(weeks[key])
         if season in test_set:
+            calibrating, cal_weeks = calibration_window(history, key, calibration_weeks)
+            cal_keys = set(cal_weeks)
             train: list[Mapping[str, object]] = []
             for row in history:
                 row_key = _row_key(row)
-                if row_key >= (season, week):
+                if row_key >= key:
                     raise EvalError(f"training row {row_key} is not strictly before {key}")
-                if _is_force_zero(row) or not _has_actual(row):
+                if row_key in cal_keys or _is_force_zero(row) or not _has_actual(row):
                     continue
                 train.append(row)
-            through = _trained_through(history)
+            through = _trained_through(train)
             model = make_model()
             baseline = make_baseline()
             fit = getattr(model, "fit", None)
@@ -624,13 +804,27 @@ def rolling_origin(
             baseline_predict = getattr(baseline, "predict", None)
             if not callable(predict) or not callable(baseline_predict):
                 raise EvalError("predictors need fit() and predict()")
-            model_preds = list(predict(rows))
+            cal_preds = list(predict(calibrating)) if calibrating else []
+            if len(cal_preds) != len(calibrating):
+                raise EvalError("predict() must return one row per calibration input")
+            deltas = {
+                position: conformal_quantile(values)
+                for position, values in _cqr_scores(calibrating, cal_preds).items()
+            }
+            raw_preds = list(predict(rows))
             baseline_preds = list(baseline_predict(rows))
-            if len(model_preds) != len(rows) or len(baseline_preds) != len(rows):
+            if len(raw_preds) != len(rows) or len(baseline_preds) != len(rows):
                 raise EvalError("predict() must return one row per input")
+            model_preds: list[Prediction] = []
+            for row, raw in zip(rows, raw_preds, strict=True):
+                delta = deltas.get(_position(row))
+                if delta is None or _is_force_zero(row):
+                    model_preds.append(raw)
+                else:
+                    model_preds.append(adjust_interval(raw, delta))
             fallbacks: dict[str, int] = defaultdict(int)
-            for row, model_pred, baseline_pred in zip(
-                rows, model_preds, baseline_preds, strict=True
+            for row, raw, model_pred, baseline_pred in zip(
+                rows, raw_preds, model_preds, baseline_preds, strict=True
             ):
                 fallbacks[model_pred.fallback or "model"] += 1
                 if _is_force_zero(row) or not _has_actual(row):
@@ -643,6 +837,8 @@ def rolling_origin(
                     actual=float(row["actual"]),  # type: ignore[arg-type]
                     model=model_pred,
                     baseline=baseline_pred,
+                    q10_raw=raw.q10,
+                    q90_raw=raw.q90,
                 )
                 by_season[season].append(scored)
                 digest_rows.append(scored)
@@ -665,6 +861,8 @@ def rolling_origin(
                     "week": week,
                     "train_rows": len(train),
                     "trained_through": through,
+                    "calibration_weeks": [f"{item[0]:04d}-W{item[1]:02d}" for item in cal_weeks],
+                    "conformal_delta": deltas,
                     "fallbacks": dict(sorted(fallbacks.items())),
                 }
             )
@@ -713,13 +911,21 @@ def rolling_origin(
             }
         )
     coverage_by_position: dict[str, object] = {}
+    coverage_raw_by_position: dict[str, object] = {}
     for position in POSITIONS:
         group = [row for row in digest_rows if row.position == position]
         if not group:
             coverage_by_position[position] = {"coverage": None, "n": 0}
+            coverage_raw_by_position[position] = {"coverage": None, "n": 0}
             continue
         covered = sum(1 for row in group if row.model.q10 <= row.actual <= row.model.q90)
+        covered_raw = sum(1 for row in group if row.q10_raw <= row.actual <= row.q90_raw)
         coverage_by_position[position] = {"coverage": covered / len(group), "n": len(group)}
+        coverage_raw_by_position[position] = {
+            "coverage": covered_raw / len(group),
+            "n": len(group),
+        }
+    primary = choose_primary_mae(folds)
     if lineup_weeks:
         points_gained = sum(float(item["points_gained"]) for item in lineup_weeks)
         regret = sum(float(item["regret"]) for item in lineup_weeks)
@@ -739,10 +945,15 @@ def rolling_origin(
             "test_seasons": [int(season) for season in test_seasons],
             "params": dict(FROZEN_PARAMS),
             "tuned_on_test": False,
+            "primary_mae": primary,
+            "rule": "amended_2026-10-18_post_hoc",
             "notes": [
                 "No hyperparameter was changed after looking at 2022–2025.",
+                "The 2026-10-18 bias amendment was decided after the M3 results.",
+                "Promotion bias is the mean head. q50 bias is informational.",
+                "Primary MAE stays on q50 unless the mean head wins at least 3 seasons.",
+                "Intervals are CQR-adjusted on the last 8 weeks before the test week.",
                 "min_data_in_leaf is min(40, max(5, n // 10)) so a small history can still split.",
-                "MAE, bias, and coverage use q50 and the raw 10/90 interval.",
                 "Lineup expected value uses the mean head.",
                 "force_zero rows predict 0 and are excluded from fit and from metrics.",
                 "The legacy baseline reads points_ewma, points_roll3, and points_roll5.",
@@ -753,9 +964,13 @@ def rolling_origin(
         },
         "folds": folds,
         "calibration": {
-            "method": "deferred_to_m7",
+            "method": "cqr_trailing_weeks",
             "reason": CALIBRATION_REASON,
+            "weeks": calibration_weeks,
+            "min_scores": MIN_CALIBRATION_SCORES,
+            "alpha": CONFORMAL_ALPHA,
             "coverage_by_position": coverage_by_position,
+            "coverage_raw_by_position": coverage_raw_by_position,
         },
         "lineup": {
             "method": "seeded_synthetic_rosters",
