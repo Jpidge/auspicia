@@ -1,0 +1,315 @@
+# Gridiron Lab — Design
+
+**Status:** M0 scoring · **Date:** 2026-10-18 · **Owner:** John Page
+
+Ground-up rebuild of the previous analytics tool ([Jpidge/Fandromeda2](https://github.com/Jpidge/Fandromeda2)). Public code and the GitHub Pages site live in `Jpidge/gridiron-lab`. Weekly capture data lives in the private repo `Jpidge/gridiron-lab-data`. One job: make better weekly decisions in **Fantasy Football Coalition** than Yahoo's projections would, and prove it with measured evidence.
+
+## 1. Why rebuild
+
+| Previous-tool finding | Gridiron Lab response |
+|---|---|
+| Corrected 2025 holdout: only ~5% MAE gain over baseline (QB 8.23→7.84, RB 4.24→4.01, WR 3.43→3.26, TE 2.83→2.67) | Add the missing signals. Keep the baseline as a permanent benchmark. |
+| Ridge and XGBoost near tied | One regularized GBM per position, plus one baseline |
+| Single holdout season, no uncertainty | Four rolling-origin folds with bootstrap CIs |
+| Never compared to Yahoo | Automated pre-kickoff Yahoo capture ("The Gridiron Lab Challenge") |
+| QB error large | Dedicated QB work (M7) |
+| No Vegas or injury/practice features | First-class, timestamped feature groups |
+| Point error only | Start/sit decision metrics |
+| ± range = 1.15 × volatility, uncalibrated | Calibrated quantiles |
+| 6,438-line `gptindex.py`, 15 blind `except Exception` | Package, narrow exceptions, logging |
+| 1.5 MB inlined dashboard; heavy process docs | Compact JSON site; README/CHANGELOG/DESIGN only |
+
+Code findings that matter for the port:
+
+- **Baseline weights.** The legacy baseline's "15% season average" term reuses `fantasy_points_ewma`. The effective blend is therefore 60% EWMA (α=0.45) / 25% roll3 / 15% roll5, plus a clipped momentum adjustment and a TD-dependency penalty. The output is floored at 0, even though the league allows negative scores.
+- **Volatility.** It is the standard deviation of five summary statistics (last, roll2, roll3, roll5, EWMA), not of game outcomes. That is why the range can't be calibrated.
+- **Week 1 skew.** Walk-forward training skips target Week 1, but live forecasts serve Week 1 from carry-over. That is train/serve skew.
+- **Matchup bug.** The earlier matchup experiment joined the player's own team defense instead of the opponent's.
+
+## 2. Goals and non-goals
+
+**Goals:**
+
+- Data that is correct as of any point in time
+- One feature pipeline shared by training and serving
+- Calibrated weekly projections for QB/RB/WR/TE/K/DST
+- Start/sit and waiver recommendations
+- An honest Yahoo benchmark
+- A fast mobile dashboard
+
+**Non-goals (v2.0):** trades, DFS, multiple leagues, play-level simulation, paid data, writing lineups via the API.
+
+## 3. League configuration (authoritative)
+
+Yahoo league **Fantasy Football Coalition**, ID **893771**: 12 teams, H2H, **non-PPR**, fractional and negative scoring. Lineup: QB, 2 RB, 2 WR, TE, W/R/T, K, DEF, 6 BN, 1 IR. My team: Purple Reign (team ID 10).
+
+| Category | Rule |
+|---|---|
+| Passing | 1 pt / 25 yd; TD 6; INT −2; 40+ yd TD +1 |
+| Rushing | 1 pt / 10 yd; TD 6; 40+ yd TD +1 |
+| Receiving | 1 pt / 10 yd; TD 6; reception 0; 40+ yd TD +1 |
+| Misc offense | Return yd 1/25; return TD 6; 2-pt 2; fumble lost −2; offensive fumble-return TD 6 |
+| Kicker | PAT 1; FG = total made FG yards / 10 |
+| DST | Sack 1; INT 2; fumble rec 2; TD 6; safety 2; blocked kick 2; return yd 1/25; KR/PR TD 6; extra-point return 2 |
+| Points allowed | 0 → 10; 1–6 → 7; 7–13 → 4; 14–20 → 1; 21–27 → 0; 28–34 → −1; 35+ → −4 |
+
+- **Where the rules live.** They sit in the `[scoring]` table of `gridiron_lab.toml`. Boundary readings that the table does not spell out are in §16. The engine (ported `scoring.py`) is generic over that table.
+- **Version stamp.** Every target, model and snapshot carries `scoring_version = ffc_yahoo_v1` plus the table's hash. A model with a different hash refuses to load.
+- **Event-level rules.** Long-TD bonuses, returns and K/DST events come from play-by-play aggregation (ported `pbp_scoring.py`).
+- **Offensive fumble-return TDs** stay explicitly *unavailable*, never silently zero.
+
+## 4. Architecture
+
+```
+NFLverse ─┐                 ┌─> features(as_of) ─> models ─> predictions ─┐
+Vegas  ───┼─> ingest ─> DB ─┤                                             ├─> eval, snapshots ─> site JSON ─> Pages
+Yahoo  ───┘                 └─> scoring engine ─> targets ────────────────┘
+```
+
+There is one CLI, `gridiron-lab {ingest, build-features, train, predict, evaluate, yahoo capture, site build}`. Stages talk only through the DB.
+
+## 5. Data layer
+
+**Storage.**
+
+- **Source of truth:** append-only Parquet partitions (`data/raw/<source>/<season>/`, `data/snapshots/`).
+- **Query layer:** DuckDB on top. It can always be rebuilt from the Parquet files.
+- **What can't be rebuilt:** snapshots and Yahoo captures. They are never rewritten, and they are not stored in this public repo. Weekly capture data belongs in `Jpidge/gridiron-lab-data`.
+
+**Temporal columns.** Every row carries:
+
+- `known_as_of` (UTC): the earliest time the value was knowable
+- `ingested_at`
+- `source`
+
+Live ingests set `known_as_of = ingested_at`. Historical backfill uses conservative, documented proxies:
+
+- Stats and play-by-play: kickoff + 6 h
+- Snaps: kickoff + 24 h
+- Vegas lines: kickoff − 1 h (assumed close line)
+- Injury reports: report timestamp, or the report date at 23:59 local if there is no time
+- Depth charts and rosters: snapshot date
+
+**Sources.**
+
+- **NFLverse** (`nflreadpy`): weekly stats, play-by-play, schedules, snap counts, injuries, depth charts, rosters, IDs.
+- **Vegas:** `spread_line` and `total_line` from NFLverse schedules (free, already a dependency). Implied team total = total/2 ± spread/2, with the sign convention pinned by a unit test.
+- **Yahoo API:** league settings, weekly rosters and lineup slots, player status, projections.
+- **Manual fallback:** pasted Yahoo roster text, read by the ported parser.
+
+**Identity.**
+
+- The canonical `player_id` is the NFLverse `gsis_id`.
+- `player_xref` maps Yahoo keys, names and teams to it, with `match_method` and `match_confidence`.
+- Ambiguous matches are surfaced, never auto-assigned.
+- DST uses `DEF:<team>`.
+
+**Point-in-time access** goes through one function: `db.as_of(table, ts)` returns, per key, the latest row with `known_as_of < ts`. A test fails if `features/` reads a table any other way.
+
+## 6. Feature pipeline
+
+**Contract.** For player *p* in week *W*, `as_of ≤ kickoff(p, W)`, and every input has `known_as_of < as_of`. Training and serving call the same `build_features(season, week, as_of_policy)`.
+
+There are two policies:
+
+- **`capture` (serving):** as_of = now.
+- **`simulated_capture` (training and evaluation):** as_of = the scheduled capture time for that week, defaulting to Thursday 20:00 UTC.
+
+Training and serving see the same information state. A Sunday-morning policy would be a separate model variant.
+
+**Feature groups (v2.0):**
+
+1. **Usage and production:** last, roll3, roll5 and EWMA of league-scored points, targets, carries, air yards, red-zone touches, pass attempts, dropbacks and designed QB rushes. Plus four-game slopes (v1's opportunity momentum).
+2. **Snap share and opportunity:** snap %, plus target, carry, air-yard and red-zone shares of team totals.
+3. **Vegas:** implied team total, spread, game total.
+4. **Opponent defensive strength:** league-scored points allowed to the position, using only games completed before as_of. The opponent comes from the *target-week schedule*.
+5. **Injury and practice:** game status, daily DNP/LP/FP, and same-position teammates ruled out.
+6. **Context:** home/away, rest days, games played, prior-season carry-over that decays by week and resets when a player changes teams.
+
+**Missing values and forced zeros.**
+
+- Missing stays NaN with a `*_missing` flag. Zero is used only when it is true.
+- After the model runs, byes and Out status force the projection to 0.
+
+**Required tests:**
+
+- W-1 stats present, W stats absent.
+- **Adversarial test:** set one player's Week W stats to 1e6, rebuild, and assert that the features and predictions are byte-identical.
+- An injury or line row stamped as_of + 1 s is excluded.
+- Opponent ≠ own team.
+- Bye → 0, while the same player in a scheduled week gets a non-zero projection.
+- **Train/serve parity:** the training row equals the serving row built at the same as_of.
+
+## 7. Models
+
+**QB/RB/WR/TE.** One regularized GBM per position: XGBoost ≥ 2.0 or LightGBM, decided in M3. Shallow trees, L2 regularization, early stopping on an inner temporal split. Two heads:
+
+- **Mean** (squared error): used for lineup expected value.
+- **Quantile** (q10, q50, q90): used for ranges and MAE. Quantile crossing is fixed by sorting.
+
+**K.** Ridge or Poisson GLM on implied team total, FG attempt rate, kick-distance history and dome.
+
+**DST.** Expected points-allowed tier value from an empirical distribution of points allowed, conditioned on the opponent's implied total. Sacks and turnovers come from rolling rates for both teams. TDs and returns use league-average priors.
+
+**Baseline.** `legacy_baseline_v1`, ported verbatim with its quirks, so old numbers can be reproduced. It is never retired.
+
+**Calibration.** Conformalized quantile regression, fitted on the latest fold before the test season.
+
+- 10–90 interval: 80% ± 3 pp coverage per position
+- Each tail: 10% ± 2 pp
+
+The ridge and XGBoost layers and the hand-tuned blend are dropped. Every prediction carries `model_version`, `feature_version`, `scoring_version` and `trained_through`.
+
+## 8. Evaluation
+
+**Folds.** Train ≤ S−1, test S, for S = 2022–2025:
+
+2022–2024 are development folds, 2025 is confirmation-only (once per frozen candidate), and live 2026+ is the true out-of-sample test.
+
+**Metrics** are reported per position and for pooled offense. Each has a 95% CI from a bootstrap that resamples whole weeks, because errors are correlated within a week.
+
+- MAE, RMSE, bias, median absolute error
+- Spearman rank correlation within each position-week
+- Top-12 hit rate
+- 10–90 interval coverage
+- **Decision metrics:** each week, build the optimal lineup by model, by baseline and (once captured) by Yahoo, then score them with actuals. Report **points gained per week** and **regret** against the hindsight optimum.
+  - Greedy fill (required slots, then best remaining RB/WR/TE at flex) is optimal because each player has one position.
+  - Rosters for 2026+ are the real league rosters. Earlier seasons use seeded synthetic 15-player rosters drawn by season-to-date points.
+
+**Promotion rule (pre-registered, checked in code).** A candidate replaces the incumbent only if all of these hold:
+
+1. Pooled-offense MAE improves in ≥ 3 of 4 folds, and the paired CI of the MAE difference excludes 0.
+2. No position worsens by > 0.05 MAE in more than one fold.
+3. |bias| ≤ 0.3 per position.
+4. Coverage stays on target.
+5. Pooled points gained vs the incumbent is ≥ 0.
+
+Every run is logged to an `experiments` table: id, git SHA, folds, features, params, metrics.
+
+## 9. Yahoo benchmark — The Gridiron Lab Challenge
+
+- **Capture.** A GitHub Actions cron runs Thursday 20:00 UTC, about 4 h before TNF. The margin absorbs Actions schedule delay. The job pulls Yahoo projections for every rostered player plus top waiver targets, and runs `predict` in the same job. Both sides are stamped `captured_at_utc`. Optional captures: Sunday 15:00 UTC, and before Saturday or international games.
+- **Validation.** A row is eligible only if `captured_at_utc < kickoff(player)`. The canonical pair is the latest eligible Gridiron Lab row and Yahoo row, captured ≤ 15 min apart.
+- **Actuals.** After Tuesday finalization, join canonical-engine actuals. Yahoo's reported points are stored as a cross-check; a difference > 0.1 fails the week loudly.
+- **Publishing.** A week is published only when every row is comparable. The report covers:
+  - MAE and RMSE for both systems
+  - Value added (|err_yahoo| − |err_ours|)
+  - Head-to-head win rate
+  - Disagreement buckets (<1, 1–2, 2–3, 3–5, >5)
+  - Lineup points vs Yahoo
+- **Secrets.**
+  - The OAuth2 client ID, secret and refresh token live in GitHub secrets, or in a git-ignored `.env` locally, behind a pre-commit secret scan.
+  - Access tokens (~1 h) are refreshed per job and never written to disk in CI.
+- **Timing.** Capture starts the day the access codes arrive; uncaptured weeks are lost.
+
+## 10. Dashboard
+
+**Hosting.** A static site on GitHub Pages, deployed from an Actions artifact (`actions/deploy-pages`). Generated files are never committed.
+
+**Data.** `gridiron-lab site build` emits:
+
+- `meta.json`
+- `roster.json`
+- `startsit.json`: lineup, swaps, points gained
+- `projections.json`: columnar mean/p10/p50/p90 and the Yahoo delta
+- `waivers.json`
+- lazy-loaded `players/<id>.json`
+- `lab.json`
+
+**Front end.**
+
+- Size budget: < 150 KB gzipped for the first screen.
+- Vanilla JS modules, one CSS file, no build step.
+- Mobile-first cards with ≥ 44 px tap targets.
+
+**Lab.** `lab.html` is a separate page (folds, CIs, calibration, Challenge results), not in the main nav.
+
+## 11. Repo and engineering standards
+
+```
+src/gridiron_lab/{data,features,models,eval,yahoo,scoring,site}.py
+tests/   site/   docs/DESIGN.md   gridiron_lab.toml   pyproject.toml   README.md   CHANGELOG.md
+.github/workflows/{ci,weekly,yahoo-capture,pages}.yml
+```
+
+M0 lands `scoring.py`, `config.py`, and `logging.py` under `src/gridiron_lab/`. The other modules arrive in the milestone that needs them.
+
+- **Tooling:** Python 3.11+, locked dependencies, ruff (lint + format), pytest, mypy on `scoring/` and `features/`.
+- **Exceptions:** caught only by specific type. Ruff `BLE001` bans blind `except Exception`.
+- **Failure modes:** optional sources (injuries, Vegas) degrade to flagged-missing. A core-stats failure aborts the run.
+- **Logging:** stage summaries at INFO, e.g. `Matched 183/186 · ambiguous 2 · unmatched 1`.
+- **Config:** everything lives in `gridiron_lab.toml`: league, scoring, seasons, schedule, model params, paths. Secrets come only from env vars.
+
+## 12. Migration
+
+1. **Port with tests first.** Port `scoring.py`, `pbp_scoring.py`, the Yahoo roster parser, name normalization and their tests without changing behavior, then refactor under those tests.
+2. **Port the temporal tests** (W-1 present / W absent, carry-over, opponent join) onto `as_of`.
+3. **Keep the previous tool running.** It stays production until Gridiron Lab beats it on both:
+   - the rolling-origin eval under the promotion rule (the previous tool's ML projections are the incumbent where reproducible, the legacy baseline otherwise);
+   - ≥ 4 weeks of the Challenge.
+4. **No private data in this repo.** Nothing from the old repo's private roster files, snapshots or Yahoo exports is committed. Old snapshots may be imported into `Jpidge/gridiron-lab-data` tagged `source = legacy`.
+
+## 13. Roadmap
+
+| Milestone | Deliverable | Acceptance criteria |
+|---|---|---|
+| **M0** Repo + CI + scoring | Skeleton, pyproject, ruff, pytest, CI, scoring port | Ported scoring tests pass. One hand-checked stat line per rule category. CI green. |
+| **M1** Data layer | DuckDB/Parquet, NFLverse + Vegas ingestion, `as_of()`, `player_xref` | 2018–2025 backfill loads. Every table has `known_as_of`. Re-ingest is idempotent. Row counts match NFLverse. |
+| **M2** Features | `build_features`, all groups, both policies | All §6 tests pass, including adversarial and parity. |
+| **M3** Models + eval | GBMs, K/DST, legacy baseline, fold harness, bootstrap, experiments | `legacy_baseline_v1` reproduces the previous tool's 2025 baseline MAEs (8.23 / 4.24 / 3.43 / 2.83) within ±0.10, or the gap is explained. GBM vs baseline reported with CIs on four folds. |
+| **M4** Site | JSON emitters, front end, Pages workflow | < 150 KB first screen; usable on a phone; Lab renders. |
+| **M5** Yahoo | OAuth refresh, capture, roster sync, xref | Three consecutive scheduled captures pass kickoff validation. ≥ 98% of rostered players matched, the rest surfaced. Manual fallback works. |
+| **M6** Decisions + Challenge | Lineup simulator, decision metrics, report | Points gained per week with CI on historical folds. First fully comparable Challenge week published. |
+| **M7** Intervals + QB | Conformal calibration, QB features | Coverage on target in ≥ 3 of 4 folds per position. QB changes pass the promotion rule, or are recorded as rejected. |
+
+**Order:** M0 → M4 in sequence. The M5 capture job starts in parallel with M1 the day the Yahoo codes arrive.
+
+## 14. Risks
+
+- **Yahoo history:** past projections may be unavailable, so the Challenge may start from zero.
+- **Cron jitter:** Actions schedules can fire late or be skipped. Mitigation: hours of margin, manual dispatch backup, failure alerts.
+- **CI storage:** the Actions cache is evictable. Captures need the private repo `Jpidge/gridiron-lab-data`, outside this public repository.
+- **Vegas timing:** NFLverse lines are probably near-close values. Using them at a Thursday as_of is mild leakage.
+- **Injury data:** NFLverse injury timestamps may be coarse, and recent-season coverage needs to be verified.
+- **Sample size:** four folds and ~17 weeks per season give wide CIs. A ~5% gain may be indistinguishable from noise.
+- **Privacy:** a public Pages site exposes manager names and rosters.
+
+## 15. Open questions
+
+1. Does the Yahoo API serve past-week projections? Test with the first token.
+2. Injury/practice source: are NFLverse injuries enough, or should we add timestamped Yahoo status captures?
+3. Vegas: accept NFLverse lines with a "close" assumption, or capture lines ourselves each Thursday?
+4. K/DST: keep them out of the Challenge until they beat a naive rolling mean?
+5. Does Yahoo's DST points-allowed exclude points scored by the opponent's defense or special teams? Verify against Yahoo-reported DST points.
+6. Do Yahoo refresh tokens rotate? If so, CI must write the new token back to secrets.
+7. Anonymize every manager except Purple Reign on the public site?
+8. XGBoost or LightGBM? Decide on M3 fold results.
+
+## 16. M0 scoring assumptions
+
+The point values in §3 are the league rules, stored in `gridiron_lab.toml`. `src/gridiron_lab/scoring.py` multiplies supplied counts by those rates. It does not round, and it does not floor a total at zero. These are the readings §3 does not spell out. Tests use hand-derived literals for each one.
+
+1. **Points-allowed tiers are inclusive integer ranges.** 0 scores 10; 1 through 6 score 7; 7 through 13 score 4; 14 through 20 score 1; 21 through 27 score 0; 28 through 34 score −1; 35 and every larger integer score −4. A non-integer or a negative `points_allowed` raises `ScoringError`. The table does not define those inputs, so the engine does not invent a tier for them. The previous engine treated every `points_allowed <= 0` as a shutout, which also covered negatives; that reading is not kept. Whether Yahoo's points-allowed figure excludes points scored by the opponent's defense or special teams is still open (§15 question 5). The engine scores the number it is given.
+
+2. **A missing `points_allowed` is not a shutout.** The omitted field is reported as unavailable and the +10 tier is not applied. Explicit 0 is a shutout.
+
+3. **A 40+ touchdown bonus includes a 40-yard touchdown and stacks on the 6-point score.** The engine scores a supplied bonus count. It rejects a bonus count larger than the matching touchdown count, because the bonus is extra, not a substitute for the touchdown. The previous unit test awarded rushing and receiving bonuses with no base touchdown; that input is now an error. Play-by-play reconstruction is not part of M0. The previous aggregator treated the threshold as `yards_gained >= 40`. "40+" is read here as 40 or more.
+
+4. **There is no 40+ bonus for return touchdowns or defensive touchdowns.** The rules list that bonus only on passing, rushing, and receiving touchdowns.
+
+5. **Return yards and return touchdowns stack.** Yards score 1 per 25; the touchdown scores 6. Kickoff and punt returns share one `return_yards` field and one `return_tds` field. Offense and defense have separate touchdown rates in the table (`return_touchdown` and `defense_return_touchdown`); both are 6 in this league. The caller chooses `score_offense` or `score_defense`. The same name `interceptions` is −2 for a pass thrown and +2 for a takeaway.
+
+6. **Made field-goal yards score `yards / 10`.** Missed field goals are not an input, and the rules give them no penalty. Made PATs score 1 each. Missed PATs are not an input. Negative field-goal yards are rejected.
+
+7. **Each two-point conversion on the stat line scores 2.** The canonical field is `two_point`. The engine does not split pass, rush, and receive, and it does not award one conversion to two players. A two-point conversion is not counted inside `touchdown_points`.
+
+8. **Categories stack. The engine does not infer one from another.** A fumble lost (−2) and an offensive fumble-return touchdown (6) both score when both counts are present. A sack is not implied by a safety, and a fumble recovery does not imply a touchdown. The caller attributes each event to one category so a kick-return touchdown is `return_tds`, not also `defense_tds`.
+
+9. **Omitted core box-score counts are zero. Omitted play-level events are unavailable, not an observed zero.** Core counts are passing, rushing, and receiving yards and touchdowns, interceptions, receptions, fumbles lost, two-point conversions, and the defensive counts sacks, interceptions, fumble recoveries, touchdowns, and safeties. Unavailable when omitted: 40+ touchdown counts, return yards, return touchdowns, offensive fumble-return touchdowns, made PATs, made field-goal yards, blocked kicks, extra-point returns, and `points_allowed`. `None` and NaN are unavailable on every field. Unknown keys are ignored so an identifier column can ride along. M0 does not sum split source columns. The previous ingestion path kept the first matching alias, so a later ingester should sum rushing and receiving fumbles lost rather than copy that behavior.
+
+10. **Negative yardage scores negative points.** The per-yard rate applies below zero for passing, rushing, receiving, and return yards. Counting stats cannot be negative.
+
+11. **Fractional scoring has no separate rounding step.** A config with `fractional = false` is rejected because the rules do not define a rounding mode. `ppr` must agree with the reception rate (0 in this league). A table that contains a negative rate while `negative_scoring` is false is rejected, because the engine will not hide that rate behind a zero floor.
+
+12. **The scoring-table hash covers rates and tiers only.** `scoring_version` stays `ffc_yahoo_v1`. `require_scoring_hash` refuses a mismatch. League name and roster slots are not part of the hash.
+
