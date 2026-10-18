@@ -1,0 +1,98 @@
+# Gridiron Lab configuration.
+# Secrets never go in this file. Yahoo credentials come from the environment
+# (see .env.example) or from GitHub Actions secrets.
+# The scoring engine reads [league], [lineup], and [scoring]. Later milestones
+# read the path, season, and model stubs.
+
+[league]
+name = "Fantasy Football Coalition"
+yahoo_id = 893771
+teams = 12
+format = "h2h"
+ppr = false
+fractional = true
+negative_scoring = true
+scoring_version = "ffc_yahoo_v1"
+my_team = "Purple Reign"
+my_team_id = 10
+
+[lineup]
+qb = 1
+rb = 2
+wr = 2
+te = 1
+flex = 1
+k = 1
+dst = 1
+bench = 6
+ir = 1
+
+[scoring.yards_per_point]
+passing = 25
+rushing = 10
+receiving = 10
+return = 25
+field_goal = 10
+
+[scoring.events]
+passing_touchdown = 6
+interception = -2
+passing_touchdown_40_plus = 1
+rushing_touchdown = 6
+rushing_touchdown_40_plus = 1
+reception = 0
+receiving_touchdown = 6
+receiving_touchdown_40_plus = 1
+return_touchdown = 6
+two_point_conversion = 2
+fumble_lost = -2
+offensive_fumble_return_touchdown = 6
+extra_point_made = 1
+defense_sack = 1
+defense_interception = 2
+defense_fumble_recovery = 2
+defense_touchdown = 6
+defense_safety = 2
+defense_blocked_kick = 2
+defense_return_touchdown = 6
+defense_extra_point_return = 2
+
+# Inclusive upper bounds. The last tier is open (35 or more) and omits max_points.
+[[scoring.points_allowed]]
+max_points = 0
+points = 10
+
+[[scoring.points_allowed]]
+max_points = 6
+points = 7
+
+[[scoring.points_allowed]]
+max_points = 13
+points = 4
+
+[[scoring.points_allowed]]
+max_points = 20
+points = 1
+
+[[scoring.points_allowed]]
+max_points = 27
+points = 0
+
+[[scoring.points_allowed]]
+max_points = 34
+points = -1
+
+[[scoring.points_allowed]]
+points = -4
+
+[paths]
+raw = "data/raw"
+snapshots = "data/snapshots"
+private_data_repo = "Jpidge/gridiron-lab-data"
+
+[seasons]
+start = 2018
+end = 2026
+
+[models]
+# M3 chooses the booster. M0 does not train a model.

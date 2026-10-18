@@ -1,0 +1,27 @@
+# Secrets and local environment. Never commit tokens.
+.env
+.env.*
+!.env.example
+*.pem
+credentials.json
+oauth_tokens.json
+secrets/
+
+# Local captures and caches. Weekly data belongs in Jpidge/gridiron-lab-data.
+data/
+*.parquet
+*.duckdb
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
