@@ -1,4 +1,9 @@
-"""Command line. ``python -m gridiron_lab ingest --season 2025``."""
+"""Command line.
+
+``python -m gridiron_lab ingest --season 2025``
+
+``python -m gridiron_lab features --season 2024 --week 1``
+"""
 
 from __future__ import annotations
 
@@ -11,6 +16,7 @@ from gridiron_lab.config import ConfigError, default_config_path
 from gridiron_lab.data.errors import FetchError, IngestError
 from gridiron_lab.data.fetch import FixtureFetch, HttpFetch
 from gridiron_lab.data.ingest import ingest
+from gridiron_lab.features import FeatureError, build_features
 from gridiron_lab.logging import configure_logging, get_logger
 from gridiron_lab.scoring import ScoringError
 
@@ -29,9 +35,15 @@ def run(argv: list[str] | None = None) -> int:
     except SystemExit as exc:
         code = exc.code
         return int(code) if isinstance(code, int) else 2
-    if args.command != "ingest":
-        parser.print_help()
-        return 2
+    if args.command == "ingest":
+        return _run_ingest(args)
+    if args.command == "features":
+        return _run_features(args)
+    parser.print_help()
+    return 2
+
+
+def _run_ingest(args: argparse.Namespace) -> int:
     try:
         seasons = parse_seasons(args.seasons)
         data_dir = _data_dir(args.data_dir, args.config)
@@ -59,6 +71,32 @@ def run(argv: list[str] | None = None) -> int:
     return 0
 
 
+def _run_features(args: argparse.Namespace) -> int:
+    try:
+        data_dir = _data_dir(args.data_dir, args.config)
+        rows = build_features(
+            args.season,
+            args.week,
+            args.policy,
+            data_dir=data_dir,
+            season_type=args.season_type,
+        )
+    except ConfigError as exc:
+        logger.error("%s", exc)
+        return 2
+    except FeatureError as exc:
+        logger.error("%s", exc)
+        return 2
+    except IngestError as exc:
+        logger.error("%s", exc)
+        return 1
+    except OSError as exc:
+        logger.error("Could not read the data directory: %s", exc.strerror or exc)
+        return 1
+    logger.info("Feature rows %s", len(rows))
+    return 0
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="gridiron-lab")
     sub = parser.add_subparsers(dest="command")
@@ -81,6 +119,21 @@ def _parser() -> argparse.ArgumentParser:
         type=Path,
         help="Read CSV fixtures instead of downloading NFLverse. For tests and local replay.",
     )
+    features_parser = sub.add_parser("features", help="Log a Week W feature build; writes nothing")
+    features_parser.add_argument("--season", type=int, required=True)
+    features_parser.add_argument("--week", type=int, required=True)
+    features_parser.add_argument(
+        "--policy",
+        default="simulated_capture",
+        choices=["capture", "simulated_capture"],
+    )
+    features_parser.add_argument("--season-type", default="REG")
+    features_parser.add_argument(
+        "--data-dir",
+        type=Path,
+        help="Directory for Parquet and DuckDB. Defaults to the parent of paths.raw.",
+    )
+    features_parser.add_argument("--config", type=Path, help="Path to gridiron_lab.toml")
     return parser
 
 

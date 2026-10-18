@@ -19,6 +19,7 @@ from gridiron_lab.data.clock import (
     implied_totals,
     kickoff_from_schedule,
     parse_report_time,
+    schedule_released,
     season_open,
     shift,
 )
@@ -73,6 +74,24 @@ _DEFENSE_STATS = (
     "extra_point_returns",
     "points_allowed",
 )
+_USAGE_FIELDS = (
+    "targets",
+    "carries",
+    "pass_attempts",
+    "passing_air_yards",
+    "receiving_air_yards",
+    "dropbacks",
+    "scrambles",
+    "redzone_touches",
+)
+_WEEKLY_USAGE = (
+    ("targets", "targets"),
+    ("carries", "carries"),
+    ("pass_attempts", "attempts"),
+    ("passing_air_yards", "passing_air_yards"),
+    ("receiving_air_yards", "receiving_air_yards"),
+)
+_PBP_USAGE = ("dropbacks", "scrambles", "redzone_touches")
 
 
 def season_type_of(row: dict[str, object]) -> str:
@@ -135,7 +154,7 @@ def build_games(
 
 def _game_versions(clock: GameClock) -> list[dict[str, object]]:
     home_total, away_total = implied_totals(clock.total_line, clock.spread_line)
-    base = {
+    identity = {
         "game_id": clock.game_id,
         "week": clock.week,
         "season_type": clock.season_type,
@@ -143,28 +162,47 @@ def _game_versions(clock: GameClock) -> list[dict[str, object]]:
         "home_team": clock.home_team,
         "away_team": clock.away_team,
         "kickoff_utc": format_utc(clock.kickoff),
-        "spread_line": clock.spread_line,
-        "total_line": clock.total_line,
-        "home_implied_total": home_total,
-        "away_implied_total": away_total,
         "source": SOURCE_NAME,
         "ingested_at": "",
         "row_hash": "",
         "season": clock.season,
     }
+    lines = {
+        "spread_line": clock.spread_line,
+        "total_line": clock.total_line,
+        "home_implied_total": home_total,
+        "away_implied_total": away_total,
+    }
+    no_lines = {
+        "spread_line": None,
+        "total_line": None,
+        "home_implied_total": None,
+        "away_implied_total": None,
+    }
+    schedule = {
+        **identity,
+        **no_lines,
+        "home_score": None,
+        "away_score": None,
+        "record_kind": "schedule",
+        "known_as_of": schedule_released(clock.season),
+        "known_as_of_method": "schedule_released_may_15",
+    }
     pregame = {
-        **base,
+        **identity,
+        **lines,
         "home_score": None,
         "away_score": None,
         "record_kind": "pregame",
         "known_as_of": shift(clock.kickoff, -VEGAS_LEAD),
         "known_as_of_method": "kickoff_minus_1h",
     }
-    versions = [pregame]
+    versions = [schedule, pregame]
     if clock.home_score is not None and clock.away_score is not None:
         versions.append(
             {
-                **base,
+                **identity,
+                **lines,
                 "home_score": clock.home_score,
                 "away_score": clock.away_score,
                 "record_kind": "postgame",
@@ -287,11 +325,15 @@ def build_player_weeks(
         player_id = as_text(stat.get("player_id")) or as_text(stat.get("gsis_id"))
         game_id = as_text(stat.get("game_id"))
         clock = by_id.get(game_id or "")
-        if player_id is None or clock is None:
+        if player_id is None:
+            notes["player_week_missing_player_id"] += 1
+            continue
+        if clock is None:
             notes["player_week_without_game"] += 1
             continue
         offense = _offense_line(stat, columns, events, player_id, clock.game_id)
-        rows.append(_scored_week(stat, clock, player_id, offense, None, rules, notes))
+        usage = _usage_line(stat, columns, events, player_id, clock.game_id)
+        rows.append(_scored_week(stat, clock, player_id, offense, None, usage, rules, notes))
     for clock in clocks:
         for team in (clock.home_team, clock.away_team):
             defense = _defense_line(events, team, clock)
@@ -301,7 +343,18 @@ def build_player_weeks(
                 "team": team,
                 "opponent_team": clock.opponent(team),
             }
-            rows.append(_scored_week(identity, clock, f"DEF:{team}", None, defense, rules, notes))
+            rows.append(
+                _scored_week(
+                    identity,
+                    clock,
+                    f"DEF:{team}",
+                    None,
+                    defense,
+                    {name: None for name in _USAGE_FIELDS},
+                    rules,
+                    notes,
+                )
+            )
     return rows, notes
 
 
@@ -336,6 +389,9 @@ def build_snaps(
                 "offense_snaps": as_int(row.get("offense_snaps")) or 0,
                 "defense_snaps": as_int(row.get("defense_snaps")) or 0,
                 "st_snaps": as_int(row.get("st_snaps")) or 0,
+                "offense_pct": as_float(row.get("offense_pct")),
+                "defense_pct": as_float(row.get("defense_pct")),
+                "st_pct": as_float(row.get("st_pct")),
                 "known_as_of": shift(clock.kickoff, SNAPS_LAG),
                 "known_as_of_method": "kickoff_plus_24h",
                 "ingested_at": "",
@@ -407,6 +463,7 @@ def build_depth_charts(
 ) -> tuple[list[dict[str, object]], Counter[str]]:
     notes: Counter[str] = Counter()
     index = _team_week_index(clocks, notes)
+    week_anchor = _week_anchor(clocks)
     stored: list[dict[str, object]] = []
     for row in rows:
         player_id = as_text(row.get("gsis_id")) or as_text(row.get("player_id"))
@@ -432,8 +489,17 @@ def build_depth_charts(
             method = "day_before_gameday_2359_et"
             notes[method] += 1
         else:
-            notes["depth_without_clock"] += 1
-            continue
+            anchor = None
+            if week is not None:
+                anchor = week_anchor.get((row_season, week, kind)) or week_anchor.get(
+                    (row_season, week, "")
+                )
+            if anchor is None:
+                notes["depth_without_clock"] += 1
+                continue
+            stamped = day_before_gameday(anchor)
+            method = "day_before_week_anchor_2359_et"
+            notes[method] += 1
         stored.append(
             {
                 "player_id": player_id,
@@ -589,12 +655,32 @@ def _defense_line(events: PbpExtract, team: str, clock: GameClock) -> dict[str, 
     return line
 
 
+def _usage_line(
+    stat: dict[str, object],
+    columns: set[str],
+    events: PbpExtract,
+    player_id: str,
+    game_id: str,
+) -> dict[str, float | None]:
+    line: dict[str, float | None] = {}
+    for dest, source in _WEEKLY_USAGE:
+        line[dest] = _optional_box(stat, columns, source)
+    counts = events.player_counts.get((player_id, game_id), {})
+    for name in _PBP_USAGE:
+        if name in events.player_available:
+            line[name] = float(counts.get(name, 0.0))
+        else:
+            line[name] = None
+    return line
+
+
 def _scored_week(
     stat: dict[str, object],
     clock: GameClock,
     player_id: str,
     offense: dict[str, float | None] | None,
     defense: dict[str, float | None] | None,
+    usage: dict[str, float | None],
     rules: LeagueScoring,
     notes: Counter[str],
 ) -> dict[str, object]:
@@ -624,6 +710,8 @@ def _scored_week(
         "season": clock.season,
         "scoring_version": SCORING_VERSION,
     }
+    for name in _USAGE_FIELDS:
+        row[name] = usage.get(name)
     for name in _OFFENSE_STATS:
         row[name] = None if offense is None else offense.get(name)
     for name in _DEFENSE_STATS:

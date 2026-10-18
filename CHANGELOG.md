@@ -4,6 +4,16 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-10-18
+
+### Added
+
+- `build_features` for training (`simulated_capture`, Thursday 20:00 UTC) and serving (`capture`). Both read only through `as_of`. The contract and column list are in `docs/FEATURES.md`.
+- Feature groups for rolling and EWMA production and usage, snap and opportunity shares, Vegas lines, opponent points allowed by position, injury and depth, and home, rest, and prior-season carry-over.
+- Leakage tests: an absurd Week W stat line leaves every feature row unchanged; each group respects the cutoff; train and serve match at the same Thursday; repeats match.
+- A schedule version of each game at 15 May 16:00 UTC so Thursday features can see the opponent without seeing the closing line or the score.
+- Weekly usage columns and play-level dropbacks, scrambles, and red-zone touches. Snap rows keep `offense_pct`, `defense_pct`, and `st_pct`. Depth charts with no team game use the week anchor.
+
 ## [0.2.0] — 2026-10-18
 
 ### Added
