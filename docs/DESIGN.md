@@ -283,7 +283,7 @@ M0 lands `scoring.py`, `config.py`, and `logging.py` under `src/gridiron_lab/`. 
 5. Does Yahoo's DST points-allowed exclude points scored by the opponent's defense or special teams? Verify against Yahoo-reported DST points.
 6. Do Yahoo refresh tokens rotate? If so, CI must write the new token back to secrets.
 7. Anonymize every manager except Purple Reign on the public site?
-8. XGBoost or LightGBM? Decide on M3 fold results.
+8. XGBoost or LightGBM? Decided in M3: LightGBM 4.6.0. See §19.
 
 ## 16. M0 scoring assumptions
 
@@ -346,4 +346,22 @@ The column list is in [`docs/FEATURES.md`](FEATURES.md). These are the readings 
 5. **EWMA alpha is 0.3.** Designed QB rushes are carries minus scrambles. Other positions store a true 0 on games they played. Snap share prefers `offense_pct`.
 6. **`force_zero` is the bye and Out gate.** No model multiplies it yet. The adversarial test compares feature rows, not predictions.
 7. **Week-1 Thursday capture** often misses Sunday rosters, because those rows are stamped the evening before Sunday. Depth charts with a real `dt` (2025) can fill some of that gap. Earlier seasons cannot, without backdating a chart that was not knowable yet.
+
+## 19. M3 model assumptions
+
+1. **LightGBM 4.6.0** is the booster. Early stopping uses the last 20% of training weeks, then the model is refit on every pre-test row for the chosen number of rounds. Depth 3, 8 leaves, L2 of 1, learning rate 0.05, at most 80 rounds, patience 20. No row or column subsampling, one thread, deterministic mode. `min_data_in_leaf` is `min(40, max(5, n // 10))`. These values were fixed before the 2022–2025 run and were not searched on those seasons. A position with fewer than 40 usable rows falls back to the legacy baseline.
+
+2. **The point forecast for MAE, bias, and coverage is q50.** Lineup expected value uses the mean head. Quantile crossing is fixed by sorting. Intervals are the raw q10/q90. Conformal adjustment is M7. The promotion rule still scores raw coverage against 80% ± 3 pp, pooled across the test seasons.
+
+3. **`legacy_baseline_v1` uses the old blend on v2.0 columns.** EWMA here is alpha 0.3 and crosses seasons; the old EWMA was alpha 0.45 inside one season. The season term reuses EWMA. `opportunity_momentum` and `td_dependency` are not on the feature row, so those adjustments are 0. Volatility has no `points_roll2`. The projection is still floored at 0. The 2025 MAE gap against 8.23 / 4.24 / 3.43 / 2.83 is this difference, plus the Thursday universe, not a retune.
+
+4. **K and DST** are OLS, not the full kick-distance or points-allowed tier models in §7. With a line, K uses implied team total and DST uses the opponent implied total, plus points EWMA. Without a line, both use points EWMA and the 3-game mean. Means are not floored. Thursday `simulated_capture` has `vegas_missing=1` on essentially every row, so the backtest reports the no-line regime. The with-line regime is fit only on rows that actually have a line and is covered by unit tests.
+
+5. **`force_zero` predicts 0** and is excluded from training and from MAE, RMSE, bias, and coverage. Missing actuals are excluded from metrics.
+
+6. **Each test week is fit only on earlier weeks.** The inner validation split is inside that history. Labels are `player_weeks.fantasy_points` read after the fact. They are not features.
+
+7. **A season counts for the MAE rule only when model MAE is lower and the week-bootstrap 95% interval of (model − baseline) is entirely below 0.** No position may be worse by more than 0.05 MAE in more than one season. |bias| ≤ 0.3 on q50 in every scored position-season. Coverage must sit in [0.77, 0.83] per position. Pooled lineup points gained must be ≥ 0. Historical lineups are seeded 15-player synthetic rosters (12 teams), because Yahoo rosters are not stored.
+
+8. **The experiments record is the JSON file**, plus `experiments.jsonl` under the data directory. No model artifact is written.
 

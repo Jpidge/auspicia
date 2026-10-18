@@ -26,3 +26,7 @@ venv/
 htmlcov/
 dist/
 build/
+
+# Model artifacts and evaluation dumps stay out of git.
+/artifacts/
+*.lgb
