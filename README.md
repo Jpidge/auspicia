@@ -8,7 +8,7 @@ This public repository holds the code and the GitHub Pages site. Weekly capture 
 
 ## Status
 
-**M0 — scoring.** The canonical league scoring engine is `src/gridiron_lab/scoring.py`. Rules live in the `[scoring]` table of `gridiron_lab.toml`. Ingestion, features, and models are later milestones (M1–M7).
+**M1 — data layer.** Append-only Parquet under a configurable data directory, a rebuildable DuckDB file, and `open_db(data_dir).as_of(table, ts)`. NFLverse schedules, weekly stats, snaps, injuries, depth charts, weekly rosters, player ids, and play-by-play events load through `python -m gridiron_lab ingest`. The schema and the `known_as_of` rules are in [`docs/SCHEMA.md`](docs/SCHEMA.md). Features, models, Yahoo, and the dashboard are later milestones.
 
 ## Quick start
 
@@ -35,13 +35,19 @@ result = score_offense(
 print(result.fantasy_points)  # 20.0; negative totals are kept
 ```
 
-## Planned commands
+## Ingest
 
-Later milestones add the `gridiron-lab` CLI:
+```bash
+python -m gridiron_lab ingest --season 2025
+python -m gridiron_lab ingest --season 2018-2025 --data-dir data
+```
+
+Downloads and the DuckDB file stay in that data directory and are gitignored. Re-running a season appends nothing when the payload is unchanged.
+
+## Later commands
 
 ```bash
 cp .env.example .env    # YAHOO_CLIENT_ID / YAHOO_CLIENT_SECRET / YAHOO_REFRESH_TOKEN (never committed)
-gridiron-lab ingest --seasons 2018-2026
 gridiron-lab train
 gridiron-lab predict --week next
 gridiron-lab site build && python -m http.server -d build/site
@@ -52,9 +58,10 @@ All configuration lives in `gridiron_lab.toml`. Secrets come only from environme
 ## Layout
 
 ```
-src/gridiron_lab/     scoring engine, config, logging
-tests/                deterministic scoring tests
-docs/DESIGN.md        architecture, roadmap, and M0 scoring assumptions
+src/gridiron_lab/     scoring engine, config, logging, data layer, ingest CLI
+tests/                scoring tests and offline ingestion fixtures
+docs/DESIGN.md        architecture, roadmap, scoring and data assumptions
+docs/SCHEMA.md        canonical tables, clocks, and observed row counts
 site/                 placeholder for the GitHub Pages dashboard
 gridiron_lab.toml     league and scoring table
 ```
