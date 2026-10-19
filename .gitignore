@@ -5,6 +5,7 @@
 *.pem
 credentials.json
 oauth_tokens.json
+yahoo_refresh_token
 secrets/
 
 # Local captures and caches. Weekly data belongs in Jpidge/gridiron-lab-data.

@@ -8,7 +8,7 @@ This public repository holds the code and the GitHub Pages site. Weekly capture 
 
 ## Status
 
-**M4.1 — dashboard sparklines.** `python -m gridiron_lab export-dashboard` writes dashboard JSON version 1.1. Player rows carry `recent_points` and `snap_share`; the site draws them as inline sparklines. The contract is [`docs/DASHBOARD_JSON.md`](docs/DASHBOARD_JSON.md). `site/` is the GitHub Pages app (Team, Waivers, League, Lab). The Lab block is the published M3.1 backtest: the candidate was not promoted, and mean-head bias is still outside ±0.3 in seven position-seasons. Yahoo roster sync is M5. The feature contract is in [`docs/FEATURES.md`](docs/FEATURES.md).
+**M5a — Yahoo client, no live credentials yet.** `python -m gridiron_lab yahoo-auth` stores the first refresh token locally. `python -m gridiron_lab yahoo-capture` reads league 893771 (settings, teams, weekly rosters, projections, scoreboard, transactions) and can replay fictional fixtures with `--fixture-dir`. The Thursday workflow is [`.github/workflows/yahoo-capture.yml`](.github/workflows/yahoo-capture.yml). It is a no-op until `YAHOO_CLIENT_ID` exists, and it commits snapshots only to the private repo `Jpidge/gridiron-lab-data`. The dashboard is still JSON 1.1. The feature contract is in [`docs/FEATURES.md`](docs/FEATURES.md).
 
 ## Quick start
 
@@ -64,12 +64,47 @@ The Team view lists every team in the file. The default is `league.my_team_id` (
 
 Manager names are the roster file's `manager` field, written through as `manager_display`. Set `[dashboard] anonymize_managers = true` in `gridiron_lab.toml` and re-export to replace every name with `Manager {team_id}`. Team names stay. The page has no hardcoded manager list.
 
-[`.github/workflows/pages.yml`](.github/workflows/pages.yml) deploys `site/` with `actions/deploy-pages` on a push to `main`. Pull request branches do not deploy. The repository's Pages source has to be **GitHub Actions**; that setting is confirmed by the owner. The workflow re-exports the example JSON before upload, so the deployed file matches the exporter. It does not read the private data repo.
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) deploys `site/` with `actions/deploy-pages` on a push to `main`. Pull request branches do not deploy. The repository's Pages source has to be **GitHub Actions**; that setting is confirmed by the owner. The workflow re-exports JSON before upload. It uses the latest `roster_for_dashboard.json` from `Jpidge/gridiron-lab-data` only when `DATA_REPO_TOKEN` or `DATA_REPO_DEPLOY_KEY` is set on this repo. Otherwise it keeps the fictional example. The private file is an Actions checkout, not a commit to this public repo.
+
+## Yahoo
+
+Secrets are environment variables or GitHub Actions secrets. Names:
+
+| Name | Where it goes |
+|---|---|
+| `YAHOO_CLIENT_ID` | Local `.env` and the `Jpidge/gridiron-lab` Actions secret |
+| `YAHOO_CLIENT_SECRET` | Same |
+| `YAHOO_REFRESH_TOKEN` | Same. The helper writes the first value to a file; you paste it into the secret |
+| `YAHOO_TOKEN_FILE` | Optional local path. Default is `yahoo_refresh_token`, which is gitignored |
+| `YAHOO_SECRETS_ADMIN_TOKEN` | Optional. Actions secret that may update `YAHOO_REFRESH_TOKEN` when Yahoo rotates it |
+| `DATA_REPO_TOKEN` | Optional. Contents write on `Jpidge/gridiron-lab-data` |
+| `DATA_REPO_DEPLOY_KEY` | Optional write deploy key for that private repo |
+
+Nothing in that list is committed. `.env.example` has empty values. Logs must not contain tokens, and the capture writes the refresh token only to the token file (mode 0600).
+
+Once the Yahoo app codes exist:
+
+1. Create a Yahoo developer app with Fantasy Sports read access. Set the redirect URI to `http://127.0.0.1:8085/callback`.
+2. Copy `.env.example` to `.env`. Fill in `YAHOO_CLIENT_ID` and `YAHOO_CLIENT_SECRET`. Leave `YAHOO_REFRESH_TOKEN` empty until the next step.
+3. Run `python -m gridiron_lab yahoo-auth`. Open the printed URL, approve access, and let the local callback finish. The command writes the refresh token to `yahoo_refresh_token` (or `YAHOO_TOKEN_FILE`) and prints that path. It does not print the token.
+4. On `Jpidge/gridiron-lab`, add Actions secrets `YAHOO_CLIENT_ID`, `YAHOO_CLIENT_SECRET`, and `YAHOO_REFRESH_TOKEN` (the file from step 3).
+5. Add `DATA_REPO_TOKEN` (contents write on `Jpidge/gridiron-lab-data`) or `DATA_REPO_DEPLOY_KEY` (a write deploy key for that repo). Without one of those, a live capture runs and then logs that it could not store the snapshot.
+6. Optional: add `YAHOO_SECRETS_ADMIN_TOKEN` if Yahoo returns a new refresh token and Actions should write it back with `gh secret set YAHOO_REFRESH_TOKEN --body-file`. Without it, the workflow logs that the secret was not updated and does not print the new token.
+
+The Thursday workflow (20:00 UTC, plus `workflow_dispatch`) stays installed and exits 0 while `YAHOO_CLIENT_ID` is empty. Replay a capture without credentials:
+
+```bash
+python -m gridiron_lab yahoo-capture \
+  --fixture-dir tests/fixtures/yahoo \
+  --output /tmp/yahoo-capture \
+  --data-dir /tmp/yahoo-data
+```
+
+Those fixtures are fictional. They are not a copy of league 893771. The first live run writes three reconciliation reports: DST points-allowed tiers versus `gridiron_lab.toml` (the exclusion question stays unanswered until a played game can be compared), whether week W−1 projections came back, and which Yahoo stat modifiers match the toml. Betting lines are not captured. See `docs/DESIGN.md` section 21.
 
 ## Later commands
 
 ```bash
-cp .env.example .env    # YAHOO_CLIENT_ID / YAHOO_CLIENT_SECRET / YAHOO_REFRESH_TOKEN (never committed)
 gridiron-lab train
 gridiron-lab predict --week next
 ```
@@ -79,7 +114,7 @@ All configuration lives in `gridiron_lab.toml`. Secrets come only from environme
 ## Layout
 
 ```
-src/gridiron_lab/     scoring engine, config, logging, data layer, features, models, evaluation, lineup, dashboard, CLI
+src/gridiron_lab/     scoring engine, config, logging, data layer, features, models, evaluation, lineup, dashboard, Yahoo client, CLI
 tests/                scoring, ingestion, leakage, model, lineup, and dashboard tests
 docs/DESIGN.md        architecture, roadmap, scoring and data assumptions
 docs/SCHEMA.md        canonical tables, clocks, and observed row counts

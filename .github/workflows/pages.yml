@@ -3,6 +3,11 @@ name: Pages
 # Deploys site/ to GitHub Pages on push to main only.
 # The repository Pages source must be "GitHub Actions" (owner confirms that setting).
 # Pull request branches do not deploy.
+#
+# When DATA_REPO_TOKEN or DATA_REPO_DEPLOY_KEY is set, the job checks out
+# Jpidge/gridiron-lab-data and exports the latest roster_for_dashboard.json.
+# That file is uploaded as the Pages artifact. It is not committed here.
+# With neither secret, the job keeps the fictional example roster.
 
 on:
   push:
@@ -28,13 +33,53 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Export the example dashboard
+      - name: Check for a private data-repo credential
+        id: datarepo
+        env:
+          DATA_REPO_TOKEN: ${{ secrets.DATA_REPO_TOKEN }}
+          DATA_REPO_DEPLOY_KEY: ${{ secrets.DATA_REPO_DEPLOY_KEY }}
         run: |
+          if [ -n "$DATA_REPO_TOKEN" ]; then
+            echo "mode=token" >> "$GITHUB_OUTPUT"
+          elif [ -n "$DATA_REPO_DEPLOY_KEY" ]; then
+            echo "mode=deploy-key" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=absent" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Checkout private capture data
+        if: steps.datarepo.outputs.mode == 'token'
+        uses: actions/checkout@v4
+        with:
+          repository: Jpidge/gridiron-lab-data
+          token: ${{ secrets.DATA_REPO_TOKEN }}
+          path: private-data
+          persist-credentials: false
+      - name: Checkout private capture data with a deploy key
+        if: steps.datarepo.outputs.mode == 'deploy-key'
+        env:
+          DATA_REPO_DEPLOY_KEY: ${{ secrets.DATA_REPO_DEPLOY_KEY }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          ssh-keyscan -t ed25519 github.com >> "$HOME/.ssh/known_hosts"
+          printf '%s\n' "$DATA_REPO_DEPLOY_KEY" > "$HOME/.ssh/gridiron_lab_data"
+          chmod 600 "$HOME/.ssh/gridiron_lab_data"
+          GIT_SSH_COMMAND="ssh -i $HOME/.ssh/gridiron_lab_data -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes" \
+            git clone --depth 1 git@github.com:Jpidge/gridiron-lab-data.git private-data
+          rm -f "$HOME/.ssh/gridiron_lab_data"
+      - name: Export the dashboard
+        run: |
+          set -euo pipefail
           python -m pip install --upgrade pip
           python -m pip install -e .
-          python -m gridiron_lab export-dashboard \
-            --rosters examples/dashboard/rosters.json \
-            --output site/dashboard.json
+          roster="examples/dashboard/rosters.json"
+          if [ -d private-data ]; then
+            latest="$(find private-data/yahoo -name roster_for_dashboard.json | sort | tail -n 1)"
+            if [ -n "$latest" ]; then
+              roster="$latest"
+            fi
+          fi
+          python -m gridiron_lab export-dashboard --rosters "$roster" --output site/dashboard.json
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -11,7 +11,7 @@ M1 stores NFLverse extracts as append-only Parquet and scores weekly lines with 
 
 `players`, `player_xref`, and `identity_issues` are not one NFL season. Their `season` column is 0 and they partition under `season=0`. Every other table uses the NFL season.
 
-Every row has `known_as_of` (UTC, `YYYY-MM-DDTHH:MM:SSZ`), `known_as_of_method`, `ingested_at`, `source` (`nflverse`), and `row_hash`. The hash covers every column except `ingested_at` and itself. A re-run appends nothing when the hash is already stored. A changed payload is a new version.
+Every row has `known_as_of` (UTC, `YYYY-MM-DDTHH:MM:SSZ`), `known_as_of_method`, `ingested_at`, `source`, and `row_hash`. NFLverse rows use `source = nflverse`. Yahoo capture rows use `source = yahoo`. The hash covers every column except `ingested_at` and itself. A re-run appends nothing when the hash is already stored. A changed payload is a new version.
 
 `as_of(table, ts)` keeps, per entity key, the row with the latest `known_as_of` that is **strictly before** `ts`. Ties break on `ingested_at`, then `row_hash`. It scans the Parquet parts. The DuckDB file is a rebuild of those parts, not a second source of truth.
 
@@ -28,6 +28,7 @@ Every row has `known_as_of` (UTC, `YYYY-MM-DDTHH:MM:SSZ`), `known_as_of_method`,
 | Injury with neither | team-week kickoff | `kickoff_proxy_missing_report_time` |
 | Depth chart or roster with `dt` | that timestamp | `snapshot_timestamp` |
 | Depth chart or roster with a team game | day before `gameday`, 23:59 Eastern | `day_before_gameday_2359_et` |
+| Yahoo capture (`player_xref`, `identity_issues`, matched `rosters`) | the capture instant | `yahoo_capture` |
 | Depth chart or roster with no team game | day before the week's earliest `gameday` | `day_before_week_anchor_2359_et` |
 | Player identity | 1 September of `rookie_season` / `entry_year`, Eastern | `entry_year_sept_1_et` |
 | Undated crosswalk or DST identity | 1970-01-01 UTC | `crosswalk_undated` or `dst_identity` |

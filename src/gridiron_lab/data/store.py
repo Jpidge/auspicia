@@ -21,7 +21,14 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from gridiron_lab.data.errors import IngestError
-from gridiron_lab.data.schema import TABLE_NAMES, TableSpec, coerce, require_table, stamp_ok
+from gridiron_lab.data.schema import (
+    ALLOWED_SOURCES,
+    TABLE_NAMES,
+    TableSpec,
+    coerce,
+    require_table,
+    stamp_ok,
+)
 from gridiron_lab.logging import get_logger
 
 logger = get_logger("data.store")
@@ -182,8 +189,8 @@ class ParquetStore:
         method = row.get("known_as_of_method")
         if not isinstance(method, str) or not method:
             raise IngestError(f"{spec.name} known_as_of_method is required")
-        if row.get("source") != "nflverse":
-            raise IngestError(f"{spec.name} source must be nflverse")
+        if row.get("source") not in ALLOWED_SOURCES:
+            raise IngestError(f"{spec.name} source must be nflverse or yahoo")
         if spec.dimension and row.get("season") != 0:
             raise IngestError(f"{spec.name} dimension rows use season 0")
         for key in spec.keys:

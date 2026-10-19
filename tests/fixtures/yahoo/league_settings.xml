@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<fantasy_content xml:lang="en-US" yahoo:uri="/fantasy/v2/league/449.l.893771/settings" xmlns:yahoo="http://www.yahooapis.com/v1/base.rng" xmlns="http://fantasysports.yahooapis.com/fantasy/v2/base.rng">
+ <league>
+  <league_key>449.l.893771</league_key>
+  <league_id>893771</league_id>
+  <name>Fictional Thursday League</name>
+  <num_teams>12</num_teams>
+  <season>2026</season>
+  <current_week>7</current_week>
+  <settings>
+   <stat_modifiers>
+    <stats>
+     <stat>
+      <stat_id>4</stat_id>
+      <value>0.04</value>
+     </stat>
+     <stat>
+      <stat_id>5</stat_id>
+      <value>6</value>
+     </stat>
+     <stat>
+      <stat_id>50</stat_id>
+      <value>10</value>
+     </stat>
+    </stats>
+   </stat_modifiers>
+  </settings>
+ </league>
+</fantasy_content>

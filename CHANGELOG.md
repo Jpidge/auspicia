@@ -4,6 +4,18 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-10-19
+
+### Added
+
+- A Yahoo Fantasy client for league 893771: OAuth authorization-code and refresh-token flow, league settings, teams and manager nicknames, weekly rosters, scoreboard, transactions, and player points for a week. Refresh-token rotation is written to a mode-0600 file and is not logged. HTTP 429 and 999 back off.
+- `python -m gridiron_lab yahoo-auth` for the one-time local consent on `http://127.0.0.1:8085/callback`.
+- `python -m gridiron_lab yahoo-capture`. Without `YAHOO_CLIENT_ID` and with `--allow-missing-secrets`, it exits 0. `--fixture-dir` replays fictional Yahoo documents.
+- Mapped rows in `player_xref`, `identity_issues`, and `rosters` with `source = yahoo` and `known_as_of` on every row. Unmatched Yahoo ids are identity issues. The dashboard roster uses the Yahoo nickname and still honors `anonymize_managers`.
+- `.github/workflows/yahoo-capture.yml`, Thursday 20:00 UTC, no-op until the Yahoo secrets exist. Snapshots commit to `Jpidge/gridiron-lab-data` when `DATA_REPO_TOKEN` or `DATA_REPO_DEPLOY_KEY` is set. Pages reads that private roster only inside CI.
+- Reconciliation reports for DST points-allowed tiers, past-week projections, and stat modifiers versus `gridiron_lab.toml`. The two live questions stay `needs_live_comparison` and `needs_live_request`.
+- `docs/DESIGN.md` section 21, dated 2026-10-19: betting-line sources, cost, and a recommendation not to sign up. The capture records lines as not captured.
+
 ## [0.5.1] — 2026-10-19
 
 ### Added

@@ -1,0 +1,255 @@
+{
+  "fantasy_content": {
+    "league": [
+      {
+        "league_key": "449.l.893771",
+        "league_id": "893771"
+      },
+      {
+        "teams": {
+          "0": {
+            "team": [
+              {
+                "team_key": "449.l.893771.t.10"
+              },
+              {
+                "team_id": "10"
+              },
+              {
+                "name": "Purple Reign"
+              },
+              {
+                "managers": {
+                  "0": {
+                    "manager": {
+                      "manager_id": "1",
+                      "nickname": "Wynn Adler"
+                    }
+                  },
+                  "count": 1
+                }
+              },
+              {
+                "team_standings": {
+                  "outcome_totals": {
+                    "wins": "4",
+                    "losses": "2",
+                    "ties": "0"
+                  }
+                }
+              },
+              {
+                "roster": {
+                  "coverage_type": "week",
+                  "week": "7",
+                  "players": {
+                    "0": {
+                      "player": [
+                        [
+                          {
+                            "player_key": "449.p.90001"
+                          },
+                          {
+                            "player_id": "90001"
+                          },
+                          {
+                            "name": {
+                              "full": "Casey Hale"
+                            }
+                          },
+                          {
+                            "editorial_team_abbr": "HBR"
+                          },
+                          {
+                            "display_position": "QB"
+                          },
+                          {
+                            "primary_position": "QB"
+                          },
+                          {
+                            "status": "Healthy"
+                          },
+                          {
+                            "bye_weeks": {
+                              "week": "9"
+                            }
+                          }
+                        ],
+                        {
+                          "selected_position": {
+                            "position": "QB"
+                          }
+                        }
+                      ]
+                    },
+                    "1": {
+                      "player": [
+                        [
+                          {
+                            "player_key": "449.p.90002"
+                          },
+                          {
+                            "player_id": "90002"
+                          },
+                          {
+                            "name": {
+                              "full": "Jules Okonkwo"
+                            }
+                          },
+                          {
+                            "editorial_team_abbr": "PIN"
+                          },
+                          {
+                            "display_position": "WR"
+                          },
+                          {
+                            "primary_position": "WR"
+                          },
+                          {
+                            "status": "Q"
+                          },
+                          {
+                            "bye_weeks": {
+                              "week": "9"
+                            }
+                          }
+                        ],
+                        {
+                          "selected_position": {
+                            "position": "BN"
+                          }
+                        }
+                      ]
+                    },
+                    "2": {
+                      "player": [
+                        [
+                          {
+                            "player_key": "449.p.90099"
+                          },
+                          {
+                            "player_id": "90099"
+                          },
+                          {
+                            "name": {
+                              "full": "Harbor Defense"
+                            }
+                          },
+                          {
+                            "editorial_team_abbr": "HBR"
+                          },
+                          {
+                            "display_position": "DEF"
+                          },
+                          {
+                            "primary_position": "DEF"
+                          },
+                          {
+                            "status": "Healthy"
+                          },
+                          {
+                            "bye_weeks": {
+                              "week": "9"
+                            }
+                          }
+                        ],
+                        {
+                          "selected_position": {
+                            "position": "DEF"
+                          }
+                        }
+                      ]
+                    },
+                    "count": 3
+                  }
+                }
+              }
+            ]
+          },
+          "1": {
+            "team": [
+              {
+                "team_key": "449.l.893771.t.4"
+              },
+              {
+                "team_id": "4"
+              },
+              {
+                "name": "Paper North"
+              },
+              {
+                "managers": {
+                  "0": {
+                    "manager": {
+                      "manager_id": "1",
+                      "nickname": "Nia Pell"
+                    }
+                  },
+                  "count": 1
+                }
+              },
+              {
+                "team_standings": {
+                  "outcome_totals": {
+                    "wins": "3",
+                    "losses": "3",
+                    "ties": "0"
+                  }
+                }
+              },
+              {
+                "roster": {
+                  "coverage_type": "week",
+                  "week": "7",
+                  "players": {
+                    "0": {
+                      "player": [
+                        [
+                          {
+                            "player_key": "449.p.90003"
+                          },
+                          {
+                            "player_id": "90003"
+                          },
+                          {
+                            "name": {
+                              "full": "Remy Calder"
+                            }
+                          },
+                          {
+                            "editorial_team_abbr": "OAK"
+                          },
+                          {
+                            "display_position": "RB"
+                          },
+                          {
+                            "primary_position": "RB"
+                          },
+                          {
+                            "status": "Healthy"
+                          },
+                          {
+                            "bye_weeks": {
+                              "week": "8"
+                            }
+                          }
+                        ],
+                        {
+                          "selected_position": {
+                            "position": "RB"
+                          }
+                        }
+                      ]
+                    },
+                    "count": 1
+                  }
+                }
+              }
+            ]
+          },
+          "count": 2
+        }
+      }
+    ]
+  }
+}

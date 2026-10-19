@@ -1,0 +1,158 @@
+{
+  "fantasy_content": {
+    "league": [
+      {
+        "league_key": "449.l.893771"
+      },
+      {
+        "players": {
+          "0": {
+            "player": [
+              [
+                {
+                  "player_key": "449.p.90001"
+                },
+                {
+                  "name": {
+                    "full": "Casey Hale"
+                  }
+                }
+              ],
+              {
+                "player_stats": {
+                  "coverage_type": "week",
+                  "week": "7",
+                  "stats": {
+                    "0": {
+                      "stat": {
+                        "stat_id": "4",
+                        "value": "0"
+                      }
+                    },
+                    "count": 1
+                  }
+                }
+              },
+              {
+                "player_points": {
+                  "coverage_type": "week",
+                  "week": "7",
+                  "total": "18.4"
+                }
+              }
+            ]
+          },
+          "1": {
+            "player": [
+              [
+                {
+                  "player_key": "449.p.90002"
+                },
+                {
+                  "name": {
+                    "full": "Jules Okonkwo"
+                  }
+                }
+              ],
+              {
+                "player_stats": {
+                  "coverage_type": "week",
+                  "week": "7",
+                  "stats": {
+                    "0": {
+                      "stat": {
+                        "stat_id": "4",
+                        "value": "0"
+                      }
+                    },
+                    "count": 1
+                  }
+                }
+              },
+              {
+                "player_points": {
+                  "coverage_type": "week",
+                  "week": "7",
+                  "total": "11.2"
+                }
+              }
+            ]
+          },
+          "2": {
+            "player": [
+              [
+                {
+                  "player_key": "449.p.90099"
+                },
+                {
+                  "name": {
+                    "full": "Harbor Defense"
+                  }
+                }
+              ],
+              {
+                "player_stats": {
+                  "coverage_type": "week",
+                  "week": "7",
+                  "stats": {
+                    "0": {
+                      "stat": {
+                        "stat_id": "4",
+                        "value": "0"
+                      }
+                    },
+                    "count": 1
+                  }
+                }
+              },
+              {
+                "player_points": {
+                  "coverage_type": "week",
+                  "week": "7",
+                  "total": "7.5"
+                }
+              }
+            ]
+          },
+          "3": {
+            "player": [
+              [
+                {
+                  "player_key": "449.p.90003"
+                },
+                {
+                  "name": {
+                    "full": "Remy Calder"
+                  }
+                }
+              ],
+              {
+                "player_stats": {
+                  "coverage_type": "week",
+                  "week": "7",
+                  "stats": {
+                    "0": {
+                      "stat": {
+                        "stat_id": "4",
+                        "value": "0"
+                      }
+                    },
+                    "count": 1
+                  }
+                }
+              },
+              {
+                "player_points": {
+                  "coverage_type": "week",
+                  "week": "7",
+                  "total": "9.1"
+                }
+              }
+            ]
+          },
+          "count": 4
+        }
+      }
+    ]
+  }
+}
