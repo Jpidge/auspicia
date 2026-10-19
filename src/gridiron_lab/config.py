@@ -32,7 +32,10 @@ _SECRET_KEY_NAMES = frozenset(
         "authorization",
     }
 )
-_TOP_LEVEL_KEYS = frozenset({"league", "lineup", "scoring", "paths", "seasons", "models"})
+_TOP_LEVEL_KEYS = frozenset(
+    {"league", "lineup", "scoring", "paths", "seasons", "models", "dashboard"}
+)
+_DASHBOARD_KEYS = frozenset({"anonymize_managers"})
 _LEAGUE_KEYS = frozenset(
     {
         "name",
@@ -83,11 +86,24 @@ class Lineup:
 
 
 @dataclass(frozen=True)
+class DashboardSettings:
+    """Manager-name privacy for the public dashboard export.
+
+    ``anonymize_managers`` replaces each manager display name with
+    ``Manager {team_id}`` and drops the roster file's manager string from
+    the JSON. Team names are unchanged. Flip this in ``gridiron_lab.toml``.
+    """
+
+    anonymize_managers: bool
+
+
+@dataclass(frozen=True)
 class AppConfig:
     path: Path
     league: LeagueInfo
     lineup: Lineup
     scoring: LeagueScoring
+    dashboard: DashboardSettings
 
 
 def default_config_path() -> Path:
@@ -141,7 +157,14 @@ def _load_config(path: Path) -> AppConfig:
     league = _league(raw.get("league"), path)
     lineup = _lineup(raw.get("lineup"), path)
     scoring = _scoring(raw.get("scoring"), league, path)
-    return AppConfig(path=path, league=league, lineup=lineup, scoring=scoring)
+    dashboard = _dashboard(raw.get("dashboard"), path)
+    return AppConfig(
+        path=path,
+        league=league,
+        lineup=lineup,
+        scoring=scoring,
+        dashboard=dashboard,
+    )
 
 
 def _league(raw: object, path: Path) -> LeagueInfo:
@@ -162,6 +185,14 @@ def _league(raw: object, path: Path) -> LeagueInfo:
         scoring_version=_text(table, "scoring_version", "league"),
         my_team=_text(table, "my_team", "league"),
         my_team_id=_positive_int(table, "my_team_id", "league"),
+    )
+
+
+def _dashboard(raw: object, path: Path) -> DashboardSettings:
+    table = _table(raw, "dashboard", path)
+    _exact_keys(table, _DASHBOARD_KEYS, "dashboard")
+    return DashboardSettings(
+        anonymize_managers=_bool(table, "anonymize_managers", "dashboard"),
     )
 
 

@@ -144,7 +144,7 @@ Training and serving see the same information state. A Sunday-morning policy wou
 
 **QB/RB/WR/TE.** One regularized GBM per position: XGBoost ≥ 2.0 or LightGBM, decided in M3. Shallow trees, L2 regularization, early stopping on an inner temporal split. Two heads:
 
-- **Mean** (squared error): used for lineup expected value.
+- **Mean** (squared error): the evaluation lineup expected value. The M4 dashboard maximizes q50 instead, so the median on the card is the objective. See `docs/DASHBOARD_JSON.md`.
 - **Quantile** (q10, q50, q90): used for ranges and MAE. Quantile crossing is fixed by sorting.
 
 **K.** Ridge or Poisson GLM on implied team total, FG attempt rate, kick-distance history and dome.
@@ -259,7 +259,7 @@ M0 lands `scoring.py`, `config.py`, and `logging.py` under `src/gridiron_lab/`. 
 | **M1** Data layer | DuckDB/Parquet, NFLverse + Vegas ingestion, `as_of()`, `player_xref` | 2018–2025 backfill loads. Every table has `known_as_of`. Re-ingest is idempotent. Row counts match NFLverse. |
 | **M2** Features | `build_features`, all groups, both policies | All §6 tests pass, including adversarial and parity. |
 | **M3** Models + eval | GBMs, K/DST, legacy baseline, fold harness, bootstrap, experiments | `legacy_baseline_v1` reproduces the previous tool's 2025 baseline MAEs (8.23 / 4.24 / 3.43 / 2.83) within ±0.10, or the gap is explained. GBM vs baseline reported with CIs on four folds. |
-| **M4** Site | JSON emitters, front end, Pages workflow | < 150 KB first screen; usable on a phone; Lab renders. |
+| **M4** Site | JSON emitters, front end, Pages workflow | < 150 KB first screen; usable on a phone; Lab renders. Contract: `docs/DASHBOARD_JSON.md`. |
 | **M5** Yahoo | OAuth refresh, capture, roster sync, xref | Three consecutive scheduled captures pass kickoff validation. ≥ 98% of rostered players matched, the rest surfaced. Manual fallback works. |
 | **M6** Decisions + Challenge | Lineup simulator, decision metrics, report | Points gained per week with CI on historical folds. First fully comparable Challenge week published. |
 | **M7** Intervals + QB | Conformal calibration, QB features | Coverage on target in ≥ 3 of 4 folds per position. QB changes pass the promotion rule, or are recorded as rejected. |
@@ -284,7 +284,7 @@ M0 lands `scoring.py`, `config.py`, and `logging.py` under `src/gridiron_lab/`. 
 4. K/DST: keep them out of the Challenge until they beat a naive rolling mean?
 5. Does Yahoo's DST points-allowed exclude points scored by the opponent's defense or special teams? Verify against Yahoo-reported DST points.
 6. Do Yahoo refresh tokens rotate? If so, CI must write the new token back to secrets.
-7. Anonymize every manager except Purple Reign on the public site?
+7. Anonymize every manager except Purple Reign on the public site? Decided for M4: the page shows `manager_display` from the roster file. Set `[dashboard] anonymize_managers = true` to write `Manager {team_id}` instead. The owner will honor later privacy requests one at a time.
 8. XGBoost or LightGBM? Decided in M3: LightGBM 4.6.0. See §19.
 
 ## 16. M0 scoring assumptions
