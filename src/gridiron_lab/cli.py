@@ -151,11 +151,12 @@ def _run_export_dashboard(args: argparse.Namespace) -> int:
             rosters_path=args.rosters,
             output=args.output,
             predictions_path=args.predictions,
+            data_dir=args.data_dir,
         )
     except ConfigError as exc:
         logger.error("%s", exc)
         return 2
-    except (DashboardError, LineupError) as exc:
+    except (DashboardError, LineupError, FeatureError) as exc:
         logger.error("%s", exc)
         return 2
     except OSError as exc:
@@ -246,6 +247,14 @@ def _parser() -> argparse.ArgumentParser:
         help="Optional predictions JSON. Overrides q10, q50, q90, mean, and yahoo.",
     )
     export_parser.add_argument("--config", type=Path, help="Path to gridiron_lab.toml")
+    export_parser.add_argument(
+        "--data-dir",
+        type=Path,
+        help=(
+            "Point-in-time store for recent_points and snap_share. "
+            "Omit to copy those fields from the roster file."
+        ),
+    )
     return parser
 
 

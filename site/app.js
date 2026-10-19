@@ -68,13 +68,69 @@
       '<span class="meta"><span class="yhw">' + (quiet ? "" : yahooHtml) + '</span><span class="chip v ' + verdictClass + '">' + verdict + '</span>' +
       '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></button>' +
       '<div class="drawer" role="region" aria-label="Details for ' + esc(player.name) + '"><div class="dgrid">' +
+      pointsStat(player) +
       stat("10th–90th", esc(rangeText(player) || "—")) +
       stat("Median", fmt(player.q50)) +
       stat("Mean", fmt(player.mean)) +
       stat("Opp rank", player.opp_rank == null ? "—" : String(player.opp_rank)) +
       stat("Vegas implied", player.vegas_implied == null ? "—" : fmt(player.vegas_implied)) +
+      snapStat(player) +
       stat("Practice", esc(player.practice || "—")) +
       "</div>" + notes(player.notes) + "</div></div>";
+  }
+  function nums(values) {
+    if (!values || !values.length) return [];
+    var out = [];
+    for (var i = 0; i < values.length; i += 1) {
+      var number = Number(values[i]);
+      if (!Number.isNaN(number)) out.push(number);
+    }
+    return out;
+  }
+  function compact(value) {
+    var rounded = Math.round(value * 10) / 10;
+    return Math.abs(rounded - Math.round(rounded)) < 0.05 ? String(Math.round(rounded)) : rounded.toFixed(1);
+  }
+  function spark(values, width, height) {
+    if (!values || values.length < 2) return "";
+    var max = Math.max.apply(null, values);
+    var min = Math.min.apply(null, values);
+    var span = (max - min) || 1;
+    var pts = values.map(function (value, index) {
+      return [
+        (index / (values.length - 1)) * (width - 8) + 4,
+        height - 4 - ((value - min) / span) * (height - 8)
+      ];
+    });
+    var path = pts.map(function (point, index) {
+      return (index ? "L" : "M") + point[0].toFixed(1) + " " + point[1].toFixed(1);
+    }).join(" ");
+    var last = pts[pts.length - 1];
+    return '<svg class="spark" viewBox="0 0 ' + width + " " + height + '" preserveAspectRatio="none" aria-hidden="true">' +
+      '<path d="' + path + " L" + last[0].toFixed(1) + " " + height + ' L4 ' + height + 'Z" fill="var(--c)" opacity=".12"/>' +
+      '<path d="' + path + '" fill="none" stroke="var(--c)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
+      '<path d="M' + last[0].toFixed(1) + " " + last[1].toFixed(1) + 'l0 0" stroke="var(--c)" stroke-width="7" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>';
+  }
+  function pointsStat(player) {
+    var values = nums(player.recent_points);
+    var body = values.length < 2
+      ? '<div class="val num">—</div>'
+      : spark(values, 120, 40) + '<div class="sub num">' + values.map(function (value) { return Number(value).toFixed(1); }).join(" · ") + "</div>";
+    return '<div class="stat"><div class="k">Last 6 weeks</div>' + body + "</div>";
+  }
+  function snapSeries(player) {
+    if (player.position === "DST" || player.position === "DEF") return [];
+    return nums(player.snap_share).filter(function (value) { return value > 0; });
+  }
+  function snapStat(player) {
+    var values = snapSeries(player);
+    if (values.length < 2) {
+      return '<div class="stat"><div class="k">Snap share</div><div class="val num">—</div></div>';
+    }
+    var last = values[values.length - 1];
+    var delta = last - values[0];
+    var mark = delta >= 0 ? "▲" : "▼";
+    return '<div class="stat"><div class="k">Snap share</div><div class="val num">' + compact(last) + '%<small> ' + mark + compact(Math.abs(delta)) + "</small></div>" + spark(values, 120, 24) + "</div>";
   }
   function pct(value) {
     var max = 30;
@@ -131,10 +187,21 @@
       var color = posColor(item.position);
       var weeks = item.q50_next || [];
       var total = weeks.reduce(function (sum, value) { return sum + Number(value); }, 0);
-      return '<article class="card wc"><div class="ad"><div><span class="plus">Add</span>' + esc(item.name) + '</div><div><span class="minus">Drop</span>' + esc(item.drop_name || "—") + (item.drop_position ? " (" + esc(SLOT[item.drop_position] || item.drop_position) + ")" : "") + '</div></div><div class="hd"><span class="pos" style="--c:' + color + '">' + esc(SLOT[item.position] || item.position) + '</span><div class="pm">' + esc(item.nfl_team || "") + " · " + esc(item.note || "") + "</div></div>" +
+      return '<article class="card wc" style="--c:' + color + '"><div class="ad"><div><span class="plus">Add</span>' + esc(item.name) + '</div><div><span class="minus">Drop</span>' + esc(item.drop_name || "—") + (item.drop_position ? " (" + esc(SLOT[item.drop_position] || item.drop_position) + ")" : "") + '</div></div><div class="hd"><span class="pos" style="--c:' + color + '">' + esc(SLOT[item.position] || item.position) + '</span><div class="pm">' + esc(item.nfl_team || "") + " · " + esc(item.note || "") + "</div></div>" +
         '<div class="next3">' + weeks.map(function (value, index) { return "<div><small>WK " + (data.week.week + index) + '</small><b class="num">' + fmt(value) + "</b></div>"; }).join("") + "</div>" +
-        '<div class="wm"><span>Next 3<br><b class="num">' + fmt(total) + "</b></span><span>ROS proj<br><b class=\"num\">" + fmt(item.ros) + "</b></span></div></article>";
+        '<div class="wm"><span>Next 3<br><b class="num">' + fmt(total) + "</b></span><span>ROS proj<br><b class=\"num\">" + fmt(item.ros) + "</b></span>" + snapTrend(item) + "</div></article>";
     }).join("") || '<p class="sub">No pickups at this position.</p>';
+  }
+  function snapTrend(item) {
+    if (item.position === "DST" || item.position === "DEF") {
+      return '<span style="margin-left:auto">Snap trend n/a</span>';
+    }
+    var values = snapSeries(item);
+    if (values.length < 2) return '<span style="margin-left:auto">—</span>';
+    var delta = values[values.length - 1] - values[0];
+    var color = delta > 0 ? "var(--good)" : delta < 0 ? "var(--bad)" : "var(--muted)";
+    var label = delta > 0 ? "▲" + compact(delta) + "%" : delta < 0 ? "▼" + compact(-delta) + "%" : "Steady";
+    return '<span>Snaps<br><b class="num" style="color:' + color + '">' + label + "</b></span>" + spark(values, 90, 28);
   }
 
   function renderLeague() {

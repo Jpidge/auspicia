@@ -13,9 +13,11 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 
 from gridiron_lab.config import AppConfig, Lineup
+from gridiron_lab.features import RecentSeries, recent_series
 from gridiron_lab.lineup import CLOSE_CALL_MARGIN, FLEX_POSITIONS, recommend
 
-DASHBOARD_VERSION = "1"
+DASHBOARD_VERSION = "1.1"
+RECENT_LIMIT = 6
 WIN_PROBABILITY_SD = 25.0
 OBJECTIVE = "q50"
 
@@ -232,10 +234,61 @@ def _record(wins: int, losses: int) -> str:
     return f"{wins}–{losses}"
 
 
-def _player_out(player: Mapping[str, object]) -> dict[str, object]:
+def _number_series(value: object, *, limit: int = RECENT_LIMIT) -> list[float] | None:
+    """Last numeric values from a roster-file list. Empty or non-lists are missing."""
+
+    if not isinstance(value, list):
+        return None
+    numbers: list[float] = []
+    for item in value:
+        if isinstance(item, bool) or not isinstance(item, int | float):
+            continue
+        number = float(item)
+        if not math.isfinite(number):
+            continue
+        numbers.append(round(number, 4))
+    if not numbers:
+        return None
+    return numbers[-limit:]
+
+
+def _is_dst(player: Mapping[str, object]) -> bool:
+    return str(player.get("position") or "").upper() in {"DST", "DEF"}
+
+
+def _series_for(
+    player: Mapping[str, object],
+    history: Mapping[str, RecentSeries] | None,
+) -> tuple[list[float], list[float] | None]:
+    """Points and snap share for one player.
+
+    ``history is None`` copies the roster file (the example site). A dict, even
+    an empty one, is a point-in-time lookup: ids the store does not know get an
+    empty points list and a null snap share. DST snap share is always null.
+    """
+
+    dst = _is_dst(player)
+    if history is None:
+        points = _number_series(player.get("recent_points")) or []
+        shares = None if dst else _number_series(player.get("snap_share"))
+        return points, shares
+    found = history.get(str(player.get("player_id") or ""))
+    if found is None:
+        return [], None
+    points = [float(value) for value in found.recent_points]
+    if dst or found.snap_share is None:
+        return points, None
+    return points, [float(value) for value in found.snap_share]
+
+
+def _player_out(
+    player: Mapping[str, object],
+    history: Mapping[str, RecentSeries] | None,
+) -> dict[str, object]:
     q50 = _optional_number(player.get("q50"))
     yahoo = _optional_number(player.get("yahoo"))
     delta = None if q50 is None or yahoo is None else q50 - yahoo
+    recent_points, snap_share = _series_for(player, history)
     kept = {
         "player_id": str(player.get("player_id") or ""),
         "name": str(player.get("name") or ""),
@@ -257,11 +310,10 @@ def _player_out(player: Mapping[str, object]) -> dict[str, object]:
         "verdict": player.get("verdict"),
         "notes": list(player.get("notes") or []) if isinstance(player.get("notes"), list) else [],
         "sparkline": player.get("sparkline") if isinstance(player.get("sparkline"), list) else [],
+        "recent_points": recent_points,
         "opp_rank": player.get("opp_rank"),
         "vegas_implied": _optional_number(player.get("vegas_implied")),
-        "snap_share": (
-            player.get("snap_share") if isinstance(player.get("snap_share"), list) else []
-        ),
+        "snap_share": snap_share,
         "practice": player.get("practice"),
     }
     return kept
@@ -287,8 +339,14 @@ def build_dashboard(
     roster_doc: Mapping[str, object],
     predictions: Mapping[str, object] | None = None,
     lab: Mapping[str, object] | None = None,
+    *,
+    history: Mapping[str, RecentSeries] | None = None,
 ) -> dict[str, object]:
-    """Assemble one week of dashboard JSON. Manager names come from the roster file."""
+    """Assemble one week of dashboard JSON. Manager names come from the roster file.
+
+    ``history`` is the point-in-time series from ``recent_series``. Omit it to
+    copy ``recent_points`` and ``snap_share`` from the roster file.
+    """
 
     teams_raw = roster_doc.get("teams")
     if not isinstance(teams_raw, list) or not teams_raw:
@@ -355,9 +413,9 @@ def build_dashboard(
                 "projected_total": total,
                 "opponent_projected_total": opponent_total,
                 "win_probability": _win_probability(total, opponent_total),
-                "starters": [_player_out(player) for player in result["starters"]],  # type: ignore[union-attr]
-                "bench": [_player_out(player) for player in result["bench"]],  # type: ignore[union-attr]
-                "inactive": [_player_out(player) for player in result["inactive"]],  # type: ignore[union-attr]
+                "starters": [_player_out(player, history) for player in result["starters"]],  # type: ignore[union-attr]
+                "bench": [_player_out(player, history) for player in result["bench"]],  # type: ignore[union-attr]
+                "inactive": [_player_out(player, history) for player in result["inactive"]],  # type: ignore[union-attr]
                 "calls": result["calls"],
             }
         )
@@ -387,7 +445,7 @@ def build_dashboard(
             }
         )
 
-    waivers = _waivers(roster_doc.get("waivers"), prepared, anonymize, managers)
+    waivers = _waivers(roster_doc.get("waivers"), prepared, anonymize, managers, history)
     default_team_id = config.league.my_team_id
     if default_team_id not in names:
         raise DashboardError(f"league.my_team_id {default_team_id} is not in the roster file")
@@ -436,6 +494,7 @@ def _waivers(
     teams: Sequence[Mapping[str, object]],
     anonymize: bool,
     managers: Mapping[int, str],
+    history: Mapping[str, RecentSeries] | None,
 ) -> list[dict[str, object]]:
     del anonymize, managers
     if raw is None:
@@ -467,9 +526,7 @@ def _waivers(
                 "nfl_team": item.get("nfl_team"),
                 "q50_next": item.get("q50_next") if isinstance(item.get("q50_next"), list) else [],
                 "ros": _optional_number(item.get("ros")),
-                "snap_share": (
-                    item.get("snap_share") if isinstance(item.get("snap_share"), list) else []
-                ),
+                "snap_share": _series_for(item, history)[1],
                 "note": item.get("note") or "",
                 "drop_player_id": drop_id,
                 "drop_name": None if drop is None else drop.get("name"),
@@ -479,6 +536,33 @@ def _waivers(
     return exported
 
 
+def _listed_players(roster_doc: Mapping[str, object]) -> tuple[list[str], dict[str, str]]:
+    ids: list[str] = []
+    positions: dict[str, str] = {}
+
+    def take(rows: object) -> None:
+        if not isinstance(rows, list):
+            return
+        for row in rows:
+            if not isinstance(row, dict):
+                continue
+            player_id = row.get("player_id")
+            if not isinstance(player_id, str) or not player_id:
+                continue
+            ids.append(player_id)
+            position = row.get("position")
+            if isinstance(position, str) and position:
+                positions[player_id] = position
+
+    teams = roster_doc.get("teams")
+    if isinstance(teams, list):
+        for team in teams:
+            if isinstance(team, dict):
+                take(team.get("players"))
+    take(roster_doc.get("waivers"))
+    return ids, positions
+
+
 def export_dashboard(
     *,
     config: AppConfig,
@@ -486,12 +570,30 @@ def export_dashboard(
     output: Path,
     predictions_path: Path | None = None,
     lab: Mapping[str, object] | None = None,
+    data_dir: Path | None = None,
 ) -> dict[str, object]:
-    """Read the roster file and write one dashboard JSON document."""
+    """Read the roster file and write one dashboard JSON document.
+
+    With ``data_dir``, ``recent_points`` and ``snap_share`` come from
+    ``recent_series`` at the Thursday simulated capture for the roster week.
+    Without it, those fields are copied from the roster file.
+    """
 
     roster_doc = load_json(rosters_path)
     predictions = load_json(predictions_path) if predictions_path is not None else None
-    payload = build_dashboard(config, roster_doc, predictions, lab)
+    history = None
+    if data_dir is not None:
+        season = _int(roster_doc, "season", "rosters")
+        week = _int(roster_doc, "week", "rosters")
+        player_ids, positions = _listed_players(roster_doc)
+        history = recent_series(
+            season,
+            week,
+            player_ids,
+            data_dir=data_dir,
+            positions=positions,
+        )
+    payload = build_dashboard(config, roster_doc, predictions, lab, history=history)
     text = json.dumps(payload, indent=2, allow_nan=False) + "\n"
     if config.dashboard.anonymize_managers:
         for team in roster_doc.get("teams", []):
