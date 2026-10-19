@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.1] — 2026-10-19
+
+### Added
+
+- Dashboard JSON 1.1. Player rows include `recent_points` and `snap_share` (percent, or null). `export-dashboard --data-dir` fills them from the point-in-time store through `recent_series`, using the Thursday simulated capture. The target week and any row known after that capture stay out. DST snap share is always null. The site draws inline SVG sparklines in the player drawer and on waiver cards.
+
 ## [0.5.0] — 2026-10-19
 
 ### Added

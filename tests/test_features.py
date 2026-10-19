@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import math
 from datetime import UTC, datetime
 from pathlib import Path
@@ -11,7 +12,13 @@ from gridiron_lab.data.fetch import FixtureFetch
 from gridiron_lab.data.ingest import ingest
 from gridiron_lab.data.schema import TABLES
 from gridiron_lab.data.store import ParquetStore
-from gridiron_lab.features import FEATURE_COLUMNS, FEATURE_VERSION, build_features, thursday_capture
+from gridiron_lab.features import (
+    FEATURE_COLUMNS,
+    FEATURE_VERSION,
+    build_features,
+    recent_series,
+    thursday_capture,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 FIXTURES = REPO_ROOT / "tests" / "fixtures"
@@ -195,6 +202,215 @@ def test_bye_forces_zero_and_a_scheduled_week_keeps_production(tmp_path: Path) -
     assert scheduled["00-QB2"]["is_bye"] == 0
     assert scheduled["00-QB2"]["force_zero"] == 1
     assert scheduled["00-QB2"]["injury_status"] == "Out"
+
+
+def test_recent_series_excludes_the_target_week_and_late_rows(tmp_path: Path) -> None:
+    _league(tmp_path)
+    found = recent_series(
+        2024,
+        2,
+        ["00-QBKC", "00-QBBAL", "DEF:KC", "missing"],
+        data_dir=tmp_path,
+        positions={"00-QBBAL": "K"},
+    )
+    assert "missing" not in found
+    assert "DEF:KC" not in found
+    assert found["00-QBKC"].recent_points == (20.0, 18.0)
+    assert found["00-QBKC"].snap_share == (80.0,)
+    assert 1e6 not in found["00-QBKC"].recent_points
+    assert found["00-QBBAL"].recent_points == (12.0,)
+    assert found["00-QBBAL"].snap_share is None
+
+    store = ParquetStore(tmp_path)
+    store.append(
+        "player_weeks",
+        [
+            _week(
+                "00-QBKC",
+                2024,
+                2,
+                "2024_02_CIN_KC",
+                "KC",
+                "CIN",
+                points=1e6,
+                targets=1e6,
+                carries=1e6,
+                attempts=1e6,
+                air=1e6,
+                dropbacks=1e6,
+                scrambles=1e6,
+                redzone=1e6,
+                known="2024-05-16T00:00:00Z",
+            ),
+            _week(
+                "DEF:KC",
+                2024,
+                1,
+                "2024_01_BAL_KC",
+                "KC",
+                "BAL",
+                points=9,
+                targets=0,
+                carries=0,
+                attempts=0,
+                air=0,
+                dropbacks=0,
+                scrambles=0,
+                redzone=0,
+                known="2024-09-06T06:20:00Z",
+            ),
+            _week(
+                "DEF:KC",
+                2024,
+                2,
+                "2024_02_CIN_KC",
+                "KC",
+                "CIN",
+                points=1e6,
+                targets=0,
+                carries=0,
+                attempts=0,
+                air=0,
+                dropbacks=0,
+                scrambles=0,
+                redzone=0,
+                known="2024-05-16T00:00:00Z",
+            ),
+        ],
+    )
+    store.append(
+        "snap_counts",
+        [
+            _snap(
+                "00-QBKC",
+                "2024_02_CIN_KC",
+                2024,
+                2,
+                "KC",
+                "CIN",
+                pct=1.0,
+                snaps=70,
+                known="2024-05-16T00:00:00Z",
+            ),
+            _snap(
+                "DEF:KC",
+                "2024_01_BAL_KC",
+                2024,
+                1,
+                "KC",
+                "BAL",
+                pct=0.5,
+                snaps=30,
+                known="2024-09-07T00:20:00Z",
+            ),
+        ],
+    )
+    again = recent_series(
+        2024,
+        2,
+        ["00-QBKC", "DEF:KC"],
+        data_dir=tmp_path,
+        positions={"DEF:KC": "DST"},
+    )
+    assert again["00-QBKC"].recent_points == (20.0, 18.0)
+    assert again["00-QBKC"].snap_share == (80.0,)
+    assert again["DEF:KC"].recent_points == (9.0,)
+    assert again["DEF:KC"].snap_share is None
+    labeled = recent_series(
+        2024,
+        2,
+        ["00-QBKC"],
+        data_dir=tmp_path,
+        positions={"00-QBKC": "DST"},
+    )
+    assert labeled["00-QBKC"].recent_points == (20.0, 18.0)
+    assert labeled["00-QBKC"].snap_share is None
+
+
+def test_export_dashboard_reads_recent_series_from_the_store(tmp_path: Path) -> None:
+    from gridiron_lab.config import load_config
+    from gridiron_lab.dashboard import export_dashboard
+
+    _league(tmp_path)
+    roster = {
+        "example": False,
+        "season": 2024,
+        "week": 2,
+        "teams": [
+            {
+                "team_id": 10,
+                "name": "Purple Reign",
+                "manager": "Avery Quinn",
+                "wins": 1,
+                "losses": 0,
+                "opponent_id": 11,
+                "players": [
+                    {
+                        "player_id": "00-QBKC",
+                        "name": "Store QB",
+                        "position": "QB",
+                        "q50": 18,
+                        "recent_points": [999, 999],
+                        "snap_share": [1, 2],
+                    },
+                    {
+                        "player_id": "not-in-store",
+                        "name": "Ghost",
+                        "position": "WR",
+                        "q50": 1,
+                        "recent_points": [9, 9],
+                        "snap_share": [9, 9],
+                    },
+                ],
+            },
+            {
+                "team_id": 11,
+                "name": "Other",
+                "manager": "Drew Okada",
+                "wins": 0,
+                "losses": 1,
+                "opponent_id": 10,
+                "players": [],
+            },
+        ],
+        "waivers": [
+            {
+                "player_id": "00-QBBAL",
+                "name": "Kicker with no snaps",
+                "position": "K",
+                "snap_share": [100, 100],
+            }
+        ],
+    }
+    source = tmp_path / "rosters.json"
+    source.write_text(json.dumps(roster), encoding="utf-8")
+    output = tmp_path / "dashboard.json"
+    export_dashboard(
+        config=load_config(REPO_ROOT / "gridiron_lab.toml"),
+        rosters_path=source,
+        output=output,
+        data_dir=tmp_path,
+    )
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    players = payload["teams"][0]["starters"] + payload["teams"][0]["bench"]
+    quarterback = next(player for player in players if player["player_id"] == "00-QBKC")
+    ghost = next(player for player in players if player["player_id"] == "not-in-store")
+    assert quarterback["recent_points"] == [20.0, 18.0]
+    assert quarterback["snap_share"] == [80.0]
+    assert ghost["recent_points"] == []
+    assert ghost["snap_share"] is None
+    assert payload["waivers"][0]["snap_share"] is None
+    copied = tmp_path / "copied.json"
+    export_dashboard(
+        config=load_config(REPO_ROOT / "gridiron_lab.toml"),
+        rosters_path=source,
+        output=copied,
+    )
+    copied_payload = json.loads(copied.read_text(encoding="utf-8"))
+    copied_rows = copied_payload["teams"][0]["starters"] + copied_payload["teams"][0]["bench"]
+    copied_qb = next(player for player in copied_rows if player["player_id"] == "00-QBKC")
+    assert copied_qb["recent_points"] == [999.0, 999.0]
+    assert copied_qb["snap_share"] == [1.0, 2.0]
 
 
 def test_fixture_thursday_capture_sees_the_schedule_and_not_the_game(tmp_path: Path) -> None:

@@ -12,6 +12,7 @@ then clamps each player to their own kickoff.
 from __future__ import annotations
 
 from collections import defaultdict
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -143,25 +144,9 @@ def build_features(
         raise FeatureError(f"week must be positive, got {week}")
 
     db = open_db(data_dir)
-    probe_at = parse_utc(schedule_released(season)) + timedelta(days=1)
-    schedule = _games(db.as_of("games", probe_at))
-    week_schedule = [
-        game
-        for game in schedule.values()
-        if game.season == season and game.week == week and game.season_type == season_type
-    ]
-    if not week_schedule:
-        raise FeatureError(f"no {season_type} schedule for {season} week {week}")
-    earliest = min(game.kickoff for game in week_schedule)
-    if as_of_policy == "simulated_capture":
-        policy_as_of = thursday_capture(earliest)
-    else:
-        if now is None:
-            now = datetime.now(UTC)
-        if now.tzinfo is None:
-            raise FeatureError("now must be timezone-aware")
-        policy_as_of = now.astimezone(UTC)
-
+    policy_as_of, week_schedule = _capture(
+        db, season, week, as_of_policy, now=now, season_type=season_type
+    )
     cutoffs = {policy_as_of}
     for game in week_schedule:
         if game.kickoff < policy_as_of:
@@ -414,6 +399,102 @@ def _feature_row(
     out_row["depth_position"] = _text(depth.get("position")) if depth else None
     out_row["depth_missing"] = 0 if depth else 1
     return {name: out_row[name] for name in FEATURE_COLUMNS}
+
+
+RECENT_WEEKS = 6
+
+
+@dataclass(frozen=True)
+class RecentSeries:
+    """History visible at the capture. ``snap_share`` is None when it is not available.
+
+    Points are fantasy points. Snap share is an offensive snap percentage, 0–100.
+    """
+
+    recent_points: tuple[float, ...]
+    snap_share: tuple[float, ...] | None
+
+
+def recent_series(
+    season: int,
+    week: int,
+    player_ids: Sequence[str],
+    *,
+    data_dir: Path,
+    as_of_policy: str = "simulated_capture",
+    now: datetime | None = None,
+    season_type: str = "REG",
+    positions: Mapping[str, str] | None = None,
+) -> dict[str, RecentSeries]:
+    """Last weeks of points and snap share, using the same cutoff as ``build_features``.
+
+    A player with no history row before the capture is omitted. Snap share stays
+    None for DST and for anyone with no offensive snap observation. The target
+    week is excluded even when its ``known_as_of`` is early.
+    """
+
+    if as_of_policy not in POLICIES:
+        raise FeatureError(f"unknown as_of policy {as_of_policy!r}")
+    wanted = {str(player_id) for player_id in player_ids}
+    if not wanted:
+        return {}
+    db = open_db(data_dir)
+    policy_as_of, _week_schedule = _capture(
+        db, season, week, as_of_policy, now=now, season_type=season_type
+    )
+    snap = _Snapshot.load(db, policy_as_of, season, week, season_type)
+    found: dict[str, RecentSeries] = {}
+    labels = positions or {}
+    for player_id in sorted(wanted):
+        history = snap.weeks_by_player.get(player_id)
+        if not history:
+            continue
+        points = _observed(history, lambda row: _num(row.get("fantasy_points")))[-RECENT_WEEKS:]
+        position = str(labels.get(player_id) or history[-1].get("position") or "").upper()
+        if position in {"DST", "DEF"} or player_id.startswith("DEF:"):
+            shares: tuple[float, ...] | None = None
+        else:
+            raw = _share_series(snap, history, _snap_share)[-RECENT_WEEKS:]
+            shares = tuple(round(value * 100, 1) for value in raw) or None
+        found[player_id] = RecentSeries(
+            recent_points=tuple(round(value, 4) for value in points),
+            snap_share=shares,
+        )
+    return found
+
+
+def _capture(
+    db: Database,
+    season: int,
+    week: int,
+    as_of_policy: str,
+    *,
+    now: datetime | None,
+    season_type: str,
+) -> tuple[datetime, list[_Game]]:
+    if season_type != "REG":
+        raise FeatureError("features are built for the regular season")
+    if week < 1:
+        raise FeatureError(f"week must be positive, got {week}")
+    probe_at = parse_utc(schedule_released(season)) + timedelta(days=1)
+    schedule = _games(db.as_of("games", probe_at))
+    week_schedule = [
+        game
+        for game in schedule.values()
+        if game.season == season and game.week == week and game.season_type == season_type
+    ]
+    if not week_schedule:
+        raise FeatureError(f"no {season_type} schedule for {season} week {week}")
+    earliest = min(game.kickoff for game in week_schedule)
+    if as_of_policy == "simulated_capture":
+        policy_as_of = thursday_capture(earliest)
+    else:
+        if now is None:
+            now = datetime.now(UTC)
+        if now.tzinfo is None:
+            raise FeatureError("now must be timezone-aware")
+        policy_as_of = now.astimezone(UTC)
+    return policy_as_of, week_schedule
 
 
 def _universe(snap: _Snapshot, season: int) -> list[_Player]:

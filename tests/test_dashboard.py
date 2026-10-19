@@ -149,7 +149,7 @@ def test_export_command_writes_json(tmp_path: Path) -> None:
 
 def test_shipped_example_matches_the_contract() -> None:
     payload = json.loads((SITE / "dashboard.json").read_text(encoding="utf-8"))
-    assert payload["version"] == "1"
+    assert payload["version"] == "1.1"
     assert payload["example"] is True
     assert payload["anonymize_managers"] is False
     assert payload["default_team_id"] == 10
@@ -174,6 +174,17 @@ def test_shipped_example_matches_the_contract() -> None:
     flex = next(player for player in starters if player["slot"] == "FLEX")
     assert flex["position"] in {"RB", "WR", "TE"}
     assert purple["win_probability"] is not None
+    for team in teams:
+        for bucket in ("starters", "bench", "inactive"):
+            rows = team[bucket]
+            assert isinstance(rows, list)
+            for player in rows:
+                _assert_drawn_series(player)
+    waivers = payload["waivers"]
+    assert isinstance(waivers, list)
+    assert waivers
+    for waiver in waivers:
+        _assert_drawn_series(waiver, waiver=True)
     lab = payload["lab"]
     assert isinstance(lab, dict)
     assert lab["promoted"] is False
@@ -202,6 +213,96 @@ def test_site_reads_the_contract_fields() -> None:
     assert ".wc { min-width: 0; }" in css
     assert ".wc .pm { white-space: normal; overflow-wrap: anywhere; }" in css
     assert "min-width: 44px" in css
+    assert "function spark(" in script
+    assert "Last 6 weeks" in script
+    assert "Snap share" in script
+    assert "Snap trend n/a" in script
+    assert "recent_points" in script
+    assert "values.length < 2" in script
+    assert 'aria-hidden="true"' in script
+    assert 'fill="var(--c)"' in script
+    assert ".trend .up { color: var(--good); }" in css
+    assert ".trend .dn { color: var(--bad); }" in css
+    assert ".stat.wide" in css
+    assert ".wm { display: flex;" in css
+    assert "flex-wrap: wrap" in css
+
+
+def _assert_drawn_series(player: dict[str, object], *, waiver: bool = False) -> None:
+    if not waiver:
+        points = player["recent_points"]
+        assert isinstance(points, list)
+        assert len(points) >= 2
+    position = player["position"]
+    if position in {"DST", "DEF"}:
+        assert player["snap_share"] is None
+    else:
+        shares = player["snap_share"]
+        assert isinstance(shares, list)
+        assert len(shares) >= 2
+
+
+def test_short_and_missing_series_stay_short() -> None:
+    config = load_config(ROOT / "gridiron_lab.toml")
+    roster = _mini_roster()
+    players = roster["teams"][0]["players"]  # type: ignore[index]
+    assert isinstance(players, list)
+    players[0]["recent_points"] = [4.0, 9, "nope", 8, 7, 6, 5, 11]
+    players[0]["snap_share"] = [70, 72]
+    defense_row = next(player for player in players if player["player_id"] == "t10-dst")
+    defense_row["recent_points"] = [3.0]
+    defense_row["snap_share"] = [10, 20, 30]
+    payload = build_dashboard(config, roster)
+    teams = payload["teams"]
+    assert isinstance(teams, list)
+    rows = list(teams[0]["starters"]) + list(teams[0]["bench"])  # type: ignore[arg-type]
+    quarterback = next(player for player in rows if player["player_id"] == "t10-qb")
+    defense = next(player for player in rows if player["player_id"] == "t10-dst")
+    runner = next(player for player in rows if player["player_id"] == "t10-rb1")
+    assert quarterback["recent_points"] == [9.0, 8.0, 7.0, 6.0, 5.0, 11.0]
+    assert quarterback["snap_share"] == [70.0, 72.0]
+    assert defense["recent_points"] == [3.0]
+    assert defense["snap_share"] is None
+    assert runner["recent_points"] == []
+    assert runner["snap_share"] is None
+    waivers = payload["waivers"]
+    assert isinstance(waivers, list)
+    assert waivers[0]["snap_share"] is None
+
+
+def test_store_history_replaces_roster_file_series(tmp_path: Path) -> None:
+    from gridiron_lab.features import RecentSeries
+
+    config = load_config(ROOT / "gridiron_lab.toml")
+    roster = _mini_roster()
+    players = roster["teams"][0]["players"]  # type: ignore[index]
+    assert isinstance(players, list)
+    players[0]["recent_points"] = [999.0, 999.0]
+    players[0]["snap_share"] = [1.0, 2.0]
+    players[-1]["recent_points"] = [8.0, 9.0]
+    players[-1]["snap_share"] = [4.0, 5.0]
+    history = {
+        "t10-qb": RecentSeries(recent_points=(20.0, 18.0), snap_share=(80.0,)),
+        "t10-dst": RecentSeries(recent_points=(6.0, 7.0), snap_share=(50.0, 55.0)),
+        "waive-1": RecentSeries(recent_points=(1.0, 2.0), snap_share=(22.0, 41.0)),
+    }
+    payload = build_dashboard(config, roster, history=history)
+    teams = payload["teams"]
+    assert isinstance(teams, list)
+    rows = list(teams[0]["starters"]) + list(teams[0]["bench"])  # type: ignore[arg-type]
+    quarterback = next(player for player in rows if player["player_id"] == "t10-qb")
+    defense = next(player for player in rows if player["player_id"] == "t10-dst")
+    runner = next(player for player in rows if player["player_id"] == "t10-rb1")
+    assert quarterback["recent_points"] == [20.0, 18.0]
+    assert quarterback["snap_share"] == [80.0]
+    assert 999.0 not in quarterback["recent_points"]
+    assert defense["recent_points"] == [6.0, 7.0]
+    assert defense["snap_share"] is None
+    assert runner["recent_points"] == []
+    assert runner["snap_share"] is None
+    waivers = payload["waivers"]
+    assert isinstance(waivers, list)
+    assert waivers[0]["snap_share"] == [22.0, 41.0]
 
 
 def test_lab_prose_says_def() -> None:

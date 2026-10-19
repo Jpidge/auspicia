@@ -1,6 +1,8 @@
 # Dashboard JSON
 
-Version **1** (`version` is the string `"1"`). The static site in `site/` reads this document and nothing else. A schema change has to update `site/app.js` and `tests/test_dashboard.py` together.
+Version **1.1** (`version` is the string `"1.1"`). The static site in `site/` reads this document and nothing else. A schema change has to update `site/app.js` and `tests/test_dashboard.py` together.
+
+1.1 adds optional `recent_points` and `snap_share` on player rows, and uses `snap_share` on waiver rows. Older 1.0 files still load: a missing or one-point series is drawn as "—".
 
 The exporter does not call Yahoo. League-wide rosters arrive in M5 from the private `Jpidge/gridiron-lab-data` repo. Until then the input is a roster file you pass on the command line.
 
@@ -13,6 +15,8 @@ python -m gridiron_lab export-dashboard \
 ```
 
 Optional `--predictions path.json` overrides `q10`, `q50`, `q90`, `mean`, and `yahoo` by `player_id`. Optional `--config` defaults to `gridiron_lab.toml`.
+
+Optional `--data-dir` fills `recent_points` and `snap_share` from the point-in-time store. Omit it to copy those lists from the roster file. The example export omits it, because the example players are not in the store. A real export passes the store and does not keep a roster-file series for an id the store does not know.
 
 The shipped roster file is fictional (`"example": true`). The site shows an **Example data** badge when that flag is true. Do not commit a real league roster or any secret to this repository.
 
@@ -69,7 +73,9 @@ with `win_probability_sd` = **25**. That spread is an assumption, not a fit on t
 
 Each player needs `player_id`, `name`, `position`, and should include `nfl_team`, `opponent`, `home`, `kickoff`, `injury`, `force_zero`, `bye`, `q10`, `q50`, `q90`, `mean`, `yahoo`, `notes`, `opp_rank`, `vegas_implied`, `practice`. `q50` drives the lineup. Missing `q50` falls back to `mean`, then 0.
 
-Each waiver needs `player_id`, `name`, `position`, and may include `nfl_team`, `q50_next` (a list), `ros`, `note`, and `drop_player_id`. The exporter fills `drop_name` and `drop_position` from the roster catalog.
+`recent_points` and `snap_share`, when present on the roster file, are copied only if `--data-dir` is omitted. Each is the last six numbers. A non-list or an empty list becomes an empty `recent_points` and a null `snap_share`. DST and DEF snap lists on the file are dropped.
+
+Each waiver needs `player_id`, `name`, `position`, and may include `nfl_team`, `q50_next` (a list), `ros`, `snap_share` (a list of percentages), `note`, and `drop_player_id`. The exporter fills `drop_name` and `drop_position` from the roster catalog. Waiver `snap_share` follows the same copy-or-lookup rule, and is null for DST and DEF.
 
 Predictions, when passed, look like:
 
@@ -83,7 +89,7 @@ Top-level fields:
 
 | Field | Meaning |
 |---|---|
-| `version` | `"1"` |
+| `version` | `"1.1"` |
 | `example` | `true` when the roster file says so |
 | `disclaimer` | Footer sentence. Example exports say the players are fictional. |
 | `anonymize_managers` | The config flag that produced this file |
@@ -101,7 +107,13 @@ Top-level fields:
 
 Each team includes `team_id`, `name`, `manager_display`, `wins`, `losses`, `record` (en dash), `opponent_id`, `opponent_name`, `projected_total`, `opponent_projected_total`, `win_probability`, `starters`, `bench`, `inactive`, and `calls`.
 
-Each player row includes `player_id`, `name`, `position`, `nfl_team`, `opponent`, `home`, `kickoff`, `injury`, `force_zero`, `bye`, `q10`, `q50`, `q90`, `mean`, `yahoo`, `yahoo_delta` (`q50 - yahoo` when both exist), `slot` (`QB`, `RB`, `WR`, `TE`, `FLEX`, `K`, `DST`, or `null` on the bench), `verdict` (`start`, `monitor`, `sit`), `notes`, `sparkline`, `opp_rank`, `vegas_implied`, `snap_share`, and `practice`.
+Each player row includes `player_id`, `name`, `position`, `nfl_team`, `opponent`, `home`, `kickoff`, `injury`, `force_zero`, `bye`, `q10`, `q50`, `q90`, `mean`, `yahoo`, `yahoo_delta` (`q50 - yahoo` when both exist), `slot` (`QB`, `RB`, `WR`, `TE`, `FLEX`, `K`, `DST`, or `null` on the bench), `verdict` (`start`, `monitor`, `sit`), `notes`, `sparkline`, `recent_points`, `opp_rank`, `vegas_implied`, `snap_share`, and `practice`.
+
+`recent_points` is the last up to six weekly fantasy-point totals, oldest first. With `--data-dir` those totals are `fantasy_points` on `player_weeks`, which ingestion already scored with `ffc_yahoo_v1`. The lookup is `recent_series`: the same Thursday 20:00 UTC simulated capture and the same history filter as `build_features`. A week is included only when its `known_as_of` is before that capture, and the target week is excluded even when it was stamped early. Weeks with no observed total are skipped. Fewer than six weeks is a shorter list, not a padded one. An id with no history row is `[]`.
+
+`snap_share` is the last up to six offensive snap percentages (0–100), oldest first, or `null`. The feature pipeline stores snap share as a 0–1 ratio (`offense_pct`, otherwise offense snaps over that team's max offense snaps). The dashboard multiplies by 100 and rounds to one decimal. Weeks with no snap observation are left out, so this list is not guaranteed to line up with `recent_points`. It is `null` when the store has no offensive snap observation, and it is always `null` for DST and DEF. The exporter does not invent a series.
+
+The page draws an inline sparkline when a series has at least two points, and prints the numbers as text. Fewer than two points, or a missing field, is "—". DST waiver cards say "Snap trend n/a".
 
 The page labels FLEX as W/R/T and DST as DEF.
 

@@ -8,7 +8,7 @@ This public repository holds the code and the GitHub Pages site. Weekly capture 
 
 ## Status
 
-**M4 — dashboard JSON and the static site.** `python -m gridiron_lab export-dashboard` writes version 1 of the dashboard document from a roster file. The contract is [`docs/DASHBOARD_JSON.md`](docs/DASHBOARD_JSON.md). `site/` is the GitHub Pages app (Team, Waivers, League, Lab). The Lab block is the published M3.1 backtest: the candidate was not promoted, and mean-head bias is still outside ±0.3 in seven position-seasons. Yahoo roster sync is M5. The feature contract is in [`docs/FEATURES.md`](docs/FEATURES.md).
+**M4.1 — dashboard sparklines.** `python -m gridiron_lab export-dashboard` writes dashboard JSON version 1.1. Player rows carry `recent_points` and `snap_share`; the site draws them as inline sparklines. The contract is [`docs/DASHBOARD_JSON.md`](docs/DASHBOARD_JSON.md). `site/` is the GitHub Pages app (Team, Waivers, League, Lab). The Lab block is the published M3.1 backtest: the candidate was not promoted, and mean-head bias is still outside ±0.3 in seven position-seasons. Yahoo roster sync is M5. The feature contract is in [`docs/FEATURES.md`](docs/FEATURES.md).
 
 ## Quick start
 
@@ -45,6 +45,8 @@ python -m gridiron_lab evaluate --season 2018-2025 --test-season 2022-2025 --dat
 python -m gridiron_lab export-dashboard \
   --rosters examples/dashboard/rosters.json \
   --output site/dashboard.json
+# A real week also passes the point-in-time store:
+#   --data-dir data
 python -m http.server -d site
 ```
 
@@ -82,7 +84,7 @@ tests/                scoring, ingestion, leakage, model, lineup, and dashboard 
 docs/DESIGN.md        architecture, roadmap, scoring and data assumptions
 docs/SCHEMA.md        canonical tables, clocks, and observed row counts
 docs/FEATURES.md      feature contract and column list
-docs/DASHBOARD_JSON.md  dashboard JSON version 1 and the roster input
+docs/DASHBOARD_JSON.md  dashboard JSON version 1.1 and the roster input
 examples/dashboard/   fictional roster file for the site
 site/                 GitHub Pages dashboard (HTML, CSS, JS, dashboard.json)
 gridiron_lab.toml     league, lineup, scoring, and the manager-name flag
