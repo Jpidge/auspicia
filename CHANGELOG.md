@@ -13,7 +13,7 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 - A static site in `site/` (vanilla JS, no third-party requests). Team, Waivers, League, and Lab. Dark and light themes are saved. The Team view can show any team; `#team=10` and `localStorage` remember the choice. The default is Purple Reign.
 - `[dashboard] anonymize_managers`. When true, the export writes `Manager {team_id}` and refuses to emit the roster file's manager string.
 - A GitHub Pages workflow that deploys `site/` on push to `main` only, using `actions/deploy-pages`.
-- The Lab block is the published M3.1 backtest. The candidate was not promoted, and mean-head bias is still outside ±0.3 in seven position-seasons.
+- The Lab block is the published M3.1 backtest. The candidate was not promoted, and mean-head bias is still outside ±0.3 in seven position-seasons. The site draws that gap as improvement over the baseline and labels the defense slot DEF.
 
 ## [0.4.1] — 2026-10-18
 

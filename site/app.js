@@ -19,12 +19,26 @@
     return fmt(player.q10) + "–" + fmt(player.q90);
   }
   function posColor(position) { return COLORS[position] || "var(--muted)"; }
-  function teamById(id) {
+  function knownTeam(id) {
     var teams = state.data.teams;
     for (var i = 0; i < teams.length; i += 1) if (teams[i].team_id === id) return teams[i];
-    var fallback = state.data.default_team_id;
-    for (var j = 0; j < teams.length; j += 1) if (teams[j].team_id === fallback) return teams[j];
-    return teams[0];
+    return null;
+  }
+  function teamById(id) {
+    return knownTeam(id) || knownTeam(state.data.default_team_id) || state.data.teams[0];
+  }
+  function noteMissing(asked) {
+    var note = $("team-note");
+    var found = knownTeam(asked);
+    if (asked == null || found) {
+      state.missingTeam = null;
+      note.hidden = true;
+      note.textContent = "";
+      return;
+    }
+    state.missingTeam = asked;
+    note.hidden = false;
+    note.textContent = "Team " + asked + " not found, showing " + teamById(asked).name;
   }
 
   function row(player) {
@@ -35,7 +49,7 @@
     var quiet = player.force_zero || player.bye || player.injury === "IR" || player.injury === "OUT";
     var delta = player.yahoo_delta;
     var deltaClass = delta > 0.2 ? "d-up" : delta < -0.2 ? "d-dn" : "d-eq";
-    var deltaHtml = player.yahoo == null ? "" : '<span class="chip ' + deltaClass + '">' + (delta > 0 ? "+" : delta < 0 ? "−" : "±") + Math.abs(delta).toFixed(1) + " vs Y!</span>";
+    var deltaHtml = player.yahoo == null ? "" : '<span class="chip ' + deltaClass + '">' + (delta > 0 ? "+" : delta < 0 ? "−" : "±") + Math.abs(delta).toFixed(1) + '<span class="dlabel"> vs Y!</span></span>';
     var yahooHtml = player.yahoo == null ? "" : '<span class="yh">Y! <b class="num">' + fmt(player.yahoo) + "</b></span>" + deltaHtml;
     var proj = quiet ? '<span class="sub">Out — no projection</span>' : (
       '<span class="rng" aria-hidden="true"><span class="trk"></span><span class="band" style="left:' + pct(player.q10) + "%;width:" + Math.max(0, pct(player.q90) - pct(player.q10)) + '%"></span><span class="med" style="left:' + pct(player.q50) + '%"></span></span>' +
@@ -94,9 +108,11 @@
     $("matchup").innerHTML = '<div class="mu"><div class="t me"><span class="sub">' + esc(team.name) + " (" + esc(team.record) + ')</span><span class="pts num">' + fmt(team.projected_total) + '</span><span class="sub">Gridiron Lab proj.</span></div><span class="vs">VS</span><div class="t r"><span class="sub">' + esc(team.opponent_name || "No opponent") + '</span><span class="pts num">' + (opp == null ? "–" : fmt(opp)) + '</span><span class="sub">Gridiron Lab proj.</span></div></div>' +
       (wpPct == null ? "" : '<div class="wp"><div class="wpbar" role="img" aria-label="Win probability ' + wpPct + ' percent"><i style="width:' + wpPct + '%"></i></div><div class="wplab"><span>Win probability <b class="num">' + wpPct + '%</b></span><span><b class="num">' + (100 - wpPct) + "%</b></span></div></div>");
     var calls = team.calls || [];
-    $("tough-card").innerHTML = "<h2>Toughest calls</h2>" + (calls.length ? '<div class="tc">' + calls.map(function (call) {
+    var tough = $("tough-card");
+    tough.classList.toggle("is-empty", !calls.length);
+    tough.innerHTML = calls.length ? "<h2>Toughest calls</h2>" + '<div class="tc">' + calls.map(function (call) {
       return '<div class="tci"><div class="q">' + esc(call.slot) + '</div><div class="pair"><div class="p win">' + esc(call.starter_name) + '<small class="num">' + fmt(call.starter_projection) + ' median</small></div><span class="or">OR</span><div class="p" style="text-align:right">' + esc(call.alternative_name) + '<small class="num">' + fmt(call.alternative_projection) + ' median</small></div></div><div class="sub">' + esc(call.starter_name) + " leads by " + fmt(call.margin) + ".</div></div>";
-    }).join("") + "</div>" : '<p class="sub">No start/sit decision is within ' + data.close_call_margin + " point.</p>");
+    }).join("") + "</div>" : '<p>Toughest calls: none within ' + data.close_call_margin + " point.</p>";
     var bench = (team.bench || []).concat(team.inactive || []);
     $("lineup-col").innerHTML = '<div class="sec-h"><h2>Recommended lineup</h2><span class="sub">Tap a row for details</span></div><p class="ylegend">Y! = Yahoo projection; chip = ours minus Yahoo</p><div class="list">' + team.starters.map(row).join("") + '</div><div class="sec-h"><h2>Bench</h2><span class="sub">' + data.lineup.bench + " bench · " + data.lineup.ir + ' IR</span></div><div class="list">' + bench.map(row).join("") + "</div>";
     $("legend-card").innerHTML = '<h2>How to read a row</h2><div class="legend"><span><i class="sw"></i>10th–90th pct range</span><span><i class="sw m"></i>Median projection</span><span><span class="chip d-up">+2.1</span> ours minus Yahoo</span></div><p class="sub">The lineup maximizes median points under the league slots. A player on bye, OUT, or IR is not started when someone else can fill the slot.</p>';
@@ -134,7 +150,8 @@
     $("ltbl").querySelector("tbody").innerHTML = rows.map(function (rowItem) {
       var mark = rowItem.team_id === mine ? " mine" : "";
       var you = rowItem.team_id === data.default_team_id ? ' <span class="chip d-eq">You</span>' : "";
-      return '<tr class="' + mark.trim() + '"><td class="num">' + rowItem.rank + '</td><td class="tn"><div>' + esc(rowItem.name) + you + '</div><div class="opp-line">vs ' + esc(rowItem.opponent_name || "—") + "</div><div class=\"sub\">" + esc(rowItem.manager_display) + '</div></td><td class="num hide-s">' + esc(rowItem.record) + '</td><td class="sub hide-s">' + esc(rowItem.opponent_name || "—") + '</td><td class="r num"><b>' + fmt(rowItem.projected_total) + '</b></td><td class="hide-s"><div class="mbar"><i style="width:' + (Number(rowItem.share_of_leader) * 100) + '%"></i></div></td></tr>';
+      var viewing = rowItem.team_id === state.teamId && rowItem.team_id !== data.default_team_id ? ' <span class="chip d-eq">Viewing</span>' : "";
+      return '<tr class="' + mark.trim() + '"><td class="num">' + rowItem.rank + '</td><td class="tn"><div>' + esc(rowItem.name) + you + viewing + '</div><div class="opp-line">vs ' + esc(rowItem.opponent_name || "—") + "</div><div class=\"sub\">" + esc(rowItem.manager_display) + '</div></td><td class="num hide-s">' + esc(rowItem.record) + '</td><td class="sub hide-s">' + esc(rowItem.opponent_name || "—") + '</td><td class="r num"><b>' + fmt(rowItem.projected_total) + '</b></td><td class="hide-s"><div class="mbar"><i style="width:' + (Number(rowItem.share_of_leader) * 100) + '%"></i></div></td></tr>';
     }).join("");
     var headers = document.querySelectorAll("#ltbl th[data-k]");
     for (var i = 0; i < headers.length; i += 1) {
@@ -162,12 +179,15 @@
     });
     var maxMae = mae.reduce(function (max, item) { return Math.max(max, item.mae); }, 1);
     var coverage = lab.pooled_coverage || {};
-    var notes = (lab.notes || []).map(function (note) { return "<li>" + esc(note) + "</li>"; }).join("");
+    function labText(value) { return esc(value).replace(/DST/g, "DEF"); }
+    var notes = (lab.notes || []).map(function (note) { return "<li>" + labText(note) + "</li>"; }).join("");
     var criteria = (lab.criteria || []).map(function (item) {
-      return "<li><span>" + esc(item.detail) + '</span><span class="' + (item.pass ? "pass" : "fail") + '">' + (item.pass ? "Pass" : "Fail") + "</span></li>";
+      return "<li><span>" + labText(item.detail) + '</span><span class="' + (item.pass ? "pass" : "fail") + '">' + (item.pass ? "Pass" : "Fail") + "</span></li>";
     }).join("");
     var bars = (lab.mae_diff_by_season || []).map(function (item) {
-      return '<div class="l"><span class="num">' + item.season + '</span><span class="b"><i style="width:' + Math.min(100, Math.abs(item.mae_diff) / 0.6 * 100) + '%;background:var(--accent)"></i></span><b class="num">' + Number(item.mae_diff).toFixed(3) + "</b></div>";
+      var gain = -Number(item.mae_diff);
+      var label = (gain > 0 ? "+" : "") + gain.toFixed(3);
+      return '<div class="l"><span class="num">' + item.season + '</span><span class="b"><i style="width:' + Math.min(100, Math.max(0, gain) / 0.6 * 100) + '%;background:var(--accent)"></i></span><b class="num">' + label + "</b></div>";
     }).join("");
     $("lab-root").innerHTML = '<div class="note" role="note">' + esc((lab.notes && lab.notes[0]) || "Backtest") + " Promoted: " + (lab.promoted ? "yes" : "no") + ".</div>" +
       '<div class="lab"><div class="card"><h2>MAE by position</h2><p class="sub">Mean of seasonal q50 MAE, points per game. Lower is better. Compared with the legacy baseline, not Yahoo.</p><div class="mae">' +
@@ -178,7 +198,7 @@
         var value = coverage[position];
         var inside = value >= 0.77 && value <= 0.83;
         return '<div class="l"><span class="pos" style="--c:' + posColor(position) + '">' + esc(SLOT[position] || position) + '</span><span class="num">' + Number(value).toFixed(3) + '</span><b class="' + (inside ? "pass" : "fail") + '">' + (inside ? "In band" : "Outside") + "</b></div>";
-      }).join("") + '</div></div><div class="card"><h2>Promotion rule</h2><ul class="crit">' + criteria + '</ul></div><div class="card"><h2>q50 MAE minus baseline</h2><p class="sub">Negative means the model was closer than the legacy baseline that season.</p><div class="mae">' + bars + '</div><p class="sub">Lineup points versus that baseline: +' + Number(lab.points_gained_vs_baseline).toFixed(1) + ' over the backtest. Not a Yahoo result.</p></div><div class="card wide"><h2>Notes</h2><ul class="why">' + notes + "</ul></div></div>";
+      }).join("") + '</div></div><div class="card"><h2>Promotion rule</h2><ul class="crit">' + criteria + '</ul></div><div class="card"><h2>Improvement over baseline</h2><p class="sub">Baseline q50 MAE minus the model. Positive means the model was closer that season.</p><div class="mae">' + bars + '</div><p class="sub">Lineup points versus that baseline: +' + Number(lab.points_gained_vs_baseline).toFixed(1) + ' over the backtest. Not a Yahoo result.</p></div><div class="card wide"><h2>Notes</h2><ul class="why">' + notes + "</ul></div></div>";
   }
 
   window.addEventListener("hashchange", function () {
@@ -186,8 +206,13 @@
     var hash = (location.hash || "").replace(/^#/, "");
     var teamMatch = /^team=(\d+)$/.exec(hash);
     if (teamMatch) {
-      state.teamId = teamById(Number(teamMatch[1])).team_id;
-      try { localStorage.setItem("gl-team", String(state.teamId)); } catch (error) { /* private mode */ }
+      var asked = Number(teamMatch[1]);
+      var found = knownTeam(asked);
+      noteMissing(found ? null : asked);
+      state.teamId = teamById(asked).team_id;
+      if (found) {
+        try { localStorage.setItem("gl-team", String(state.teamId)); } catch (error) { /* private mode */ }
+      }
       renderTeam();
       renderLeague();
       show("team", false);
@@ -209,7 +234,7 @@
       panel.hidden = !on;
       if (on && focus) tab.focus();
     }
-    var hash = view === "team" ? "#team=" + state.teamId : "#" + view;
+    var hash = view === "team" ? "#team=" + (state.missingTeam != null ? state.missingTeam : state.teamId) : "#" + view;
     try { history.replaceState(null, "", hash); } catch (error) { /* file URLs can reject this */ }
     window.scrollTo(0, 0);
   }
@@ -226,9 +251,20 @@
     var teamMatch = /^team=(\d+)$/.exec(hash);
     var stored = null;
     try { stored = localStorage.getItem("gl-team"); } catch (error) { stored = null; }
-    var requested = teamMatch ? Number(teamMatch[1]) : (stored ? Number(stored) : data.default_team_id);
-    state.teamId = teamById(requested).team_id;
-    try { localStorage.setItem("gl-team", String(state.teamId)); } catch (error) { /* private mode */ }
+    if (teamMatch) {
+      var asked = Number(teamMatch[1]);
+      var found = knownTeam(asked);
+      noteMissing(found ? null : asked);
+      state.teamId = teamById(asked).team_id;
+      if (found) {
+        try { localStorage.setItem("gl-team", String(state.teamId)); } catch (error) { /* private mode */ }
+      }
+    } else {
+      var fromStore = stored != null && stored !== "" ? Number(stored) : data.default_team_id;
+      noteMissing(null);
+      state.teamId = teamById(knownTeam(fromStore) ? fromStore : data.default_team_id).team_id;
+      try { localStorage.setItem("gl-team", String(state.teamId)); } catch (error) { /* private mode */ }
+    }
     if (hash === "waivers" || hash === "league" || hash === "lab") state.view = hash;
     renderTeam();
     renderWaivers();
@@ -246,6 +282,7 @@
     button.setAttribute("aria-expanded", open ? "true" : "false");
   });
   $("team-select").addEventListener("change", function () {
+    noteMissing(null);
     state.teamId = Number($("team-select").value);
     try { localStorage.setItem("gl-team", String(state.teamId)); } catch (error) { /* ignore */ }
     renderTeam();

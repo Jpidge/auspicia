@@ -110,7 +110,7 @@ def published_m3_lab() -> dict[str, object]:
                 "pass": False,
                 "detail": (
                     "Mean bias is outside ±0.3 for QB 2022, QB 2023, QB 2025, "
-                    "WR 2022, K 2024, K 2025, and DST 2025."
+                    "WR 2022, K 2024, K 2025, and DEF 2025."
                 ),
             },
             {

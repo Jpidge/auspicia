@@ -114,5 +114,6 @@ The page labels FLEX as W/R/T and DST as DEF.
 - `positions[].seasons[]` has `mae`, `mae_baseline`, `bias` (mean head), and `coverage` (adjusted 10/90).
 - `pooled_coverage` and `mae_diff_by_season` (`model MAE − baseline MAE`; negative means the model was closer).
 - `points_gained_vs_baseline` is `1591.3` lineup points versus the legacy baseline over 72 weeks. It is not a Yahoo result.
-- `criteria` records the promotion rule. Bias fails: mean bias is outside ±0.3 for QB 2022, QB 2023, QB 2025, WR 2022, K 2024, K 2025, and DST 2025. Coverage fails because TE pooled coverage is 0.846, above 0.83.
+- `criteria` records the promotion rule. Bias fails: mean bias is outside ±0.3 for QB 2022, QB 2023, QB 2025, WR 2022, K 2024, K 2025, and DEF 2025. Coverage fails because TE pooled coverage is 0.846, above 0.83. The page says DEF wherever this prose names the defense slot.
+- The page draws `mae_diff_by_season` as improvement over the baseline (the negation). Positive means the model was closer. The JSON field stays model MAE minus baseline MAE.
 - `notes` repeats those limits in plain language. The Lab view shows them.

@@ -185,11 +185,32 @@ def test_shipped_example_matches_the_contract() -> None:
 
 def test_site_reads_the_contract_fields() -> None:
     script = (SITE / "app.js").read_text(encoding="utf-8")
+    css = (SITE / "app.css").read_text(encoding="utf-8")
     for field in UI_FIELDS:
         assert field in script
     assert "Avery Quinn" not in script
     assert "Purple Reign" not in script
     assert "dashboard.json" in script
+    # You is the owner's team (default_team_id). Viewing marks the selected team.
+    assert "rowItem.team_id === data.default_team_id" in script
+    assert ">You</span>" in script
+    assert "rowItem.team_id === state.teamId && rowItem.team_id !== data.default_team_id" in script
+    assert ">Viewing</span>" in script
+    assert "not found, showing" in script
+    assert "svg[hidden] { display: none; }" in css
+    assert "grid-template-columns: minmax(0, 1fr)" in css
+    assert ".wc { min-width: 0; }" in css
+    assert ".wc .pm { white-space: normal; overflow-wrap: anywhere; }" in css
+    assert "min-width: 44px" in css
+
+
+def test_lab_prose_says_def() -> None:
+    criteria = published_m3_lab()["criteria"]
+    assert isinstance(criteria, list)
+    detail = next(item["detail"] for item in criteria if item["name"] == "bias")
+    assert isinstance(detail, str)
+    assert "DEF 2025" in detail
+    assert "DST" not in detail
 
 
 def test_first_screen_is_under_the_gzip_budget() -> None:

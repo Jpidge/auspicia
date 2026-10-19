@@ -4,6 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Gridiron Lab</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="stylesheet" href="app.css">
 </head>
 <body>
@@ -52,11 +55,16 @@
           <span class="sub" id="kickoff-label"></span>
         </div>
       </div>
+      <p class="note" id="team-note" role="status" hidden></p>
       <div class="cols">
-        <div class="card matchup" id="matchup" aria-label="Matchup projection"></div>
-        <div class="card tough" id="tough-card"></div>
-        <div class="lineup-col" id="lineup-col"></div>
-        <div class="card legend-card" id="legend-card"></div>
+        <div class="main-col">
+          <div class="card matchup" id="matchup" aria-label="Matchup projection"></div>
+          <div class="lineup-col" id="lineup-col"></div>
+        </div>
+        <div class="side-col">
+          <div class="card tough" id="tough-card"></div>
+          <div class="card legend-card" id="legend-card"></div>
+        </div>
       </div>
     </section>
     <section class="view" id="v-waivers" role="tabpanel" aria-labelledby="t-waivers" hidden>
