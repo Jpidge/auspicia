@@ -54,6 +54,7 @@
   --shadow: 0 1px 2px rgba(16, 30, 60, 0.06), 0 6px 18px rgba(16, 30, 60, 0.08);
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 svg[hidden] { display: none; }
 html, body { margin: 0; }
 body {

@@ -208,7 +208,13 @@ def test_site_reads_the_contract_fields() -> None:
     assert "rowItem.team_id === state.teamId && rowItem.team_id !== data.default_team_id" in script
     assert ">Viewing</span>" in script
     assert "not found, showing" in script
+    assert "[hidden] { display: none !important; }" in css
     assert "svg[hidden] { display: none; }" in css
+    note = (SITE / "index.html").read_text(encoding="utf-8")
+    assert 'id="team-note"' in note
+    assert 'class="note" id="team-note" role="status" hidden' in note
+    assert "note.hidden = true" in script
+    assert "note.hidden = false" in script
     assert "grid-template-columns: minmax(0, 1fr)" in css
     assert ".wc { min-width: 0; }" in css
     assert ".wc .pm { white-space: normal; overflow-wrap: anywhere; }" in css
