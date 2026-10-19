@@ -221,9 +221,11 @@ def test_site_reads_the_contract_fields() -> None:
     assert "values.length < 2" in script
     assert 'aria-hidden="true"' in script
     assert 'fill="var(--c)"' in script
-    assert ".trend .up { color: var(--good); }" in css
-    assert ".trend .dn { color: var(--bad); }" in css
-    assert ".stat.wide" in css
+    assert '"var(--good)"' in script
+    assert '"var(--bad)"' in script
+    assert 'style="color:' in script
+    assert ".dgrid .stat:first-child { grid-column: 1 / -1; }" in css
+    assert ".wm svg.spark { width: 90px;" in css
     assert ".wm { display: flex;" in css
     assert "flex-wrap: wrap" in css
 
