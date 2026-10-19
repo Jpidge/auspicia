@@ -8,7 +8,7 @@ This public repository holds the code and the GitHub Pages site. Weekly capture 
 
 ## Status
 
-**M3.1 — bias amendment and interval calibration.** Promotion bias uses the mean head. The 10/90 interval is adjusted with a trailing conformal window that never sees the test week. The feature contract is in [`docs/FEATURES.md`](docs/FEATURES.md). Yahoo and the dashboard are later milestones.
+**M4 — dashboard JSON and the static site.** `python -m gridiron_lab export-dashboard` writes version 1 of the dashboard document from a roster file. The contract is [`docs/DASHBOARD_JSON.md`](docs/DASHBOARD_JSON.md). `site/` is the GitHub Pages app (Team, Waivers, League, Lab). The Lab block is the published M3.1 backtest: the candidate was not promoted, and mean-head bias is still outside ±0.3 in seven position-seasons. Yahoo roster sync is M5. The feature contract is in [`docs/FEATURES.md`](docs/FEATURES.md).
 
 ## Quick start
 
@@ -42,9 +42,27 @@ python -m gridiron_lab ingest --season 2025
 python -m gridiron_lab ingest --season 2018-2025 --data-dir data
 python -m gridiron_lab features --season 2024 --week 1 --policy simulated_capture --data-dir data
 python -m gridiron_lab evaluate --season 2018-2025 --test-season 2022-2025 --data-dir data --output /tmp/eval.json
+python -m gridiron_lab export-dashboard \
+  --rosters examples/dashboard/rosters.json \
+  --output site/dashboard.json
+python -m http.server -d site
 ```
 
+Open `http://127.0.0.1:8000/`. The page loads `dashboard.json` from the same origin. Opening the HTML file directly cannot fetch that JSON.
+
+`examples/dashboard/rosters.json` is fictional. The page shows an **Example data** badge. Real rosters stay in `Jpidge/gridiron-lab-data` and are not committed here. Pass `--predictions` to override `q10`, `q50`, `q90`, `mean`, and `yahoo` from a model file. The shape of both files is in [`docs/DASHBOARD_JSON.md`](docs/DASHBOARD_JSON.md).
+
 Downloads, the DuckDB file, and the evaluation JSON stay out of git. Re-running a season appends nothing when the payload is unchanged. The features command logs a row count and does not write a file. Evaluate does not write a model file.
+
+## Site
+
+`site/` is static: `index.html`, `app.css`, `app.js`, and `dashboard.json`. No CDN and no third-party request. The first screen (HTML, CSS, and JS, gzipped) stays under 150 KB; `tests/test_dashboard.py` checks that budget and that the script still reads the JSON fields it renders.
+
+The Team view lists every team in the file. The default is `league.my_team_id` (Purple Reign, Yahoo team 10). A choice is stored in `localStorage` under `gl-team`. `#team=10` selects that team for the visit and then saves it. `#waivers`, `#league`, and `#lab` open the other views. The theme is stored under `gl-theme`.
+
+Manager names are the roster file's `manager` field, written through as `manager_display`. Set `[dashboard] anonymize_managers = true` in `gridiron_lab.toml` and re-export to replace every name with `Manager {team_id}`. Team names stay. The page has no hardcoded manager list.
+
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) deploys `site/` with `actions/deploy-pages` on a push to `main`. Pull request branches do not deploy. The repository's Pages source has to be **GitHub Actions**; that setting is confirmed by the owner. The workflow re-exports the example JSON before upload, so the deployed file matches the exporter. It does not read the private data repo.
 
 ## Later commands
 
@@ -52,7 +70,6 @@ Downloads, the DuckDB file, and the evaluation JSON stay out of git. Re-running 
 cp .env.example .env    # YAHOO_CLIENT_ID / YAHOO_CLIENT_SECRET / YAHOO_REFRESH_TOKEN (never committed)
 gridiron-lab train
 gridiron-lab predict --week next
-gridiron-lab site build && python -m http.server -d build/site
 ```
 
 All configuration lives in `gridiron_lab.toml`. Secrets come only from environment variables or GitHub Actions secrets.
@@ -60,11 +77,13 @@ All configuration lives in `gridiron_lab.toml`. Secrets come only from environme
 ## Layout
 
 ```
-src/gridiron_lab/     scoring engine, config, logging, data layer, features, models, evaluation, CLI
-tests/                scoring, ingestion, leakage, model, and harness tests
+src/gridiron_lab/     scoring engine, config, logging, data layer, features, models, evaluation, lineup, dashboard, CLI
+tests/                scoring, ingestion, leakage, model, lineup, and dashboard tests
 docs/DESIGN.md        architecture, roadmap, scoring and data assumptions
 docs/SCHEMA.md        canonical tables, clocks, and observed row counts
 docs/FEATURES.md      feature contract and column list
-site/                 placeholder for the GitHub Pages dashboard
-gridiron_lab.toml     league and scoring table
+docs/DASHBOARD_JSON.md  dashboard JSON version 1 and the roster input
+examples/dashboard/   fictional roster file for the site
+site/                 GitHub Pages dashboard (HTML, CSS, JS, dashboard.json)
+gridiron_lab.toml     league, lineup, scoring, and the manager-name flag
 ```

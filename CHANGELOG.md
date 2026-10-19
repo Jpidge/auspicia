@@ -4,6 +4,17 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-10-19
+
+### Added
+
+- Dashboard JSON version 1 and `python -m gridiron_lab export-dashboard`. The contract is in `docs/DASHBOARD_JSON.md`. Rosters come from a JSON file. `examples/dashboard/rosters.json` is a fictional league so the site runs before the Yahoo connection.
+- A lineup recommender that fills the `[lineup]` slots by q50, leaves bye and OUT players off the field, and marks a start/sit within 1.0 point as a close call.
+- A static site in `site/` (vanilla JS, no third-party requests). Team, Waivers, League, and Lab. Dark and light themes are saved. The Team view can show any team; `#team=10` and `localStorage` remember the choice. The default is Purple Reign.
+- `[dashboard] anonymize_managers`. When true, the export writes `Manager {team_id}` and refuses to emit the roster file's manager string.
+- A GitHub Pages workflow that deploys `site/` on push to `main` only, using `actions/deploy-pages`.
+- The Lab block is the published M3.1 backtest. The candidate was not promoted, and mean-head bias is still outside ±0.3 in seven position-seasons.
+
 ## [0.4.1] — 2026-10-18
 
 ### Changed

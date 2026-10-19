@@ -1,0 +1,43 @@
+name: Pages
+
+# Deploys site/ to GitHub Pages on push to main only.
+# The repository Pages source must be "GitHub Actions" (owner confirms that setting).
+# Pull request branches do not deploy.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Export the example dashboard
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m gridiron_lab export-dashboard \
+            --rosters examples/dashboard/rosters.json \
+            --output site/dashboard.json
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@v4

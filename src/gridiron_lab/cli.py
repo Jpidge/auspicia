@@ -5,6 +5,9 @@
 ``python -m gridiron_lab features --season 2024 --week 1``
 
 ``python -m gridiron_lab evaluate --season 2018-2025 --test-season 2022-2025 --output results.json``
+
+``python -m gridiron_lab export-dashboard --rosters examples/dashboard/rosters.json
+--output site/dashboard.json``
 """
 
 from __future__ import annotations
@@ -15,11 +18,13 @@ import sys
 from pathlib import Path
 
 from gridiron_lab.config import ConfigError, default_config_path, load_config
+from gridiron_lab.dashboard import DashboardError, export_dashboard
 from gridiron_lab.data.errors import FetchError, IngestError
 from gridiron_lab.data.fetch import FixtureFetch, HttpFetch
 from gridiron_lab.data.ingest import ingest
 from gridiron_lab.evaluate import EvalError, run_evaluation
 from gridiron_lab.features import FeatureError, build_features
+from gridiron_lab.lineup import LineupError
 from gridiron_lab.logging import configure_logging, get_logger
 from gridiron_lab.scoring import ScoringError
 
@@ -44,6 +49,8 @@ def run(argv: list[str] | None = None) -> int:
         return _run_features(args)
     if args.command == "evaluate":
         return _run_evaluate(args)
+    if args.command == "export-dashboard":
+        return _run_export_dashboard(args)
     parser.print_help()
     return 2
 
@@ -136,6 +143,28 @@ def _run_evaluate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_export_dashboard(args: argparse.Namespace) -> int:
+    try:
+        config = load_config(args.config)
+        export_dashboard(
+            config=config,
+            rosters_path=args.rosters,
+            output=args.output,
+            predictions_path=args.predictions,
+        )
+    except ConfigError as exc:
+        logger.error("%s", exc)
+        return 2
+    except (DashboardError, LineupError) as exc:
+        logger.error("%s", exc)
+        return 2
+    except OSError as exc:
+        logger.error("Could not write the dashboard file: %s", exc.strerror or exc)
+        return 1
+    logger.info("Wrote dashboard %s", args.output)
+    return 0
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="gridiron-lab")
     sub = parser.add_subparsers(dest="command")
@@ -205,6 +234,18 @@ def _parser() -> argparse.ArgumentParser:
         default=1000,
         help="Week resamples for the MAE-difference interval.",
     )
+    export_parser = sub.add_parser(
+        "export-dashboard",
+        help="Write dashboard JSON from a roster file. Does not call Yahoo.",
+    )
+    export_parser.add_argument("--rosters", type=Path, required=True, help="Roster JSON input")
+    export_parser.add_argument("--output", type=Path, required=True, help="Dashboard JSON path")
+    export_parser.add_argument(
+        "--predictions",
+        type=Path,
+        help="Optional predictions JSON. Overrides q10, q50, q90, mean, and yahoo.",
+    )
+    export_parser.add_argument("--config", type=Path, help="Path to gridiron_lab.toml")
     return parser
 
 
