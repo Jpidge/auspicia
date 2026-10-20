@@ -61,7 +61,9 @@ CONFORMAL_ALPHA = 0.2
 CALIBRATION_REASON = (
     "Split conformalized quantile regression on the last 8 weeks before each "
     "test week. The model is fit only on weeks before that window. Both are "
-    "strictly before the test week. Fewer than 30 scores leaves the raw interval."
+    "strictly before the test week. Fewer than 30 scores leaves the raw interval. "
+    "When the boundary atom straddles [0.77, 0.83], q10 and q90 are the "
+    "equal-tailed residual quantiles around q50 (DESIGN §21, 2026-10-19)."
 )
 
 ModelFactory = Callable[[], object]
@@ -233,6 +235,69 @@ def adjust_interval(prediction: Prediction, delta: float) -> Prediction:
     low = min(prediction.q10 - delta, prediction.q50)
     high = max(prediction.q90 + delta, prediction.q50)
     q10, q50, q90 = sort_quantiles(low, prediction.q50, high)
+    return _with_quantiles(prediction, q10, q50, q90)
+
+
+def boundary_atom_straddles(scores: Sequence[float]) -> bool:
+    """True when no additive shift can land inside the promotion band.
+
+    Scores below zero are strictly inside the interval and scores equal to
+    zero sit on an endpoint. If the open share is below the band and the
+    closed share is above it, a shrink drops the whole atom and a zero shift
+    stays too high. The 0.77 and 0.83 cuts are the promotion band.
+    """
+
+    finite = [float(score) for score in scores if math.isfinite(float(score))]
+    count = len(finite)
+    if count < MIN_CALIBRATION_SCORES or conformal_quantile(finite) != 0.0:
+        return False
+    opened = sum(score < 0.0 for score in finite) / count
+    closed = sum(score <= 0.0 for score in finite) / count
+    return opened < (COVERAGE_LOW - 1e-9) and closed > (COVERAGE_HIGH + 1e-9)
+
+
+def residual_tails(
+    rows: Sequence[Mapping[str, object]],
+    predictions: Sequence[Prediction],
+) -> dict[str, tuple[float, float]]:
+    """Equal-tailed residual quantiles around q50, keyed by position.
+
+    Each tail uses half the two-sided alpha. A position under the score floor
+    is omitted and the caller keeps the raw interval.
+    """
+
+    lower: dict[str, list[float]] = {position: [] for position in POSITIONS}
+    upper: dict[str, list[float]] = {position: [] for position in POSITIONS}
+    for row, prediction in zip(rows, predictions, strict=True):
+        if _is_force_zero(row) or not _has_actual(row) or prediction.fallback == "force_zero":
+            continue
+        position = _position(row)
+        if position not in lower:
+            continue
+        actual = float(row["actual"])  # type: ignore[arg-type]
+        lower[position].append(prediction.q50 - actual)
+        upper[position].append(actual - prediction.q50)
+    half = CONFORMAL_ALPHA / 2.0
+    tails: dict[str, tuple[float, float]] = {}
+    for position in POSITIONS:
+        low = conformal_quantile(lower[position], alpha=half)
+        high = conformal_quantile(upper[position], alpha=half)
+        if low is None or high is None:
+            continue
+        tails[position] = (low, high)
+    return tails
+
+
+def adjust_residual(prediction: Prediction, lower_tail: float, upper_tail: float) -> Prediction:
+    """Place q10 and q90 on the residual quantiles. q50 is unchanged."""
+
+    low = min(prediction.q50 - lower_tail, prediction.q50)
+    high = max(prediction.q50 + upper_tail, prediction.q50)
+    q10, q50, q90 = sort_quantiles(low, prediction.q50, high)
+    return _with_quantiles(prediction, q10, q50, q90)
+
+
+def _with_quantiles(prediction: Prediction, q10: float, q50: float, q90: float) -> Prediction:
     return Prediction(
         mean=prediction.mean,
         q10=q10,
@@ -285,6 +350,38 @@ def _cqr_scores(
         actual = float(row["actual"])  # type: ignore[arg-type]
         scores[position].append(max(prediction.q10 - actual, actual - prediction.q90))
     return scores
+
+
+def _interval_rule(
+    position: str,
+    straddling: Mapping[str, bool],
+    tails: Mapping[str, tuple[float, float]],
+    deltas: Mapping[str, float | None],
+) -> str:
+    if straddling.get(position) and position in tails:
+        return "residual_quantile"
+    if deltas.get(position) is not None:
+        return "cqr"
+    return "raw"
+
+
+def _apply_interval(
+    row: Mapping[str, object],
+    raw: Prediction,
+    rules: Mapping[str, str],
+    tails: Mapping[str, tuple[float, float]],
+    deltas: Mapping[str, float | None],
+) -> Prediction:
+    if _is_force_zero(row):
+        return raw
+    position = _position(row)
+    if rules.get(position) == "residual_quantile":
+        lower_tail, upper_tail = tails[position]
+        return adjust_residual(raw, lower_tail, upper_tail)
+    delta = deltas.get(position)
+    if delta is None:
+        return raw
+    return adjust_interval(raw, delta)
 
 
 def _empty_metrics() -> dict[str, object]:
@@ -807,9 +904,17 @@ def rolling_origin(
             cal_preds = list(predict(calibrating)) if calibrating else []
             if len(cal_preds) != len(calibrating):
                 raise EvalError("predict() must return one row per calibration input")
+            score_map = _cqr_scores(calibrating, cal_preds)
             deltas = {
-                position: conformal_quantile(values)
-                for position, values in _cqr_scores(calibrating, cal_preds).items()
+                position: conformal_quantile(values) for position, values in score_map.items()
+            }
+            straddling = {
+                position: boundary_atom_straddles(values) for position, values in score_map.items()
+            }
+            tails = residual_tails(calibrating, cal_preds) if any(straddling.values()) else {}
+            rules = {
+                position: _interval_rule(position, straddling, tails, deltas)
+                for position in POSITIONS
             }
             raw_preds = list(predict(rows))
             baseline_preds = list(baseline_predict(rows))
@@ -817,11 +922,7 @@ def rolling_origin(
                 raise EvalError("predict() must return one row per input")
             model_preds: list[Prediction] = []
             for row, raw in zip(rows, raw_preds, strict=True):
-                delta = deltas.get(_position(row))
-                if delta is None or _is_force_zero(row):
-                    model_preds.append(raw)
-                else:
-                    model_preds.append(adjust_interval(raw, delta))
+                model_preds.append(_apply_interval(row, raw, rules, tails, deltas))
             fallbacks: dict[str, int] = defaultdict(int)
             for row, raw, model_pred, baseline_pred in zip(
                 rows, raw_preds, model_preds, baseline_preds, strict=True
@@ -863,6 +964,7 @@ def rolling_origin(
                     "trained_through": through,
                     "calibration_weeks": [f"{item[0]:04d}-W{item[1]:02d}" for item in cal_weeks],
                     "conformal_delta": deltas,
+                    "interval_rule": rules,
                     "fallbacks": dict(sorted(fallbacks.items())),
                 }
             )
@@ -946,13 +1048,14 @@ def rolling_origin(
             "params": dict(FROZEN_PARAMS),
             "tuned_on_test": False,
             "primary_mae": primary,
-            "rule": "amended_2026-10-18_post_hoc",
+            "rule": "amended_2026-10-19_te_residual",
             "notes": [
                 "No hyperparameter was changed after looking at 2022–2025.",
                 "The 2026-10-18 bias amendment was decided after the M3 results.",
                 "Promotion bias is the mean head. q50 bias is informational.",
                 "Primary MAE stays on q50 unless the mean head wins at least 3 seasons.",
                 "Intervals are CQR-adjusted on the last 8 weeks before the test week.",
+                "A boundary atom that straddles [0.77, 0.83] uses residual quantiles around q50.",
                 "min_data_in_leaf is min(40, max(5, n // 10)) so a small history can still split.",
                 "Lineup expected value uses the mean head.",
                 "force_zero rows predict 0 and are excluded from fit and from metrics.",
@@ -965,6 +1068,7 @@ def rolling_origin(
         "folds": folds,
         "calibration": {
             "method": "cqr_trailing_weeks",
+            "boundary_atom": "residual_quantile",
             "reason": CALIBRATION_REASON,
             "weeks": calibration_weeks,
             "min_scores": MIN_CALIBRATION_SCORES,
