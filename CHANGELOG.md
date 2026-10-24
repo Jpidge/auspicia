@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.4] — 2026-10-24
+
+### Added
+
+- Dashboard Lab block from an evaluation report. `export-dashboard --lab-report results.json` generates the Lab block from a real `evaluate` report — per-season rows from its folds, pooled coverage from its calibration block, criteria prose from its promotion checklist, and the q50-graded lineup total as `points_gained_vs_baseline` — instead of shipping the hand-copied M3.1 constants. Without the flag, the published M3.1 backtest ships unchanged. A report that cannot support the block (no folds, no promotion verdict, no q50 lineup measurement) fails the export.
+
 ## [0.5.3] — 2026-10-24
 
 ### Changed
