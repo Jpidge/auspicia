@@ -6,9 +6,17 @@ import gzip
 import json
 from pathlib import Path
 
+import pytest
+
 from gridiron_lab.cli import run
 from gridiron_lab.config import load_config
-from gridiron_lab.dashboard import DASHBOARD_VERSION, build_dashboard, published_m3_lab
+from gridiron_lab.dashboard import (
+    DASHBOARD_VERSION,
+    DashboardError,
+    build_dashboard,
+    lab_block_from_report,
+    published_m3_lab,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "site"
@@ -328,3 +336,196 @@ def test_first_screen_is_under_the_gzip_budget() -> None:
         raw = (SITE / name).read_bytes()
         total += len(gzip.compress(raw, mtime=0))
     assert total < 150 * 1024
+
+
+def _lab_report(primary: str = "q50") -> dict[str, object]:
+    """A synthetic evaluate report with a failing bias and coverage gate."""
+
+    def block(
+        mae: float, mae_mean: float, baseline: float, bias: float, coverage: float
+    ) -> dict[str, object]:
+        return {
+            "n": 100,
+            "mae": mae,
+            "mae_mean": mae_mean,
+            "mae_baseline": baseline,
+            "bias": bias,
+            "coverage": coverage,
+            "mae_diff": mae - baseline,
+            "mae_mean_diff": mae_mean - baseline,
+        }
+
+    folds = []
+    for season, diff, mean_diff in ((2024, -0.30, -0.28), (2025, -0.38, -0.36)):
+        folds.append(
+            {
+                "season": season,
+                "positions": {
+                    "QB": block(7.4, 7.6, 7.9, 0.716, 0.824),
+                    "RB": block(3.8, 3.9, 4.16, -0.158, 0.808),
+                    "WR": block(3.25, 3.3, 3.54, 0.05, 0.819),
+                    "TE": block(2.39, 2.45, 2.69, 0.02, 0.844),
+                    "K": block(4.05, 4.1, 4.41, -0.552, 0.800),
+                    "DST": block(4.34, 4.4, 4.74, -1.513, 0.805),
+                },
+                "pooled_offense": {"mae_diff": diff, "mae_mean_diff": mean_diff},
+                "weeks": [],
+            }
+        )
+    coverage = {
+        "QB": {"coverage": 0.802, "n": 500},
+        "RB": {"coverage": 0.809, "n": 900},
+        "WR": {"coverage": 0.825, "n": 900},
+        "TE": {"coverage": 0.846, "n": 300},
+        "K": {"coverage": 0.798, "n": 200},
+        "DST": {"coverage": 0.804, "n": 200},
+    }
+    return {
+        "experiment": {"model_version": "lgbm_skill_v1", "primary_mae": primary},
+        "folds": folds,
+        "calibration": {"coverage_by_position": coverage},
+        "lineup": {
+            "points_gained_total": 1750.0,
+            "points_gained_q50_total": 1600.5,
+            "points_gained_per_week": [{"season": 2024, "week": 1}, {"season": 2025, "week": 1}],
+        },
+        "promotion": {
+            "promoted": False,
+            "mae_seasons": {
+                "pass": True,
+                "seasons_passing": 2,
+                "required": 2,
+                "detail": [{"season": 2024}, {"season": 2025}],
+            },
+            "position_mae": {"pass": True, "worse_seasons": {}, "failures": {}},
+            "bias": {
+                "pass": False,
+                "limit": 0.3,
+                "head": "mean",
+                "failures": [
+                    {"season": 2025, "position": "DST", "bias": -1.513, "head": "mean"},
+                    {"season": 2024, "position": "QB", "bias": 0.7, "head": "mean"},
+                ],
+            },
+            "coverage": {
+                "pass": False,
+                "band": [0.77, 0.83],
+                "failures": ["TE"],
+                "by_position": coverage,
+            },
+            "lineup_points": {
+                "pass": True,
+                "points_gained": 1600.5,
+                "points_gained_mean_head": 1750.0,
+                "graded_on": "q50",
+            },
+        },
+    }
+
+
+def test_lab_block_from_report_builds_the_block() -> None:
+    lab = lab_block_from_report(_lab_report())
+    assert lab["source"] == "evaluation_report"
+    assert lab["model_version"] == "lgbm_skill_v1"
+    assert lab["primary_mae"] == "q50"
+    assert lab["promoted"] is False
+    # The graded q50 figure, not the mean-head total.
+    assert lab["points_gained_vs_baseline"] == 1600.5
+    assert lab["mae_diff_by_season"] == [
+        {"season": 2024, "mae_diff": -0.30},
+        {"season": 2025, "mae_diff": -0.38},
+    ]
+    pooled = lab["pooled_coverage"]
+    assert isinstance(pooled, dict)
+    assert pooled["TE"] == 0.846
+    positions = lab["positions"]
+    assert isinstance(positions, list)
+    assert [row["position"] for row in positions] == ["QB", "RB", "WR", "TE", "K", "DST"]
+    qb = positions[0]
+    assert qb["seasons"][0] == {
+        "season": 2024,
+        "mae": 7.4,
+        "mae_baseline": 7.9,
+        "bias": 0.716,
+        "coverage": 0.824,
+    }
+    criteria = lab["criteria"]
+    assert isinstance(criteria, list)
+    assert [item["name"] for item in criteria] == [
+        "mae_seasons",
+        "position_mae",
+        "bias",
+        "coverage",
+        "lineup_points",
+    ]
+    by_name = {item["name"]: item for item in criteria}
+    assert "in 2 of 2 seasons" in str(by_name["mae_seasons"]["detail"])
+    bias_detail = str(by_name["bias"]["detail"])
+    assert "DEF 2025" in bias_detail
+    assert "QB 2024" in bias_detail
+    assert "DST" not in bias_detail
+    coverage_detail = str(by_name["coverage"]["detail"])
+    assert "TE pooled coverage is 0.846, above the 0.83 cap." in coverage_detail
+    assert "The other positions are inside the band." in coverage_detail
+    lineup_detail = str(by_name["lineup_points"]["detail"])
+    assert "+1600.5 lineup points" in lineup_detail
+    assert "across 2 weeks" in lineup_detail
+    notes = " ".join(lab["notes"])  # type: ignore[arg-type]
+    assert "not promoted" in notes
+    assert "±0.3" in notes
+
+
+def test_lab_block_from_report_uses_the_mean_head_when_selected() -> None:
+    lab = lab_block_from_report(_lab_report(primary="mean"))
+    assert lab["primary_mae"] == "mean"
+    positions = lab["positions"]
+    assert isinstance(positions, list)
+    qb = positions[0]
+    assert qb["seasons"][0]["mae"] == 7.6
+    assert lab["mae_diff_by_season"][0] == {"season": 2024, "mae_diff": -0.28}  # type: ignore[index]
+
+
+def test_lab_block_from_report_rejects_incomplete_reports() -> None:
+    with pytest.raises(DashboardError):
+        lab_block_from_report({})
+    report = _lab_report()
+    report["folds"] = []
+    with pytest.raises(DashboardError):
+        lab_block_from_report(report)
+    report = _lab_report()
+    lineup = report["lineup"]
+    assert isinstance(lineup, dict)
+    lineup["points_gained_q50_total"] = None
+    with pytest.raises(DashboardError):
+        lab_block_from_report(report)
+    report = _lab_report()
+    del report["promotion"]
+    with pytest.raises(DashboardError):
+        lab_block_from_report(report)
+
+
+def test_export_command_with_lab_report(tmp_path: Path) -> None:
+    source = tmp_path / "rosters.json"
+    source.write_text(json.dumps(_mini_roster()), encoding="utf-8")
+    report_path = tmp_path / "report.json"
+    report_path.write_text(json.dumps(_lab_report()), encoding="utf-8")
+    output = tmp_path / "out" / "dashboard.json"
+    code = run(
+        [
+            "export-dashboard",
+            "--rosters",
+            str(source),
+            "--output",
+            str(output),
+            "--lab-report",
+            str(report_path),
+            "--config",
+            str(ROOT / "gridiron_lab.toml"),
+        ]
+    )
+    assert code == 0
+    payload = json.loads(output.read_text(encoding="utf-8"))
+    lab = payload["lab"]
+    assert lab["source"] == "evaluation_report"
+    assert lab["points_gained_vs_baseline"] == 1600.5
+    assert lab["promoted"] is False

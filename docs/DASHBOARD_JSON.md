@@ -103,7 +103,7 @@ Top-level fields:
 | `teams` | One object per fantasy team, below |
 | `waivers` | Pickup rows |
 | `standings` | Same teams sorted by projected total, with `rank` and `share_of_leader` |
-| `lab` | Published M3.1 backtest, below |
+| `lab` | Published M3.1 backtest, below, or a block generated from an evaluation report (`--lab-report`) |
 
 Each team includes `team_id`, `name`, `manager_display`, `wins`, `losses`, `record` (en dash), `opponent_id`, `opponent_name`, `projected_total`, `opponent_projected_total`, `win_probability`, `starters`, `bench`, `inactive`, and `calls`.
 
@@ -120,6 +120,8 @@ The page labels FLEX as W/R/T and DST as DEF.
 ## Lab
 
 `lab` is the published M3.1 backtest (commit `33d5bbc`), not a number computed at export time and not a Yahoo comparison. Yahoo capture is M5.
+
+With `--lab-report <report.json>` (the JSON written by `evaluate`), the block is generated from that report at export time instead, and `source` is `"evaluation_report"`. The per-season rows come from the report's folds (the primary head's MAE, selected by the report), pooled coverage from its calibration block, the criteria prose is generated from its promotion checklist, and `points_gained_vs_baseline` is the report's q50-graded lineup total (`lineup.points_gained_q50_total`). Nothing is recomputed at export time. A report with no folds, no promotion verdict, or no q50 lineup measurement fails the export instead of publishing a partial block. Without the flag, the published M3.1 block below ships unchanged.
 
 - `promoted` is `false`. The M3 candidate was not promoted.
 - `primary_mae` is `q50`.

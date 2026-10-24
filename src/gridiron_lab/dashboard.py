@@ -149,6 +149,315 @@ def published_m3_lab() -> dict[str, object]:
     }
 
 
+_LAB_POSITIONS = ("QB", "RB", "WR", "TE", "K", "DST")
+
+
+def _lab_label(position: str) -> str:
+    """The page calls the defense slot DEF; the report calls it DST."""
+
+    return "DEF" if position == "DST" else position
+
+
+def _lab_section(report: Mapping[str, object], key: str) -> Mapping[str, object]:
+    block = report.get(key)
+    if not isinstance(block, Mapping):
+        raise DashboardError(f"lab report.{key} must be an object")
+    return block
+
+
+def _lab_checklist_item(promotion: Mapping[str, object], name: str) -> Mapping[str, object]:
+    item = promotion.get(name)
+    if not isinstance(item, Mapping):
+        raise DashboardError(f"lab report.promotion.{name} is missing")
+    return item
+
+
+def lab_block_from_report(report: Mapping[str, object]) -> dict[str, object]:
+    """The Lab block for one evaluation report, in the published shape.
+
+    Every figure is read from the report: folds for the per-season rows,
+    the calibration block for pooled coverage, the promotion checklist for
+    the criteria, and the q50 lineup total for points gained. Nothing is
+    recomputed and nothing is invented. A report that cannot support the
+    block (no folds, no promotion verdict, no q50 lineup measurement)
+    raises instead of publishing a partial block.
+    """
+
+    experiment = _lab_section(report, "experiment")
+    model_version = experiment.get("model_version")
+    if not isinstance(model_version, str) or not model_version.strip():
+        raise DashboardError("lab report.experiment.model_version must be a non-empty string")
+    primary = "mean" if experiment.get("primary_mae") == "mean" else "q50"
+    mae_key = "mae_mean" if primary == "mean" else "mae"
+    diff_key = "mae_mean_diff" if primary == "mean" else "mae_diff"
+
+    folds = report.get("folds")
+    if not isinstance(folds, list) or not folds:
+        raise DashboardError("lab report.folds must be a non-empty list")
+    promotion = _lab_section(report, "promotion")
+    if not isinstance(promotion.get("promoted"), bool):
+        raise DashboardError("lab report.promotion.promoted must be a boolean")
+    promoted = bool(promotion["promoted"])
+
+    by_position: dict[str, list[dict[str, object]]] = {}
+    mae_diff_by_season: list[dict[str, object]] = []
+    for fold in folds:
+        if not isinstance(fold, Mapping):
+            raise DashboardError("lab report.folds entries must be objects")
+        season = _int(fold, "season", "lab report fold")
+        blocks = fold.get("positions")
+        if not isinstance(blocks, Mapping):
+            raise DashboardError("lab report fold.positions must be an object")
+        for position in _LAB_POSITIONS:
+            block = blocks.get(position)
+            if not isinstance(block, Mapping):
+                continue
+            count = block.get("n")
+            if isinstance(count, bool) or not isinstance(count, int) or count <= 0:
+                continue
+            by_position.setdefault(position, []).append(
+                {
+                    "season": season,
+                    "mae": _finite(block.get(mae_key), f"lab report {position} {season} mae"),
+                    "mae_baseline": _finite(
+                        block.get("mae_baseline"), f"lab report {position} {season} mae_baseline"
+                    ),
+                    "bias": _finite(block.get("bias"), f"lab report {position} {season} bias"),
+                    "coverage": _finite(
+                        block.get("coverage"), f"lab report {position} {season} coverage"
+                    ),
+                }
+            )
+        pooled = fold.get("pooled_offense")
+        if isinstance(pooled, Mapping):
+            mae_diff_by_season.append(
+                {
+                    "season": season,
+                    "mae_diff": _finite(pooled.get(diff_key), f"lab report {season} mae_diff"),
+                }
+            )
+    if not by_position:
+        raise DashboardError("lab report.folds contain no scored position rows")
+    for rows in by_position.values():
+        rows.sort(key=lambda row: int(row["season"]))
+    mae_diff_by_season.sort(key=lambda row: int(row["season"]))
+
+    calibration = _lab_section(report, "calibration")
+    coverage_map = calibration.get("coverage_by_position")
+    if not isinstance(coverage_map, Mapping):
+        raise DashboardError("lab report.calibration.coverage_by_position must be an object")
+    pooled_coverage: dict[str, object] = {}
+    for position in _LAB_POSITIONS:
+        entry = coverage_map.get(position)
+        if not isinstance(entry, Mapping):
+            continue
+        coverage = _optional_number(entry.get("coverage"))
+        if coverage is not None:
+            pooled_coverage[position] = coverage
+    if not pooled_coverage:
+        raise DashboardError("lab report.calibration.coverage_by_position has no measured coverage")
+
+    lineup = _lab_section(report, "lineup")
+    raw_points = lineup.get("points_gained_q50_total")
+    if raw_points is None:
+        raise DashboardError(
+            "lab report.lineup.points_gained_q50_total is missing; "
+            "the report has no q50 lineup measurement"
+        )
+    points = _finite(raw_points, "lab report.lineup.points_gained_q50_total")
+    week_rows = lineup.get("points_gained_per_week")
+    weeks = len(week_rows) if isinstance(week_rows, list) else 0
+
+    mae_item = _lab_checklist_item(promotion, "mae_seasons")
+    mae_pass = mae_item.get("pass") is True
+    seasons_passing = mae_item.get("seasons_passing")
+    if isinstance(seasons_passing, bool) or not isinstance(seasons_passing, int):
+        raise DashboardError("lab report.promotion.mae_seasons.seasons_passing must be an integer")
+    detail_rows = mae_item.get("detail")
+    measured = len(detail_rows) if isinstance(detail_rows, list) else len(mae_diff_by_season)
+    mae_text = (
+        f"Pooled-offense {primary} MAE beat the legacy baseline "
+        f"in {seasons_passing} of {measured} seasons."
+    )
+
+    position_item = _lab_checklist_item(promotion, "position_mae")
+    position_pass = position_item.get("pass") is True
+    if position_pass:
+        position_text = "No position was worse by more than 0.05 MAE in more than one season."
+    else:
+        worse = position_item.get("failures")
+        names = []
+        if isinstance(worse, Mapping):
+            for position in _LAB_POSITIONS:
+                count = worse.get(position)
+                if isinstance(count, int) and not isinstance(count, bool) and count > 1:
+                    names.append(f"{_lab_label(position)} ({count} seasons)")
+        if names:
+            position_text = (
+                "Positions worse by more than 0.05 MAE in more than one season: "
+                + ", ".join(names)
+                + "."
+            )
+        else:
+            position_text = (
+                "One or more positions were worse by more than 0.05 MAE in more than one season."
+            )
+
+    bias_item = _lab_checklist_item(promotion, "bias")
+    bias_pass = bias_item.get("pass") is True
+    limit = _optional_number(bias_item.get("limit"))
+    limit = 0.3 if limit is None else limit
+    failure_rows: list[tuple[int, str]] = []
+    raw_failures = bias_item.get("failures")
+    if isinstance(raw_failures, list):
+        for row in raw_failures:
+            if not isinstance(row, Mapping):
+                continue
+            row_season = row.get("season")
+            row_position = row.get("position")
+            if isinstance(row_season, int) and isinstance(row_position, str):
+                failure_rows.append((row_season, row_position))
+    failure_rows.sort(
+        key=lambda item: (
+            item[0],
+            _LAB_POSITIONS.index(item[1]) if item[1] in _LAB_POSITIONS else 99,
+        )
+    )
+    if bias_pass:
+        bias_text = f"Mean bias is inside ±{limit:g} for every position-season."
+    elif failure_rows:
+        named = ", ".join(f"{_lab_label(position)} {season}" for season, position in failure_rows)
+        bias_text = f"Mean bias is outside ±{limit:g} for {named}."
+    else:
+        bias_text = f"Mean bias is outside ±{limit:g} in at least one position-season."
+
+    coverage_item = _lab_checklist_item(promotion, "coverage")
+    coverage_pass = coverage_item.get("pass") is True
+    low, high = 0.77, 0.83
+    band = coverage_item.get("band")
+    if isinstance(band, (list, tuple)) and len(band) == 2:
+        low_num = _optional_number(band[0])
+        high_num = _optional_number(band[1])
+        if low_num is not None and high_num is not None:
+            low, high = low_num, high_num
+    raw_failing = coverage_item.get("failures")
+    failing_names = [
+        position
+        for position in _LAB_POSITIONS
+        if isinstance(raw_failing, list) and position in raw_failing
+    ]
+    by_position_cov = coverage_item.get("by_position")
+
+    def _measured(position: str) -> float | None:
+        if not isinstance(by_position_cov, Mapping):
+            return None
+        entry = by_position_cov.get(position)
+        if not isinstance(entry, Mapping):
+            return None
+        return _optional_number(entry.get("coverage"))
+
+    if coverage_pass:
+        coverage_text = f"Pooled coverage is inside {low:g}–{high:g} for every position."
+    else:
+        parts = []
+        for position in failing_names:
+            value = _measured(position)
+            if value is None:
+                parts.append(f"{_lab_label(position)} pooled coverage could not be measured.")
+            elif value > high:
+                parts.append(
+                    f"{_lab_label(position)} pooled coverage is {value:.3f}, "
+                    f"above the {high:g} cap."
+                )
+            else:
+                parts.append(
+                    f"{_lab_label(position)} pooled coverage is {value:.3f}, "
+                    f"below the {low:g} floor."
+                )
+        others = [
+            position
+            for position in _LAB_POSITIONS
+            if position not in failing_names and _measured(position) is not None
+        ]
+        if others:
+            parts.append("The other positions are inside the band.")
+        coverage_text = (
+            " ".join(parts) if parts else f"Pooled coverage is outside {low:g}–{high:g}."
+        )
+
+    lineup_item = _lab_checklist_item(promotion, "lineup_points")
+    lineup_pass = lineup_item.get("pass") is True
+    span = f" across {weeks} weeks" if weeks else ""
+    lineup_text = (
+        f"{points:+.1f} lineup points versus the legacy baseline{span}. "
+        "Graded on q50, the shipped objective. This is not a Yahoo comparison."
+    )
+
+    criteria = [
+        {"name": "mae_seasons", "pass": mae_pass, "detail": mae_text},
+        {"name": "position_mae", "pass": position_pass, "detail": position_text},
+        {"name": "bias", "pass": bias_pass, "detail": bias_text},
+        {"name": "coverage", "pass": coverage_pass, "detail": coverage_text},
+        {"name": "lineup_points", "pass": lineup_pass, "detail": lineup_text},
+    ]
+
+    if bias_pass:
+        bias_note = f"Mean-head bias is inside ±{limit:g} in every position-season."
+    elif failure_rows:
+        plural = "s" if len(failure_rows) != 1 else ""
+        bias_note = (
+            f"Mean-head bias is outside ±{limit:g} in {len(failure_rows)} position-season{plural}."
+        )
+    else:
+        bias_note = f"Mean-head bias is outside ±{limit:g} in at least one position-season."
+    if coverage_pass:
+        coverage_note = f"Calibrated 10/90 coverage is inside {low:g}–{high:g} at every position."
+    elif failing_names:
+        named = ", ".join(_lab_label(position) for position in failing_names)
+        coverage_note = f"Calibrated 10/90 coverage is outside {low:g}–{high:g} at {named}."
+    else:
+        coverage_note = f"Calibrated 10/90 coverage is outside {low:g}–{high:g}."
+    notes = [
+        (
+            "The candidate in this report was promoted."
+            if promoted
+            else "The candidate in this report was not promoted."
+        ),
+        bias_note,
+        coverage_note,
+        (
+            "q50 is the primary accuracy metric for this report."
+            if primary == "q50"
+            else "The mean head is the primary accuracy metric for this report."
+        ),
+        (
+            "These figures compare the model with the legacy baseline. "
+            "They are not a claim against Yahoo."
+        ),
+        (
+            f"This Lab block was generated from an evaluation report "
+            f"(model {model_version}), not hand-copied constants."
+        ),
+    ]
+
+    return {
+        "source": "evaluation_report",
+        "model_version": model_version,
+        "primary_mae": primary,
+        "promoted": promoted,
+        "points_gained_vs_baseline": points,
+        "mae_diff_by_season": mae_diff_by_season,
+        "pooled_coverage": pooled_coverage,
+        "positions": [
+            {"position": position, "seasons": by_position[position]}
+            for position in _LAB_POSITIONS
+            if position in by_position
+        ],
+        "criteria": criteria,
+        "notes": notes,
+    }
+
+
 def _finite(value: object, label: str) -> float:
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         raise DashboardError(f"{label} must be a number")

@@ -18,7 +18,12 @@ import sys
 from pathlib import Path
 
 from gridiron_lab.config import ConfigError, default_config_path, load_config
-from gridiron_lab.dashboard import DashboardError, export_dashboard
+from gridiron_lab.dashboard import (
+    DashboardError,
+    export_dashboard,
+    lab_block_from_report,
+    load_json,
+)
 from gridiron_lab.data.errors import FetchError, IngestError
 from gridiron_lab.data.fetch import FixtureFetch, HttpFetch
 from gridiron_lab.data.ingest import ingest
@@ -146,11 +151,15 @@ def _run_evaluate(args: argparse.Namespace) -> int:
 def _run_export_dashboard(args: argparse.Namespace) -> int:
     try:
         config = load_config(args.config)
+        lab = None
+        if args.lab_report is not None:
+            lab = lab_block_from_report(load_json(args.lab_report))
         export_dashboard(
             config=config,
             rosters_path=args.rosters,
             output=args.output,
             predictions_path=args.predictions,
+            lab=lab,
             data_dir=args.data_dir,
         )
     except ConfigError as exc:
@@ -245,6 +254,14 @@ def _parser() -> argparse.ArgumentParser:
         "--predictions",
         type=Path,
         help="Optional predictions JSON. Overrides q10, q50, q90, mean, and yahoo.",
+    )
+    export_parser.add_argument(
+        "--lab-report",
+        type=Path,
+        help=(
+            "Optional evaluate report JSON. The Lab block is generated from "
+            "the report instead of the published M3.1 backtest."
+        ),
     )
     export_parser.add_argument("--config", type=Path, help="Path to gridiron_lab.toml")
     export_parser.add_argument(
