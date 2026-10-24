@@ -640,8 +640,10 @@ def promotion_rule(report: Mapping[str, object]) -> dict[str, object]:
     coverage_pass = measured > 0 and not coverage_failures
     lineup = report.get("lineup")
     points: object = None
+    points_mean: object = None
     if isinstance(lineup, dict):
-        points = lineup.get("points_gained_total")
+        points = lineup.get("points_gained_q50_total")
+        points_mean = lineup.get("points_gained_total")
     lineup_pass = (
         isinstance(points, (int, float)) and math.isfinite(float(points)) and float(points) >= 0
     )
@@ -669,7 +671,12 @@ def promotion_rule(report: Mapping[str, object]) -> dict[str, object]:
             "by_position": coverage_detail,
             "failures": coverage_failures,
         },
-        "lineup_points": {"pass": lineup_pass, "points_gained": points},
+        "lineup_points": {
+            "pass": lineup_pass,
+            "points_gained": points,
+            "points_gained_mean_head": points_mean,
+            "graded_on": "q50",
+        },
         "promoted": bool(
             mae_pass and position_pass and bias_pass and coverage_pass and lineup_pass
         ),
@@ -804,6 +811,8 @@ def _lineup_week(
     actuals: dict[str, float] = {}
     model_mean: dict[str, float] = {}
     baseline_mean: dict[str, float] = {}
+    model_q50: dict[str, float] = {}
+    baseline_q50: dict[str, float] = {}
     for row, model_pred, baseline_pred in zip(rows, model_preds, baseline_preds, strict=True):
         if not _has_actual(row):
             continue
@@ -816,11 +825,15 @@ def _lineup_week(
         actuals[player_id] = float(row["actual"])  # type: ignore[arg-type]
         model_mean[player_id] = model_pred.mean
         baseline_mean[player_id] = baseline_pred.mean
+        model_q50[player_id] = model_pred.q50
+        baseline_q50[player_id] = baseline_pred.q50
     for group in eligible.values():
         group.sort(key=lambda item: str(item.get("player_id")))
     rng = random.Random(seed + season * 100 + week)
     gained = 0.0
     regret = 0.0
+    gained_q50 = 0.0
+    regret_q50 = 0.0
     for _team in range(teams):
         roster: list[Mapping[str, object]] = []
         for position, count in ROSTER_COUNTS.items():
@@ -829,13 +842,30 @@ def _lineup_week(
             continue
         model_starters = _starters(roster, model_mean, lineup)
         baseline_starters = _starters(roster, baseline_mean, lineup)
+        model_starters_q50 = _starters(roster, model_q50, lineup)
+        baseline_starters_q50 = _starters(roster, baseline_q50, lineup)
         hindsight = _starters(roster, actuals, lineup)
         model_points = sum(actuals[str(item.get("player_id"))] for item in model_starters)
         baseline_points = sum(actuals[str(item.get("player_id"))] for item in baseline_starters)
+        model_points_q50 = sum(
+            actuals[str(item.get("player_id"))] for item in model_starters_q50
+        )
+        baseline_points_q50 = sum(
+            actuals[str(item.get("player_id"))] for item in baseline_starters_q50
+        )
         hindsight_points = sum(actuals[str(item.get("player_id"))] for item in hindsight)
         gained += model_points - baseline_points
         regret += hindsight_points - model_points
-    return {"season": season, "week": week, "points_gained": gained, "regret": regret}
+        gained_q50 += model_points_q50 - baseline_points_q50
+        regret_q50 += hindsight_points - model_points_q50
+    return {
+        "season": season,
+        "week": week,
+        "points_gained": gained,
+        "regret": regret,
+        "points_gained_q50": gained_q50,
+        "regret_q50": regret_q50,
+    }
 
 
 def rolling_origin(
@@ -1031,9 +1061,13 @@ def rolling_origin(
     if lineup_weeks:
         points_gained = sum(float(item["points_gained"]) for item in lineup_weeks)
         regret = sum(float(item["regret"]) for item in lineup_weeks)
+        points_gained_q50 = sum(float(item["points_gained_q50"]) for item in lineup_weeks)
+        regret_q50 = sum(float(item["regret_q50"]) for item in lineup_weeks)
     else:
         points_gained = None
         regret = None
+        points_gained_q50 = None
+        regret_q50 = None
     report: dict[str, object] = {
         "experiment": {
             "id": f"{MODEL_VERSION}-seed{seed}",
@@ -1057,7 +1091,8 @@ def rolling_origin(
                 "Intervals are CQR-adjusted on the last 8 weeks before the test week.",
                 "A boundary atom that straddles [0.77, 0.83] uses residual quantiles around q50.",
                 "min_data_in_leaf is min(40, max(5, n // 10)) so a small history can still split.",
-                "Lineup expected value uses the mean head.",
+                "Lineup selection is graded on q50, the shipped objective "
+                "(owner decision 2026-10-24); the mean-head figure is reported alongside.",
                 "force_zero rows predict 0 and are excluded from fit and from metrics.",
                 "The legacy baseline reads points_ewma, points_roll3, and points_roll5.",
                 "opportunity_momentum and td_dependency are absent on v2.0, so those terms are 0.",
@@ -1082,11 +1117,15 @@ def rolling_origin(
             "roster": dict(ROSTER_COUNTS),
             "points_gained_total": points_gained,
             "regret_total": regret,
+            "points_gained_q50_total": points_gained_q50,
+            "regret_q50_total": regret_q50,
             "points_gained_per_week": lineup_weeks,
             "note": (
                 "Yahoo rosters are not in the store. Historical weeks use seeded "
                 "15-player rosters drawn by prior actual points, disjoint across teams. "
-                "Points gained is the model lineup minus the baseline lineup on the same rosters."
+                "Points gained is the model lineup minus the baseline lineup on the same rosters. "
+                "The promotion gate grades the q50 figure, the shipped selection rule "
+                "(owner decision 2026-10-24); the mean-head figure is reported alongside."
             ),
         },
         "prediction_digest": _prediction_digest(digest_rows),
