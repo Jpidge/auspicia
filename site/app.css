@@ -53,6 +53,123 @@
   --def: #5b6b85;
   --shadow: 0 1px 2px rgba(16, 30, 60, 0.06), 0 6px 18px rgba(16, 30, 60, 0.08);
 }
+/* Palette themes from the theme preview. Token mapping: preview surface ->
+   --bg2, card -> --card, hover -> --card2, border -> --line. Verdict and
+   position colors follow the built-in light set on Rowan Light and the
+   built-in dark set on the dark palettes; --faint is derived from --muted. */
+[data-theme="rowan"] {
+  color-scheme: light;
+  --bg: #efe6d5;
+  --bg2: #faf5ea;
+  --card: #fffdf7;
+  --card2: #f3ead6;
+  --line: #ddd0b8;
+  --text: #2b2118;
+  --muted: #7a6a58;
+  --faint: #978977;
+  --accent: #8a3b26;
+  --accent-ink: #fff7ec;
+  --accentSoft: rgba(138, 59, 38, 0.12);
+  --good: #0f6e3e;
+  --goodSoft: rgba(15, 110, 62, 0.12);
+  --bad: #b3262f;
+  --badSoft: rgba(179, 38, 47, 0.1);
+  --warn: #855300;
+  --warnSoft: rgba(133, 83, 0, 0.14);
+  --qb: #d6355a;
+  --rb: #0b7a58;
+  --wr: #2c6fdc;
+  --te: #a85a00;
+  --k: #7d4fd1;
+  --def: #5b6b85;
+  --shadow: 0 10px 30px rgba(43, 33, 24, 0.1);
+}
+[data-theme="aqua"] {
+  color-scheme: dark;
+  --bg: #232842;
+  --bg2: #2c3157;
+  --card: #343a63;
+  --card2: #3c4270;
+  --line: #484e7d;
+  --text: #edeff7;
+  --muted: #a3a9c9;
+  --faint: #8389a7;
+  --accent: #2ec4b6;
+  --accent-ink: #052a26;
+  --accentSoft: rgba(46, 196, 182, 0.14);
+  --good: #3ddc84;
+  --goodSoft: rgba(61, 220, 132, 0.15);
+  --bad: #ff6b6b;
+  --badSoft: rgba(255, 107, 107, 0.15);
+  --warn: #ffc24b;
+  --warnSoft: rgba(255, 194, 75, 0.16);
+  --qb: #ff7a90;
+  --rb: #4fd1a5;
+  --wr: #6aa8ff;
+  --te: #ffb357;
+  --k: #c59bff;
+  --def: #9aa7bd;
+  --shadow: 0 10px 30px rgba(5, 8, 30, 0.35);
+}
+[data-theme="midnight"] {
+  color-scheme: dark;
+  --bg: #121a33;
+  --bg2: #1a2344;
+  --card: #212b52;
+  --card2: #28335e;
+  --line: #303d68;
+  --text: #e9edf9;
+  --muted: #95a1c6;
+  --faint: #747fa1;
+  --accent: #5b87ff;
+  --accent-ink: #ffffff;
+  --accentSoft: rgba(91, 135, 255, 0.16);
+  --good: #3ddc84;
+  --goodSoft: rgba(61, 220, 132, 0.15);
+  --bad: #ff6b6b;
+  --badSoft: rgba(255, 107, 107, 0.15);
+  --warn: #ffc24b;
+  --warnSoft: rgba(255, 194, 75, 0.16);
+  --qb: #ff7a90;
+  --rb: #4fd1a5;
+  --wr: #6aa8ff;
+  --te: #ffb357;
+  --k: #c59bff;
+  --def: #9aa7bd;
+  --shadow: 0 10px 30px rgba(2, 6, 24, 0.4);
+}
+[data-theme="carbon"] {
+  color-scheme: dark;
+  --bg: #0d0e0f;
+  --bg2: #16181a;
+  --card: #1e2023;
+  --card2: #26282c;
+  --line: #2e3136;
+  --text: #f2f3f4;
+  --muted: #9aa0a6;
+  --faint: #777c80;
+  --accent: #f5f5f4;
+  --accent-ink: #101112;
+  --accentSoft: rgba(245, 245, 244, 0.14);
+  --good: #3ddc84;
+  --goodSoft: rgba(61, 220, 132, 0.15);
+  --bad: #ff6b6b;
+  --badSoft: rgba(255, 107, 107, 0.15);
+  --warn: #ffc24b;
+  --warnSoft: rgba(255, 194, 75, 0.16);
+  --qb: #ff7a90;
+  --rb: #4fd1a5;
+  --wr: #6aa8ff;
+  --te: #ffb357;
+  --k: #c59bff;
+  --def: #9aa7bd;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+.theme-pick { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; color: var(--muted); flex: none; }
+.theme-pick select {
+  background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+  min-height: 44px; padding: 8px 10px; color: var(--text); cursor: pointer;
+}
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 svg[hidden] { display: none; }
