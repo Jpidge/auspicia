@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.3] — 2026-10-24
+
+### Changed
+
+- Lineup grading. The promotion gate now grades lineup points gained on starters chosen by q50, the shipped dashboard objective (owner decision 2026-10-24, `docs/DESIGN.md` §7). The evaluation still computes and reports the mean-head lineup figure alongside: `points_gained_total` in the report, `points_gained_mean_head` in the promotion checklist; the graded figure is `points_gained_q50_total`.
+
 ## [0.5.2] — 2026-10-19
 
 ### Changed
