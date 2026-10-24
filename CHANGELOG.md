@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.7] — 2026-10-24
+
+### Changed
+
+- The theme dropdown loses its visible "Theme" label; the select keeps an `aria-label` for assistive tech, and its styles move onto the select itself.
+
 ## [0.5.6] — 2026-10-24
 
 ### Changed
