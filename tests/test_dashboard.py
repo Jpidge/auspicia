@@ -341,14 +341,17 @@ def test_site_theme_dropdown_offers_the_palettes() -> None:
         ("aqua", "Aqua Night"),
         ("midnight", "Midnight"),
         ("carbon", "Carbon"),
-        ("day-night", "Day &amp; Night"),
+        ("light", "Light"),
+        ("dark", "Dark"),
     ):
         assert f'<option value="{value}">{label}</option>' in html or (
             f'<option value="{value}" selected>{label}</option>' in html
         )
-    for name in ("rowan", "aqua", "midnight", "carbon"):
+    assert "day-night" not in html
+    assert "day-night" not in script
+    for name in ("rowan", "aqua", "midnight", "carbon", "light"):
         assert f'[data-theme="{name}"]' in css
-    for name in ("rowan", "aqua", "midnight", "carbon", "day-night"):
+    for name in ("rowan", "aqua", "midnight", "carbon", "light", "dark"):
         assert f'"{name}"' in script
     assert "gl-theme" in script
     assert "#efe6d5" in css
