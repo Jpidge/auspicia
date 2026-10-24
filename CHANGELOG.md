@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.2] — 2026-10-19
+
+### Changed
+
+- Tight-end intervals. When a position-week's conformal scores sit on the interval boundary and straddle [0.77, 0.83], q10 and q90 are the equal-tailed residual quantiles around q50. q50, the mean head, and the 8-week window are unchanged. The diagnosis and the acceptance rule are in `docs/DESIGN.md` §21 (2026-10-19).
+
 ## [0.5.1] — 2026-10-19
 
 ### Added

@@ -9,11 +9,14 @@ from pathlib import Path
 
 from gridiron_lab.cli import run
 from gridiron_lab.evaluate import (
+    adjust_residual,
     bootstrap_mae_diff,
+    boundary_atom_straddles,
     calibration_window,
     choose_primary_mae,
     conformal_quantile,
     promotion_rule,
+    residual_tails,
     rolling_origin,
 )
 from gridiron_lab.models import Prediction
@@ -389,6 +392,116 @@ def test_q50_bias_does_not_gate_promotion() -> None:
 def test_conformal_quantile_uses_the_finite_sample_index() -> None:
     assert conformal_quantile([0.0] * 29) is None
     assert conformal_quantile(list(range(30))) == 24.0
+    assert conformal_quantile(list(range(30)), alpha=0.1) == 27.0
+
+
+def test_boundary_atom_straddles_only_when_the_band_is_unreachable() -> None:
+    straddling = [-1.0] * 60 + [0.0] * 25 + [1.0] * 15
+    assert boundary_atom_straddles(straddling) is True
+    open_inside = [-1.0] * 78 + [0.0] * 12 + [1.0] * 10
+    assert boundary_atom_straddles(open_inside) is False
+    closed_inside = [-1.0] * 70 + [0.0] * 12 + [1.0] * 18
+    assert boundary_atom_straddles(closed_inside) is False
+    assert boundary_atom_straddles([0.0] * 29) is False
+
+
+def test_residual_tails_use_half_the_two_sided_alpha() -> None:
+    rows: list[dict[str, object]] = []
+    predictions: list[Prediction] = []
+    for index in range(30):
+        rows.append(
+            {
+                "player_id": f"TE{index}",
+                "season": 2021,
+                "week": 1,
+                "position": "TE",
+                "force_zero": 0,
+                "actual": float(index),
+            }
+        )
+        predictions.append(
+            Prediction(
+                mean=0.0,
+                q10=-1.0,
+                q50=0.0,
+                q90=1.0,
+                model_version="stub",
+                feature_version="v2.0",
+                scoring_version="ffc_yahoo_v1",
+                trained_through=None,
+                regime="baseline",
+            )
+        )
+    tails = residual_tails(rows, predictions)
+    assert tails["TE"] == (-2.0, 27.0)
+    shifted = adjust_residual(predictions[0], tails["TE"][0], tails["TE"][1])
+    assert shifted.q50 == 0.0
+    assert (shifted.q10, shifted.q90) == (0.0, 27.0)
+
+
+def test_straddling_boundary_atom_uses_residual_quantiles() -> None:
+    def row(season: int, week: int, index: int, actual: float) -> dict[str, object]:
+        return {
+            "player_id": f"TE{index}",
+            "season": season,
+            "week": week,
+            "position": "TE",
+            "points_ewma": 1.0,
+            "points_roll3": 1.0,
+            "points_roll5": 1.0,
+            "points_last": 1.0,
+            "force_zero": 0,
+            "actual": actual,
+            "feature_version": "v2.0",
+        }
+
+    class _Band:
+        def fit(self, rows: Sequence[Mapping[str, object]], *, trained_through: str) -> None:
+            del rows, trained_through
+
+        def predict(self, rows: Sequence[Mapping[str, object]]) -> list[Prediction]:
+            return [
+                Prediction(
+                    mean=5.0,
+                    q10=0.0,
+                    q50=5.0,
+                    q90=10.0,
+                    model_version="band",
+                    feature_version="v2.0",
+                    scoring_version="ffc_yahoo_v1",
+                    trained_through=None,
+                    regime="baseline",
+                )
+                for _ in rows
+            ]
+
+    calibration: list[dict[str, object]] = [row(2021, 18, index, 5.0) for index in range(24)]
+    calibration.extend(row(2021, 18, 24 + index, 0.0) for index in range(10))
+    calibration.extend(row(2021, 18, 34 + index, 15.0) for index in range(6))
+    report = rolling_origin(
+        {(2021, 18): calibration, (2022, 1): [row(2022, 1, 0, 12.0)]},
+        [2022],
+        seed=0,
+        n_boot=5,
+        teams=1,
+        calibration_weeks=1,
+        make_model=_Band,
+        make_baseline=_Flat,
+    )
+    folds = report["folds"]
+    assert isinstance(folds, list)
+    weeks = folds[0]["weeks"]  # type: ignore[index]
+    assert isinstance(weeks, list)
+    entry = weeks[0]
+    assert isinstance(entry, dict)
+    assert entry["interval_rule"]["TE"] == "residual_quantile"
+    positions = folds[0]["positions"]  # type: ignore[index]
+    assert isinstance(positions, dict)
+    te = positions["TE"]
+    assert isinstance(te, dict)
+    assert te["coverage"] == 1.0
+    assert te["coverage_raw"] == 0.0
+    assert te["mae"] == 7.0
 
 
 def test_calibration_window_drops_the_test_week_and_later() -> None:

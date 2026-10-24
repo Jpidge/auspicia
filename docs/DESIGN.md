@@ -374,5 +374,36 @@ Decided before the M3.1 refit, and after the M3 results were known. Tree depth, 
 1. **The mean head already exists** (squared error). M3.1 reports its bias, MAE, and RMSE beside the q50 numbers. Promotion bias uses the mean head only.
 2. **Primary accuracy stays q50 MAE** for criteria 1 and 2, unless the mean head has a lower pooled-offense MAE in at least 3 of the 4 test seasons. That comparison is the only switch, and it is fixed here before the refit. Either way the report says which head was primary.
 3. **Intervals are adjusted with split conformalized quantile regression.** For each test week and each position, the last 8 earlier weeks are a calibration window. The model is fit only on weeks before that window. Both the fit and the window are strictly before the test week. The score is `max(q10 − y, y − q90)`. The finite-sample quantile is the `ceil((n+1) × 0.8)`-th ordered score, and it needs at least 30 scores or the raw interval is kept. The adjusted interval is `[q10 − q, q90 + q]`, clipped so q50 stays inside. Criterion 4 is unchanged and is applied to this adjusted interval, pooled across seasons. Raw coverage is reported next to it. Tail rates are reported and do not gate promotion.
-4. **A negative score shrinks a too-wide interval. A positive score widens a too-narrow one.** Whether QB, TE, and DST land inside 80% ± 3 pp is an outcome of this rule, not a second pass over the window length.
+4. **A negative score shrinks a too-wide interval. A positive score widens a too-narrow one.** Whether QB, TE, and DST land inside 80% ± 3 pp is an outcome of this rule, not a second pass over the window length. The TE outcome is taken up in §21.
+
+## 21. M3.3 tight-end interval calibration
+
+Decided 2026-10-19, after the M3.1 backtest and before any change to the interval rule. Tree depth, leaves, L2, learning rate, round cap, patience, the 8-week window, the 30-score floor, and the finite-sample index stay at the §20 values. Nothing in this section was picked by searching 2022–2025 coverage.
+
+The run behind these figures is seed 0, `simulated_capture`, fit history from 2018, test weeks in 2022–2025. Adjusted TE coverage equals raw TE coverage: **0.846** pooled (n = 4914). By season: 2022 **0.837** (n = 1210), 2023 **0.846** (n = 1191), 2024 **0.858** (n = 1231), 2025 **0.844** (n = 1282). All four seasons are above 0.83. Pooled adjusted coverage for the other positions is inside [0.77, 0.83]: QB 0.802, RB 0.808, WR 0.825, K 0.798, DST 0.804.
+
+1. **The average TE band is narrower than the residual spread, not wider.** Mean interval width is 7.32 points. On the same rows, the 10th and 90th percentiles of `y − q50` are −1.80 and +6.16, a central-80 width of 7.96. Over-coverage is not a band that simply contains the marginal residual distribution.
+
+2. **The trailing window is not too short for the weekly TE sample.** All 72 test weeks produce a TE conformal score. A window holds 505 to 583 scores (median 540), well above the floor of 30. `ceil((n+1) × 0.8)` targets about 0.802. The extra coverage is not the `(n+1)` index.
+
+3. **The additive shift is zero, and scaling by width does not move it.** The TE conformal delta is 0.0 on every test week, so adjusted and raw coverage match in every season. The width-normalized score `max(q10 − y, y − q90) / (q90 − q10)` has quantile 0.0 on those same 72 weeks. A zero stays zero under any positive scale, so a locally weighted version of the same score cannot shrink TE.
+
+4. **That zero is a point mass on the interval boundary.** The two-sided score is negative when `y` is strictly inside `(q10, q90)`, zero when `y` equals `q10` or `q90`, and positive outside. Of the TE calibration scores, 0.668 are strictly negative, 0.178 are exactly zero, and 0.154 are positive. Closed calibration coverage is 0.846, the same as the test set. By season the calibration mix is 2022 open 0.670 / atom 0.168 / closed 0.838, 2023 0.654 / 0.184 / 0.838, 2024 0.679 / 0.178 / 0.857, 2025 0.667 / 0.183 / 0.850. The 80% order statistic sits between 51 and 97 ranks inside the zero atom (median 71), so it returns 0. QB, K, and DST have no exact-zero scores; their deltas move (QB mean +0.48, DST mean −0.62, which is what brings DST from raw 0.836 to 0.804). RB and WR atoms are smaller (0.038 and 0.077) and those pooled coverages are already inside the band.
+
+5. **No additive delta puts this atom inside the promotion band.** A zero shift leaves closed coverage, above 0.83. Any shrink uncovers every exact-boundary row at once and leaves only the open coverage, 0.668, which is below 0.77. A widen goes further above 0.83. There is no intermediate coverage between the open and closed figures, because the scores do not take values between the last negative score and zero.
+
+6. **The replacement interval is the equal-tailed residual quantile around the same q50.** Use it on a position-week only when that week's calibration scores straddle the existing promotion band: the share of scores `< 0` is below 0.77 and the share of scores `≤ 0` is above 0.83. Those cuts are the promotion band, not new parameters. They describe the case in which every additive shift misses [0.77, 0.83]. On the M3.1 scores this holds for 59 of 72 TE weeks (15 in 2022, 14 in 2023, 18 in 2024, 12 in 2025) and for 12 WR weeks (2, 3, 4, and 3). It holds for no QB, RB, K, or DST week. The other 13 TE weeks already have closed calibration coverage at or below 0.83, so they keep the additive shift of zero.
+
+7. **The residual formula does not introduce a tuned width.** On the calibration rows, `L = q50 − y` and `U = y − q50`. Each tail uses `conformal_quantile` at `alpha = 0.1`, half of the two-sided `alpha = 0.2`, which is the same `ceil((n+1) × 0.9)` index. The interval is `[q50 − Q(L), q50 + Q(U)]`, sorted so q50 stays inside. One pair `(Q(L), Q(U))` is used for every player at that position in that week, added to that player's own q50. The tree's q10 and q90 are not used as a scale: those endpoints are what pinned the two-sided score at zero. Fewer than 30 scores leaves the raw interval, as in §20.
+
+8. **q50, the mean head, and the training rows do not change.** The 8 weeks are still held out of the fit. MAE, mean-head bias, and lineup points gained stay the M3.1 numbers. Only q10 and q90 can move, and only on weeks the band-straddle condition fires.
+
+**Acceptance, fixed before the refit.** One rolling-origin run. No second choice of window, index, trigger, or formula.
+
+1. Pooled TE adjusted coverage on 2022–2025 is in [0.77, 0.83].
+2. For each season dropped from {2022, 2023, 2024, 2025}, TE coverage pooled over the other three is in [0.77, 0.83]. The fit does not depend on which test season is in the metric, so this is that one run with the dropped season's rows removed.
+3. Pooled adjusted coverage for QB, RB, WR, K, and DST stays in [0.77, 0.83].
+4. The MAE promotion checks still pass: q50 stays primary unless the mean head wins at least three seasons, the week-bootstrap interval still clears zero in at least three seasons, and no position is worse by more than 0.05 MAE in more than one season.
+
+Mean-head bias is not an acceptance check here. It already fails, and this rule does not touch the mean. If any of 1–4 fails, report the per-season and leave-one-season tables and do not retune.
 
