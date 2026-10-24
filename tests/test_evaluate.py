@@ -246,7 +246,11 @@ def _fold(
 
 
 def _report(
-    folds: list[dict[str, object]], *, points: float | None = 1.0, coverage: float = 0.8
+    folds: list[dict[str, object]],
+    *,
+    points: float | None = 1.0,
+    points_q50: float | None = None,
+    coverage: float = 0.8,
 ) -> dict[str, object]:
     return {
         "folds": folds,
@@ -256,7 +260,10 @@ def _report(
                 for position in ("QB", "RB", "WR", "TE", "K", "DST")
             }
         },
-        "lineup": {"points_gained_total": points},
+        "lineup": {
+            "points_gained_total": points,
+            "points_gained_q50_total": points if points_q50 is None else points_q50,
+        },
     }
 
 
@@ -329,6 +336,14 @@ def test_promotion_rule_passes_only_when_every_criterion_holds() -> None:
     assert isinstance(lineup_block, dict)
     assert lineup_block["pass"] is False
     assert negative["promoted"] is False
+
+    graded_on_q50 = promotion_rule(_report(folds, points=5.0, points_q50=-1.0))
+    graded_block = graded_on_q50["lineup_points"]
+    assert isinstance(graded_block, dict)
+    assert graded_block["pass"] is False
+    assert graded_block["points_gained"] == -1.0
+    assert graded_block["points_gained_mean_head"] == 5.0
+    assert graded_on_q50["promoted"] is False
 
 
 class _MeanAboveMedian:
