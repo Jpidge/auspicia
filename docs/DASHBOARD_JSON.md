@@ -73,6 +73,8 @@ with `win_probability_sd` = **25**. That spread is an assumption, not a fit on t
 
 Each player needs `player_id`, `name`, `position`, and should include `nfl_team`, `opponent`, `home`, `kickoff`, `injury`, `force_zero`, `bye`, `q10`, `q50`, `q90`, `mean`, `yahoo`, `notes`, `opp_rank`, `vegas_implied`, `practice`. `q50` drives the lineup. Missing `q50` falls back to `mean`, then 0.
 
+A Yahoo capture writes this same shape. `source` is `yahoo` and `known_as_of` is the capture stamp. `manager` is the Yahoo nickname. The fictional fixtures in this repo keep `example: true`. A live capture sets `example` false, and the disclaimer then says the roster came from the Yahoo Fantasy API. `[dashboard] anonymize_managers` still applies.
+
 `recent_points` and `snap_share`, when present on the roster file, are copied only if `--data-dir` is omitted. Each is the last six numbers. A non-list or an empty list becomes an empty `recent_points` and a null `snap_share`. DST and DEF snap lists on the file are dropped.
 
 Each waiver needs `player_id`, `name`, `position`, and may include `nfl_team`, `q50_next` (a list), `ros`, `snap_share` (a list of percentages), `note`, and `drop_player_id`. The exporter fills `drop_name` and `drop_position` from the roster catalog. Waiver `snap_share` follows the same copy-or-lookup rule, and is null for DST and DEF.

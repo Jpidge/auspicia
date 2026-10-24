@@ -1,0 +1,130 @@
+name: Yahoo capture
+
+# Thursday 20:00 UTC. The job exits 0 without calling Yahoo when
+# YAHOO_CLIENT_ID is unset, so the schedule can stay on before the codes exist.
+# Snapshots are committed only to Jpidge/gridiron-lab-data. They are not
+# uploaded as artifacts and they are not committed to this public repo.
+# A rotated refresh token is written with `gh secret set --body-file` when
+# YAHOO_SECRETS_ADMIN_TOKEN is set. The token is never printed.
+
+on:
+  schedule:
+    - cron: "0 20 * * 4"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install
+        run: python -m pip install --upgrade pip && python -m pip install -e .
+      - name: Capture or no-op
+        env:
+          YAHOO_CLIENT_ID: ${{ secrets.YAHOO_CLIENT_ID }}
+          YAHOO_CLIENT_SECRET: ${{ secrets.YAHOO_CLIENT_SECRET }}
+          YAHOO_REFRESH_TOKEN: ${{ secrets.YAHOO_REFRESH_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${YAHOO_CLIENT_ID}" ]; then
+            echo "YAHOO_CLIENT_ID is unset; Yahoo capture is a no-op until credentials exist."
+            exit 0
+          fi
+          python -m gridiron_lab yahoo-capture \
+            --output capture-out \
+            --data-dir capture-data \
+            --allow-missing-secrets
+      - name: Note a rotated refresh token
+        env:
+          YAHOO_SECRETS_ADMIN_TOKEN: ${{ secrets.YAHOO_SECRETS_ADMIN_TOKEN }}
+          GH_TOKEN: ${{ secrets.YAHOO_SECRETS_ADMIN_TOKEN }}
+        run: |
+          set -euo pipefail
+          marker="capture-out/refresh_rotation.json"
+          if [ ! -f "$marker" ]; then
+            exit 0
+          fi
+          rotated="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["rotated"])' "$marker")"
+          if [ "$rotated" != "True" ]; then
+            exit 0
+          fi
+          if [ -z "${YAHOO_SECRETS_ADMIN_TOKEN}" ]; then
+            echo "Yahoo returned a new refresh token. YAHOO_SECRETS_ADMIN_TOKEN is unset, so YAHOO_REFRESH_TOKEN was not updated. The new token is only in the runner token file and is not printed."
+            exit 0
+          fi
+          gh secret set YAHOO_REFRESH_TOKEN --repo "$GITHUB_REPOSITORY" --body-file yahoo_refresh_token
+      - name: Check the private data-repo credential
+        id: publish
+        env:
+          DATA_REPO_TOKEN: ${{ secrets.DATA_REPO_TOKEN }}
+          DATA_REPO_DEPLOY_KEY: ${{ secrets.DATA_REPO_DEPLOY_KEY }}
+        run: |
+          if [ ! -d capture-out/yahoo ]; then
+            echo "mode=skip" >> "$GITHUB_OUTPUT"
+          elif [ -n "$DATA_REPO_TOKEN" ]; then
+            echo "mode=token" >> "$GITHUB_OUTPUT"
+          elif [ -n "$DATA_REPO_DEPLOY_KEY" ]; then
+            echo "mode=deploy-key" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=unconfigured" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Skip publish when the private repo is not configured
+        if: steps.publish.outputs.mode == 'unconfigured'
+        run: |
+          echo "The snapshot stayed on the runner. DATA_REPO_TOKEN and DATA_REPO_DEPLOY_KEY are unset, so it was not committed. It is not uploaded as an artifact."
+      - name: Checkout the private data repo
+        if: steps.publish.outputs.mode == 'token'
+        uses: actions/checkout@v4
+        with:
+          repository: Jpidge/gridiron-lab-data
+          token: ${{ secrets.DATA_REPO_TOKEN }}
+          path: private-data
+          persist-credentials: true
+      - name: Commit the snapshot with the token
+        if: steps.publish.outputs.mode == 'token'
+        run: |
+          set -euo pipefail
+          mkdir -p private-data/yahoo
+          cp -a capture-out/yahoo/. private-data/yahoo/
+          cd private-data
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add yahoo
+          if git diff --cached --quiet; then
+            echo "Private repo already has this snapshot."
+            exit 0
+          fi
+          git commit -m "Yahoo capture"
+          git push
+      - name: Commit the snapshot with a deploy key
+        if: steps.publish.outputs.mode == 'deploy-key'
+        env:
+          DATA_REPO_DEPLOY_KEY: ${{ secrets.DATA_REPO_DEPLOY_KEY }}
+        run: |
+          set -euo pipefail
+          install -d -m 700 "$HOME/.ssh"
+          ssh-keyscan -t ed25519 github.com >> "$HOME/.ssh/known_hosts"
+          printf '%s\n' "$DATA_REPO_DEPLOY_KEY" > "$HOME/.ssh/gridiron_lab_data"
+          chmod 600 "$HOME/.ssh/gridiron_lab_data"
+          export GIT_SSH_COMMAND="ssh -i $HOME/.ssh/gridiron_lab_data -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes"
+          git clone --depth 1 git@github.com:Jpidge/gridiron-lab-data.git private-data
+          mkdir -p private-data/yahoo
+          cp -a capture-out/yahoo/. private-data/yahoo/
+          cd private-data
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          git add yahoo
+          if git diff --cached --quiet; then
+            echo "Private repo already has this snapshot."
+            rm -f "$HOME/.ssh/gridiron_lab_data"
+            exit 0
+          fi
+          git commit -m "Yahoo capture"
+          git push
+          rm -f "$HOME/.ssh/gridiron_lab_data"

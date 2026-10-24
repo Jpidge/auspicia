@@ -8,6 +8,10 @@
 
 ``python -m gridiron_lab export-dashboard --rosters examples/dashboard/rosters.json
 --output site/dashboard.json``
+
+``python -m gridiron_lab yahoo-auth``
+
+``python -m gridiron_lab yahoo-capture --allow-missing-secrets``
 """
 
 from __future__ import annotations
@@ -27,6 +31,9 @@ from gridiron_lab.features import FeatureError, build_features
 from gridiron_lab.lineup import LineupError
 from gridiron_lab.logging import configure_logging, get_logger
 from gridiron_lab.scoring import ScoringError
+from gridiron_lab.yahoo.auth import DEFAULT_REDIRECT_URI, run_yahoo_auth
+from gridiron_lab.yahoo.capture import capture
+from gridiron_lab.yahoo.errors import YahooConfigError, YahooError
 
 logger = get_logger("cli")
 
@@ -51,6 +58,10 @@ def run(argv: list[str] | None = None) -> int:
         return _run_evaluate(args)
     if args.command == "export-dashboard":
         return _run_export_dashboard(args)
+    if args.command == "yahoo-auth":
+        return _run_yahoo_auth(args)
+    if args.command == "yahoo-capture":
+        return _run_yahoo_capture(args)
     parser.print_help()
     return 2
 
@@ -166,6 +177,51 @@ def _run_export_dashboard(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_yahoo_auth(args: argparse.Namespace) -> int:
+    try:
+        run_yahoo_auth(redirect_uri=args.redirect_uri, token_file=args.token_file)
+    except YahooConfigError as exc:
+        logger.error("%s", exc)
+        return 2
+    except YahooError as exc:
+        logger.error("%s", exc)
+        return 1
+    except OSError as exc:
+        logger.error("Could not store the Yahoo refresh token: %s", exc.strerror or exc)
+        return 1
+    return 0
+
+
+def _run_yahoo_capture(args: argparse.Namespace) -> int:
+    try:
+        config = load_config(args.config)
+        return capture(
+            config=config,
+            output=args.output,
+            data_dir=args.data_dir,
+            fixture_dir=args.fixture_dir,
+            week=args.week,
+            season=args.season,
+            allow_missing_secrets=args.allow_missing_secrets,
+            token_file=args.token_file,
+        )
+    except YahooConfigError as exc:
+        logger.error("%s", exc)
+        return 2
+    except ConfigError as exc:
+        logger.error("%s", exc)
+        return 2
+    except YahooError as exc:
+        logger.error("%s", exc)
+        return 1
+    except IngestError as exc:
+        logger.error("%s", exc)
+        return 1
+    except OSError as exc:
+        logger.error("Could not write the Yahoo capture: %s", exc.strerror or exc)
+        return 1
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="gridiron-lab")
     sub = parser.add_subparsers(dest="command")
@@ -254,6 +310,41 @@ def _parser() -> argparse.ArgumentParser:
             "Point-in-time store for recent_points and snap_share. "
             "Omit to copy those fields from the roster file."
         ),
+    )
+    auth_parser = sub.add_parser(
+        "yahoo-auth",
+        help="One-time local helper that stores a Yahoo refresh token.",
+    )
+    auth_parser.add_argument("--redirect-uri", default=DEFAULT_REDIRECT_URI)
+    auth_parser.add_argument(
+        "--token-file",
+        type=Path,
+        help="Refresh-token path. Defaults to YAHOO_TOKEN_FILE or yahoo_refresh_token.",
+    )
+    capture_parser = sub.add_parser(
+        "yahoo-capture",
+        help="Snapshot Yahoo rosters, projections, and transactions.",
+    )
+    capture_parser.add_argument(
+        "--output",
+        type=Path,
+        required=True,
+        help="Directory for the snapshot. A no-op writes nothing.",
+    )
+    capture_parser.add_argument("--data-dir", type=Path, help="Parquet directory for mapped rows.")
+    capture_parser.add_argument("--config", type=Path, help="Path to gridiron_lab.toml")
+    capture_parser.add_argument(
+        "--fixture-dir",
+        type=Path,
+        help="Recorded Yahoo documents. No network.",
+    )
+    capture_parser.add_argument("--week", type=int)
+    capture_parser.add_argument("--season", type=int)
+    capture_parser.add_argument("--token-file", type=Path)
+    capture_parser.add_argument(
+        "--allow-missing-secrets",
+        action="store_true",
+        help="Exit 0 when YAHOO_CLIENT_ID is unset instead of failing.",
     )
     return parser
 

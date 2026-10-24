@@ -271,6 +271,8 @@ TABLES: dict[str, TableSpec] = {
 
 TABLE_NAMES: tuple[str, ...] = tuple(TABLES)
 SOURCE_NAME = "nflverse"
+YAHOO_SOURCE = "yahoo"
+ALLOWED_SOURCES = frozenset({SOURCE_NAME, YAHOO_SOURCE})
 _STAMP = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
 
 

@@ -1,0 +1,81 @@
+{
+  "fantasy_content": {
+    "league": [
+      {
+        "league_key": "449.l.893771",
+        "league_id": "893771"
+      },
+      {
+        "teams": {
+          "0": {
+            "team": [
+              {
+                "team_key": "449.l.893771.t.10"
+              },
+              {
+                "team_id": "10"
+              },
+              {
+                "name": "Purple Reign"
+              },
+              {
+                "managers": {
+                  "0": {
+                    "manager": {
+                      "manager_id": "1",
+                      "nickname": "Wynn Adler"
+                    }
+                  },
+                  "count": 1
+                }
+              },
+              {
+                "team_standings": {
+                  "outcome_totals": {
+                    "wins": "4",
+                    "losses": "2",
+                    "ties": "0"
+                  }
+                }
+              }
+            ]
+          },
+          "1": {
+            "team": [
+              {
+                "team_key": "449.l.893771.t.4"
+              },
+              {
+                "team_id": "4"
+              },
+              {
+                "name": "Paper North"
+              },
+              {
+                "managers": {
+                  "0": {
+                    "manager": {
+                      "manager_id": "1",
+                      "nickname": "Nia Pell"
+                    }
+                  },
+                  "count": 1
+                }
+              },
+              {
+                "team_standings": {
+                  "outcome_totals": {
+                    "wins": "3",
+                    "losses": "3",
+                    "ties": "0"
+                  }
+                }
+              }
+            ]
+          },
+          "count": 2
+        }
+      }
+    ]
+  }
+}

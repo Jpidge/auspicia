@@ -334,6 +334,14 @@ def _lineup_block(config_lineup: Lineup) -> dict[str, object]:
     }
 
 
+def _disclaimer(example: bool, source: object) -> str:
+    if example:
+        return "Fictional players, managers, and NFL-style teams. Not a real roster."
+    if source == "yahoo":
+        return "Roster captured from the Yahoo Fantasy API for this league."
+    return "Roster file supplied by the exporter. Not from the Yahoo API."
+
+
 def build_dashboard(
     config: AppConfig,
     roster_doc: Mapping[str, object],
@@ -453,11 +461,7 @@ def build_dashboard(
     return {
         "version": DASHBOARD_VERSION,
         "example": example,
-        "disclaimer": (
-            "Fictional players, managers, and NFL-style teams. Not a real roster."
-            if example
-            else "Roster file supplied by the exporter. Not from the Yahoo API."
-        ),
+        "disclaimer": _disclaimer(example, roster_doc.get("source")),
         "anonymize_managers": anonymize,
         "league": {
             "name": config.league.name,

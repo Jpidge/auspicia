@@ -1,0 +1,49 @@
+{
+  "fantasy_content": {
+    "league": [
+      {
+        "league_key": "449.l.893771"
+      },
+      {
+        "scoreboard": {
+          "week": "7",
+          "matchups": {
+            "0": {
+              "matchup": {
+                "week": "7",
+                "teams": {
+                  "0": {
+                    "team": [
+                      [
+                        {
+                          "team_id": "10"
+                        },
+                        {
+                          "name": "Purple Reign"
+                        }
+                      ]
+                    ]
+                  },
+                  "1": {
+                    "team": [
+                      [
+                        {
+                          "team_id": "4"
+                        },
+                        {
+                          "name": "Paper North"
+                        }
+                      ]
+                    ]
+                  },
+                  "count": 2
+                }
+              }
+            },
+            "count": 1
+          }
+        }
+      }
+    ]
+  }
+}

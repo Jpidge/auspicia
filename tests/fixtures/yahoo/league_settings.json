@@ -1,0 +1,205 @@
+{
+  "fantasy_content": {
+    "league": [
+      {
+        "league_key": "449.l.893771",
+        "league_id": "893771",
+        "name": "Fictional Thursday League",
+        "num_teams": 12,
+        "scoring_type": "head",
+        "current_week": "7",
+        "season": "2026",
+        "game_code": "nfl"
+      },
+      {
+        "settings": {
+          "stat_modifiers": {
+            "stats": {
+              "0": {
+                "stat": {
+                  "stat_id": "4",
+                  "value": "0.04"
+                }
+              },
+              "1": {
+                "stat": {
+                  "stat_id": "5",
+                  "value": "4"
+                }
+              },
+              "2": {
+                "stat": {
+                  "stat_id": "6",
+                  "value": "-2"
+                }
+              },
+              "3": {
+                "stat": {
+                  "stat_id": "9",
+                  "value": "0.1"
+                }
+              },
+              "4": {
+                "stat": {
+                  "stat_id": "10",
+                  "value": "6"
+                }
+              },
+              "5": {
+                "stat": {
+                  "stat_id": "11",
+                  "value": "0"
+                }
+              },
+              "6": {
+                "stat": {
+                  "stat_id": "12",
+                  "value": "0.1"
+                }
+              },
+              "7": {
+                "stat": {
+                  "stat_id": "13",
+                  "value": "6"
+                }
+              },
+              "8": {
+                "stat": {
+                  "stat_id": "15",
+                  "value": "6"
+                }
+              },
+              "9": {
+                "stat": {
+                  "stat_id": "16",
+                  "value": "2"
+                }
+              },
+              "10": {
+                "stat": {
+                  "stat_id": "18",
+                  "value": "-2"
+                }
+              },
+              "11": {
+                "stat": {
+                  "stat_id": "19",
+                  "value": "3"
+                }
+              },
+              "12": {
+                "stat": {
+                  "stat_id": "29",
+                  "value": "1"
+                }
+              },
+              "13": {
+                "stat": {
+                  "stat_id": "32",
+                  "value": "1"
+                }
+              },
+              "14": {
+                "stat": {
+                  "stat_id": "33",
+                  "value": "2"
+                }
+              },
+              "15": {
+                "stat": {
+                  "stat_id": "34",
+                  "value": "2"
+                }
+              },
+              "16": {
+                "stat": {
+                  "stat_id": "35",
+                  "value": "6"
+                }
+              },
+              "17": {
+                "stat": {
+                  "stat_id": "36",
+                  "value": "2"
+                }
+              },
+              "18": {
+                "stat": {
+                  "stat_id": "37",
+                  "value": "2"
+                }
+              },
+              "19": {
+                "stat": {
+                  "stat_id": "49",
+                  "value": "6"
+                }
+              },
+              "20": {
+                "stat": {
+                  "stat_id": "50",
+                  "value": "10"
+                }
+              },
+              "21": {
+                "stat": {
+                  "stat_id": "51",
+                  "value": "7"
+                }
+              },
+              "22": {
+                "stat": {
+                  "stat_id": "52",
+                  "value": "4"
+                }
+              },
+              "23": {
+                "stat": {
+                  "stat_id": "53",
+                  "value": "1"
+                }
+              },
+              "24": {
+                "stat": {
+                  "stat_id": "54",
+                  "value": "0"
+                }
+              },
+              "25": {
+                "stat": {
+                  "stat_id": "55",
+                  "value": "-1"
+                }
+              },
+              "26": {
+                "stat": {
+                  "stat_id": "56",
+                  "value": "-3"
+                }
+              },
+              "27": {
+                "stat": {
+                  "stat_id": "57",
+                  "value": "6"
+                }
+              },
+              "28": {
+                "stat": {
+                  "stat_id": "82",
+                  "value": "2"
+                }
+              },
+              "29": {
+                "stat": {
+                  "stat_id": "999",
+                  "value": "1"
+                }
+              },
+              "count": 30
+            }
+          }
+        }
+      }
+    ]
+  }
+}

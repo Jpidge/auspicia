@@ -1,0 +1,55 @@
+{
+  "fantasy_content": {
+    "league": [
+      {
+        "league_key": "449.l.893771"
+      },
+      {
+        "transactions": {
+          "0": {
+            "transaction": [
+              {
+                "transaction_key": "449.l.893771.tr.1"
+              },
+              {
+                "type": "add"
+              },
+              {
+                "status": "successful"
+              },
+              {
+                "timestamp": "1729000000"
+              },
+              {
+                "players": {
+                  "0": {
+                    "player": [
+                      [
+                        {
+                          "player_key": "449.p.90002"
+                        },
+                        {
+                          "name": {
+                            "full": "Jules Okonkwo"
+                          }
+                        }
+                      ],
+                      {
+                        "transaction_data": {
+                          "type": "add",
+                          "destination_team_key": "449.l.893771.t.10"
+                        }
+                      }
+                    ]
+                  },
+                  "count": 1
+                }
+              }
+            ]
+          },
+          "count": 1
+        }
+      }
+    ]
+  }
+}
