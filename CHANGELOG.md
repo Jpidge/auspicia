@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.6] — 2026-10-24
+
+### Changed
+
+- Theme dropdown, corrected. The Day & Night entry (the built-in pair following the system preference) is replaced by the original Light and Dark themes as plain selections, as the owner asked. The mode wiring is now a direct map from selection to `data-theme`; the system-following and legacy-pin logic is gone. Default is Dark, as before.
+
 ## [0.5.5] — 2026-10-24
 
 ### Changed
