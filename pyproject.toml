@@ -12,6 +12,7 @@ dependencies = [
     "duckdb==1.4.1",
     "lightgbm==4.6.0",
     "pyarrow==21.0.0",
+    "tzdata; sys_platform == 'win32'",
 ]
 
 [project.optional-dependencies]
