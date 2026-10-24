@@ -336,6 +336,8 @@ def test_site_theme_dropdown_offers_the_palettes() -> None:
     css = (SITE / "app.css").read_text(encoding="utf-8")
     assert 'id="theme-select"' in html
     assert 'id="theme"' not in html
+    assert 'aria-label="Theme"' in html
+    assert 'for="theme-select"' not in html
     for value, label in (
         ("rowan", "Rowan Light"),
         ("aqua", "Aqua Night"),
