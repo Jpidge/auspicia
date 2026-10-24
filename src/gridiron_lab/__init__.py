@@ -24,4 +24,4 @@ __all__ = [
     "score_offensive_frame",
 ]
 
-__version__ = "0.5.2"
+__version__ = "0.5.3"
