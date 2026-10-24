@@ -330,6 +330,33 @@ def test_lab_prose_says_def() -> None:
     assert "DST" not in detail
 
 
+def test_site_theme_dropdown_offers_the_palettes() -> None:
+    html = (SITE / "index.html").read_text(encoding="utf-8")
+    script = (SITE / "app.js").read_text(encoding="utf-8")
+    css = (SITE / "app.css").read_text(encoding="utf-8")
+    assert 'id="theme-select"' in html
+    assert 'id="theme"' not in html
+    for value, label in (
+        ("rowan", "Rowan Light"),
+        ("aqua", "Aqua Night"),
+        ("midnight", "Midnight"),
+        ("carbon", "Carbon"),
+        ("day-night", "Day &amp; Night"),
+    ):
+        assert f'<option value="{value}">{label}</option>' in html or (
+            f'<option value="{value}" selected>{label}</option>' in html
+        )
+    for name in ("rowan", "aqua", "midnight", "carbon"):
+        assert f'[data-theme="{name}"]' in css
+    for name in ("rowan", "aqua", "midnight", "carbon", "day-night"):
+        assert f'"{name}"' in script
+    assert "gl-theme" in script
+    assert "#efe6d5" in css
+    assert "#2ec4b6" in css
+    assert "#5b87ff" in css
+    assert "#0d0e0f" in css
+
+
 def test_first_screen_is_under_the_gzip_budget() -> None:
     total = 0
     for name in ("index.html", "app.css", "app.js"):
