@@ -18,13 +18,16 @@ import math
 from collections import defaultdict
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-import lightgbm as lgb
 import numpy as np
 
 from gridiron_lab.features import FEATURE_COLUMNS, FEATURE_VERSION
 from gridiron_lab.logging import get_logger
 from gridiron_lab.scoring import SCORING_VERSION
+
+if TYPE_CHECKING:
+    import lightgbm as lgb
 
 logger = get_logger("models")
 
@@ -329,6 +332,8 @@ def _best_rounds(
     target: np.ndarray,
     train_mask: np.ndarray,
 ) -> int:
+    import lightgbm as lgb
+
     train_set = lgb.Dataset(
         features[train_mask],
         label=target[train_mask],
@@ -365,6 +370,8 @@ def _fit_booster(
     target: np.ndarray,
     rounds: int,
 ) -> lgb.Booster:
+    import lightgbm as lgb
+
     dataset = lgb.Dataset(
         features,
         label=target,
