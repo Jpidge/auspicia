@@ -144,8 +144,10 @@ Training and serving see the same information state. A Sunday-morning policy wou
 
 **QB/RB/WR/TE.** One regularized GBM per position: XGBoost ≥ 2.0 or LightGBM, decided in M3. Shallow trees, L2 regularization, early stopping on an inner temporal split. Two heads:
 
-- **Mean** (squared error): the evaluation lineup expected value. The M4 dashboard maximizes q50 instead, so the median on the card is the objective. See `docs/DASHBOARD_JSON.md`.
+- **Mean** (squared error): a prediction head, trained on squared error. The evaluation reports a mean-head lineup figure alongside the graded q50 figure (see the owner decision below). The M4 dashboard maximizes q50, so the median on the card is the objective. See `docs/DASHBOARD_JSON.md`.
 - **Quantile** (q10, q50, q90): used for ranges and MAE. Quantile crossing is fixed by sorting.
+
+**Owner decision (2026-10-24) — the promotion gate grades the shipped selection rule.** The dashboard lineup optimizer maximizes q50, so lineup points gained is graded on starters chosen by q50. The mean-head lineup figure is still computed and reported alongside, so the two selection rules can be compared on the same backtests. This decision was recorded before the next evaluation run; it does not change the current verdict, which fails on the bias gates under either figure.
 
 **K.** Ridge or Poisson GLM on implied team total, FG attempt rate, kick-distance history and dome.
 
