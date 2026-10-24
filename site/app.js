@@ -383,20 +383,52 @@
       show(tabs[(next + tabs.length) % tabs.length].getAttribute("data-v"), true);
     });
   });
-  $("theme").addEventListener("click", function () {
-    var next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-    applyTheme(next);
-    try { localStorage.setItem("gl-theme", next); } catch (error) { /* ignore */ }
+  var THEME_MODES = ["rowan", "aqua", "midnight", "carbon", "day-night"];
+  var themeMode = "day-night";
+  var themePinned = null;
+  var themeFollowsSystem = false;
+  var themeSelect = $("theme-select");
+  function systemTheme() {
+    return window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  }
+  function applyTheme(mode) {
+    themeMode = mode;
+    var resolved = mode;
+    if (mode === "day-night") {
+      resolved = themePinned || (themeFollowsSystem ? systemTheme() : "dark");
+    }
+    document.documentElement.setAttribute("data-theme", resolved);
+    themeSelect.value = mode;
+  }
+  themeSelect.addEventListener("change", function () {
+    if (themeSelect.value === "day-night") {
+      themePinned = null;
+      themeFollowsSystem = true;
+    }
+    applyTheme(themeSelect.value);
+    try { localStorage.setItem("gl-theme", themeSelect.value); } catch (error) { /* ignore */ }
   });
-  function applyTheme(theme) {
-    document.documentElement.setAttribute("data-theme", theme);
-    $("ico-sun").hidden = theme !== "dark";
-    $("ico-moon").hidden = theme === "dark";
-    $("theme").setAttribute("aria-label", "Switch to " + (theme === "dark" ? "light" : "dark") + " theme");
+  if (window.matchMedia) {
+    var schemeQuery = window.matchMedia("(prefers-color-scheme: light)");
+    var onSchemeChange = function () {
+      if (themeMode === "day-night" && !themePinned && themeFollowsSystem) applyTheme("day-night");
+    };
+    if (schemeQuery.addEventListener) schemeQuery.addEventListener("change", onSchemeChange);
+    else if (schemeQuery.addListener) schemeQuery.addListener(onSchemeChange);
   }
   var savedTheme = null;
   try { savedTheme = localStorage.getItem("gl-theme"); } catch (error) { savedTheme = null; }
-  applyTheme(savedTheme === "light" ? "light" : "dark");
+  if (savedTheme === "dark" || savedTheme === "light") {
+    themePinned = savedTheme;
+    applyTheme("day-night");
+  } else if (savedTheme === "day-night") {
+    themeFollowsSystem = true;
+    applyTheme("day-night");
+  } else if (THEME_MODES.indexOf(savedTheme) !== -1) {
+    applyTheme(savedTheme);
+  } else {
+    applyTheme("day-night");
+  }
 
   fetch("dashboard.json")
     .then(function (response) {
