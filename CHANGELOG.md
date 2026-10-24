@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.5] — 2026-10-24
+
+### Changed
+
+- Site theme picker. The day/night button is now a dropdown: Rowan Light, Aqua Night, Midnight, and Carbon palettes from the theme preview (exact preview hexes mapped onto the site's tokens), plus Day & Night — the built-in light/dark pair, which follows the system preference once chosen. A saved legacy `dark`/`light` choice is honored as a Day & Night pin, and the default first visit is unchanged (dark). Midnight returns to the set at the owner's request.
+
 ## [0.5.4] — 2026-10-24
 
 ### Added
