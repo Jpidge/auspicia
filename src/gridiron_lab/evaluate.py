@@ -847,9 +847,7 @@ def _lineup_week(
         hindsight = _starters(roster, actuals, lineup)
         model_points = sum(actuals[str(item.get("player_id"))] for item in model_starters)
         baseline_points = sum(actuals[str(item.get("player_id"))] for item in baseline_starters)
-        model_points_q50 = sum(
-            actuals[str(item.get("player_id"))] for item in model_starters_q50
-        )
+        model_points_q50 = sum(actuals[str(item.get("player_id"))] for item in model_starters_q50)
         baseline_points_q50 = sum(
             actuals[str(item.get("player_id"))] for item in baseline_starters_q50
         )
