@@ -68,6 +68,8 @@ Manager names are the roster file's `manager` field, written through as `manager
 
 ## Later commands
 
+Planned with Yahoo integration — **not yet implemented**. The CLI today provides `ingest`, `features`, `evaluate`, and `export-dashboard` only.
+
 ```bash
 cp .env.example .env    # YAHOO_CLIENT_ID / YAHOO_CLIENT_SECRET / YAHOO_REFRESH_TOKEN (never committed)
 gridiron-lab train
