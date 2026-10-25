@@ -62,7 +62,7 @@ Downloads, the DuckDB file, and the evaluation JSON stay out of git. Re-running 
 
 The Team view lists every team in the file. The default is `league.my_team_id` (Purple Reign, Yahoo team 10). A choice is stored in `localStorage` under `gl-team`. `#team=10` selects that team for the visit and then saves it. `#waivers`, `#league`, and `#lab` open the other views. The theme is picked from the header dropdown — Rowan Light, Aqua Night, Midnight, Carbon, plus the original Light and Dark — and is stored under `gl-theme`.
 
-Manager names are the roster file's `manager` field, written through as `manager_display`. Set `[dashboard] anonymize_managers = true` in `gridiron_lab.toml` and re-export to replace every name with `Manager {team_id}`. Team names stay. The page has no hardcoded manager list.
+The dashboard carries team names and players only. Manager names are not exported or displayed.
 
 [`.github/workflows/pages.yml`](.github/workflows/pages.yml) deploys `site/` with `actions/deploy-pages` on a push to `main`. Pull request branches do not deploy. The repository's Pages source has to be **GitHub Actions**; that setting is confirmed by the owner. The workflow re-exports the example JSON before upload, so the deployed file matches the exporter. It does not read the private data repo.
 
@@ -89,5 +89,5 @@ docs/FEATURES.md      feature contract and column list
 docs/DASHBOARD_JSON.md  dashboard JSON version 1.1 and the roster input
 examples/dashboard/   fictional roster file for the site
 site/                 GitHub Pages dashboard (HTML, CSS, JS, dashboard.json)
-gridiron_lab.toml     league, lineup, scoring, and the manager-name flag
+gridiron_lab.toml     league, lineup, and scoring
 ```

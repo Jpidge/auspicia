@@ -21,10 +21,8 @@ from gridiron_lab.dashboard import (
 ROOT = Path(__file__).resolve().parents[1]
 SITE = ROOT / "site"
 ROSTERS = ROOT / "examples" / "dashboard" / "rosters.json"
-# Fields the page reads. anonymize_managers is an export flag; the page
-# shows manager_display, which the exporter already resolved.
+# Fields the page reads.
 UI_FIELDS = (
-    "manager_display",
     "default_team_id",
     "q10",
     "q50",
@@ -93,26 +91,19 @@ def _mini_roster() -> dict[str, object]:
     }
 
 
-def test_anonymize_flag_drops_manager_names() -> None:
+def test_exports_carry_no_manager_names() -> None:
     config = load_config(ROOT / "gridiron_lab.toml")
     shown = build_dashboard(config, _mini_roster())
-    assert shown["anonymize_managers"] is False
     teams = shown["teams"]
     assert isinstance(teams, list)
-    assert teams[0]["manager_display"] == "Avery Quinn"
-    hidden_config = config.__class__(
-        path=config.path,
-        league=config.league,
-        lineup=config.lineup,
-        scoring=config.scoring,
-        dashboard=config.dashboard.__class__(anonymize_managers=True),
-    )
-    hidden = build_dashboard(hidden_config, _mini_roster())
-    text = json.dumps(hidden)
+    assert teams[0]["name"] == "Purple Reign"
+    assert all("manager_display" not in team for team in teams if isinstance(team, dict))
+    standings = shown["standings"]
+    assert isinstance(standings, list)
+    assert all("manager_display" not in row for row in standings if isinstance(row, dict))
+    text = json.dumps(shown)
     assert "Avery Quinn" not in text
     assert "Drew Okada" not in text
-    assert "Manager 10" in text
-    assert hidden["teams"][0]["name"] == "Purple Reign"  # type: ignore[index]
 
 
 def test_predictions_override_the_roster_file() -> None:
@@ -159,14 +150,13 @@ def test_shipped_example_matches_the_contract() -> None:
     payload = json.loads((SITE / "dashboard.json").read_text(encoding="utf-8"))
     assert payload["version"] == "1.1"
     assert payload["example"] is True
-    assert payload["anonymize_managers"] is False
     assert payload["default_team_id"] == 10
     assert payload["league"]["name"] == "Fantasy Football Coalition"
     teams = payload["teams"]
     assert isinstance(teams, list)
     assert len(teams) == 12
     purple = next(team for team in teams if team["team_id"] == 10)
-    assert purple["manager_display"] == "Avery Quinn"
+    assert "manager_display" not in purple
     assert purple["name"] == "Purple Reign"
     starters = purple["starters"]
     assert isinstance(starters, list)

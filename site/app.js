@@ -155,7 +155,7 @@
     $("kickoff").hidden = !week.countdown_label && !week.kickoff_label;
     var select = $("team-select");
     select.innerHTML = data.teams.map(function (item) {
-      return '<option value="' + item.team_id + '">' + esc(item.name) + " · " + esc(item.manager_display) + "</option>";
+      return '<option value="' + item.team_id + '">' + esc(item.name) + "</option>";
     }).join("");
     select.value = String(team.team_id);
     var opp = team.opponent_projected_total;
@@ -218,7 +218,7 @@
       var mark = rowItem.team_id === mine ? " mine" : "";
       var you = rowItem.team_id === data.default_team_id ? ' <span class="chip d-eq">You</span>' : "";
       var viewing = rowItem.team_id === state.teamId && rowItem.team_id !== data.default_team_id ? ' <span class="chip d-eq">Viewing</span>' : "";
-      return '<tr class="' + mark.trim() + '"><td class="num">' + rowItem.rank + '</td><td class="tn"><div>' + esc(rowItem.name) + you + viewing + '</div><div class="opp-line">vs ' + esc(rowItem.opponent_name || "—") + "</div><div class=\"sub\">" + esc(rowItem.manager_display) + '</div></td><td class="num hide-s">' + esc(rowItem.record) + '</td><td class="sub hide-s">' + esc(rowItem.opponent_name || "—") + '</td><td class="r num"><b>' + fmt(rowItem.projected_total) + '</b></td><td class="hide-s"><div class="mbar"><i style="width:' + (Number(rowItem.share_of_leader) * 100) + '%"></i></div></td></tr>';
+      return '<tr class="' + mark.trim() + '"><td class="num">' + rowItem.rank + '</td><td class="tn"><div>' + esc(rowItem.name) + you + viewing + '</div><div class="opp-line">vs ' + esc(rowItem.opponent_name || "—") + '</div></td><td class="num hide-s">' + esc(rowItem.record) + '</td><td class="sub hide-s">' + esc(rowItem.opponent_name || "—") + '</td><td class="r num"><b>' + fmt(rowItem.projected_total) + '</b></td><td class="hide-s"><div class="mbar"><i style="width:' + (Number(rowItem.share_of_leader) * 100) + '%"></i></div></td></tr>';
     }).join("");
     var headers = document.querySelectorAll("#ltbl th[data-k]");
     for (var i = 0; i < headers.length; i += 1) {

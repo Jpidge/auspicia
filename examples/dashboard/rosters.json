@@ -8,7 +8,6 @@
     {
       "team_id": 1,
       "name": "Fourth & Long Shots",
-      "manager": "Casey Nguyen",
       "wins": 5,
       "losses": 1,
       "opponent_id": 2,
@@ -451,7 +450,6 @@
     {
       "team_id": 2,
       "name": "Gravy Bowl",
-      "manager": "Riley Okonkwo",
       "wins": 2,
       "losses": 4,
       "opponent_id": 1,
@@ -894,7 +892,6 @@
     {
       "team_id": 3,
       "name": "Blitz Dynasty",
-      "manager": "Jordan Hale",
       "wins": 4,
       "losses": 2,
       "opponent_id": 4,
@@ -1337,7 +1334,6 @@
     {
       "team_id": 4,
       "name": "Couch Coaches",
-      "manager": "Samira Patel",
       "wins": 3,
       "losses": 3,
       "opponent_id": 3,
@@ -1780,7 +1776,6 @@
     {
       "team_id": 5,
       "name": "Hail Mary Hens",
-      "manager": "Chris Delgado",
       "wins": 1,
       "losses": 5,
       "opponent_id": 6,
@@ -2223,7 +2218,6 @@
     {
       "team_id": 6,
       "name": "Red Zone Rascals",
-      "manager": "Morgan Ellis",
       "wins": 4,
       "losses": 2,
       "opponent_id": 5,
@@ -2666,7 +2660,6 @@
     {
       "team_id": 7,
       "name": "Punt Intended",
-      "manager": "Alex Romero",
       "wins": 3,
       "losses": 3,
       "opponent_id": 8,
@@ -3109,7 +3102,6 @@
     {
       "team_id": 8,
       "name": "Waiver Wire Wizards",
-      "manager": "Taylor Brooks",
       "wins": 2,
       "losses": 4,
       "opponent_id": 7,
@@ -3552,7 +3544,6 @@
     {
       "team_id": 9,
       "name": "End Zone Envy",
-      "manager": "Jamie Cho",
       "wins": 3,
       "losses": 3,
       "opponent_id": 12,
@@ -3995,7 +3986,6 @@
     {
       "team_id": 10,
       "name": "Purple Reign",
-      "manager": "Avery Quinn",
       "wins": 4,
       "losses": 2,
       "opponent_id": 11,
@@ -4756,7 +4746,6 @@
     {
       "team_id": 11,
       "name": "Taco Tuesday Titans",
-      "manager": "Drew Okada",
       "wins": 3,
       "losses": 3,
       "opponent_id": 10,
@@ -5199,7 +5188,6 @@
     {
       "team_id": 12,
       "name": "Sunday Scaries",
-      "manager": "Reese Patel",
       "wins": 2,
       "losses": 4,
       "opponent_id": 9,

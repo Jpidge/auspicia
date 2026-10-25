@@ -97,8 +97,3 @@ end = 2026
 [models]
 # M3 chose LightGBM 4.6.0 (lgbm_skill_v1). Params are pre-registered in models.py.
 
-[dashboard]
-# Manager display names come from the roster file. Set this to true to write
-# "Manager {team_id}" instead and omit the roster file's manager string.
-# Team names stay. Real league rosters are not committed to this repo.
-anonymize_managers = false

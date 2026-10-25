@@ -286,7 +286,7 @@ M0 lands `scoring.py`, `config.py`, and `logging.py` under `src/gridiron_lab/`. 
 4. K/DST: keep them out of the Challenge until they beat a naive rolling mean?
 5. Does Yahoo's DST points-allowed exclude points scored by the opponent's defense or special teams? Verify against Yahoo-reported DST points.
 6. Do Yahoo refresh tokens rotate? If so, CI must write the new token back to secrets.
-7. Anonymize every manager except Purple Reign on the public site? Decided for M4: the page shows `manager_display` from the roster file. Set `[dashboard] anonymize_managers = true` to write `Manager {team_id}` instead. The owner will honor later privacy requests one at a time.
+7. Anonymize every manager except Purple Reign on the public site? Decided for M4: the page shows `manager_display` from the roster file. Set `[dashboard] anonymize_managers = true` to write `Manager {team_id}` instead. The owner will honor later privacy requests one at a time. **Superseded 2026-10-24:** the owner removed manager names from the export and the page entirely — unneeded. Team names and players stay real on the public site.
 8. XGBoost or LightGBM? Decided in M3: LightGBM 4.6.0. See §19.
 
 ## 16. M0 scoring assumptions
