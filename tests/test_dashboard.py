@@ -146,10 +146,10 @@ def test_export_command_writes_json(tmp_path: Path) -> None:
     assert payload["default_team_id"] == 10
 
 
-def test_shipped_example_matches_the_contract() -> None:
+def test_shipped_dashboard_matches_the_contract() -> None:
     payload = json.loads((SITE / "dashboard.json").read_text(encoding="utf-8"))
     assert payload["version"] == "1.1"
-    assert payload["example"] is True
+    assert payload["example"] is False
     assert payload["default_team_id"] == 10
     assert payload["league"]["name"] == "Fantasy Football Coalition"
     teams = payload["teams"]
@@ -178,6 +178,17 @@ def test_shipped_example_matches_the_contract() -> None:
             assert isinstance(rows, list)
             for player in rows:
                 _assert_drawn_series(player)
+    # The name bridge filled real 2026 series for nearly every rostered
+    # player; the handful without one have not played a 2026 snap.
+    drawn = sum(
+        1
+        for team in teams
+        for bucket in ("starters", "bench", "inactive")
+        for player in team[bucket]
+        if isinstance(player["recent_points"], list) and len(player["recent_points"]) >= 2
+    )
+    assert drawn >= 175
+    assert sum(1 for player in starters if len(player["recent_points"]) >= 2) >= 8
     waivers = payload["waivers"]
     assert isinstance(waivers, list)
     assert waivers
@@ -186,6 +197,7 @@ def test_shipped_example_matches_the_contract() -> None:
     lab = payload["lab"]
     assert isinstance(lab, dict)
     assert lab["promoted"] is False
+    assert lab["source"] == "evaluation_report"
     notes = " ".join(lab["notes"])
     assert "not promoted" in notes
     assert "±0.3" in notes
@@ -238,14 +250,12 @@ def _assert_drawn_series(player: dict[str, object], *, waiver: bool = False) -> 
     if not waiver:
         points = player["recent_points"]
         assert isinstance(points, list)
-        assert len(points) >= 2
     position = player["position"]
     if position in {"DST", "DEF"}:
         assert player["snap_share"] is None
     else:
         shares = player["snap_share"]
-        assert isinstance(shares, list)
-        assert len(shares) >= 2
+        assert shares is None or isinstance(shares, list)
 
 
 def test_short_and_missing_series_stay_short() -> None:

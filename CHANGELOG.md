@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.10] — 2026-10-24
+
+### Changed
+
+- The shipped `site/dashboard.json` is now the real league (owner decision): Week 7 of the Fantasy Football Coalition, captured from Yahoo on 2026-10-24 — all 12 teams, 187 rostered players, top-25 available players, Yahoo projections standing in for the model's until the predict path lands, and the Lab block generated from the 2026-10-24 evaluation report. The fictional example remains under `examples/` as the sample and fixture. The shipped-data contract test now pins the real file.
+
 ## [0.5.9] — 2026-10-24
 
 ### Removed
