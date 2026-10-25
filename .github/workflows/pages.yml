@@ -3,6 +3,9 @@ name: Pages
 # Deploys site/ to GitHub Pages on push to main only.
 # The repository Pages source must be "GitHub Actions" (owner confirms that setting).
 # Pull request branches do not deploy.
+# The deploy publishes the committed site/dashboard.json as-is (the real
+# league since 0.5.10); dashboard updates land through pull requests, never
+# by regenerating data during the deploy.
 
 on:
   push:
@@ -25,16 +28,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-      - name: Export the example dashboard
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -e .
-          python -m gridiron_lab export-dashboard \
-            --rosters examples/dashboard/rosters.json \
-            --output site/dashboard.json
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
