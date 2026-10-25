@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.8] — 2026-10-24
+
+### Added
+
+- Interval coverage rows in the Lab view now draw a bar like the MAE and improvement rows, scaled 0 to 1, with the 0.77–0.83 target band shaded on the track so "in band" is visible at a glance.
+
 ## [0.5.7] — 2026-10-24
 
 ### Changed
