@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.11] — 2026-10-24
+
+### Fixed
+
+- The Pages deploy no longer regenerates the example dashboard over the committed one. The workflow's "Export the example dashboard" step rebuilt `site/dashboard.json` from `examples/dashboard/rosters.json` on every deploy, so the live site could never show the real league shipped in 0.5.10. The deploy now publishes the committed `site/` directory as-is; dashboard updates land through pull requests.
+
 ## [0.5.10] — 2026-10-24
 
 ### Changed
