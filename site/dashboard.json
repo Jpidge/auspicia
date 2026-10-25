@@ -6571,36 +6571,36 @@
     }
   ],
   "lab": {
-    "source": "m3.1_backtest",
+    "source": "evaluation_report",
     "model_version": "lgbm_skill_v1",
     "primary_mae": "q50",
     "promoted": false,
-    "points_gained_vs_baseline": 1591.3,
+    "points_gained_vs_baseline": 1472.1,
     "mae_diff_by_season": [
       {
         "season": 2022,
-        "mae_diff": -0.398
+        "mae_diff": -0.39812641990904796
       },
       {
         "season": 2023,
-        "mae_diff": -0.319
+        "mae_diff": -0.318291325736233
       },
       {
         "season": 2024,
-        "mae_diff": -0.295
+        "mae_diff": -0.2948024915118137
       },
       {
         "season": 2025,
-        "mae_diff": -0.382
+        "mae_diff": -0.3817903070504536
       }
     ],
     "pooled_coverage": {
-      "QB": 0.802,
-      "RB": 0.809,
-      "WR": 0.825,
-      "TE": 0.846,
-      "K": 0.798,
-      "DST": 0.804
+      "QB": 0.8024877497173012,
+      "RB": 0.8085305105853051,
+      "WR": 0.8191870584621685,
+      "TE": 0.8083028083028083,
+      "K": 0.7979420018709074,
+      "DST": 0.8040478380864765
     },
     "positions": [
       {
@@ -6608,31 +6608,31 @@
         "seasons": [
           {
             "season": 2022,
-            "mae": 7.091,
-            "mae_baseline": 7.479,
-            "bias": 0.658,
-            "coverage": 0.798
+            "mae": 7.090862496994131,
+            "mae_baseline": 7.479001134237204,
+            "bias": 0.6579809494794776,
+            "coverage": 0.7981220657276995
           },
           {
             "season": 2023,
-            "mae": 7.189,
-            "mae_baseline": 7.521,
-            "bias": 0.7,
-            "coverage": 0.782
+            "mae": 7.188873765134411,
+            "mae_baseline": 7.521221340546889,
+            "bias": 0.7001108335079201,
+            "coverage": 0.7822222222222223
           },
           {
             "season": 2024,
-            "mae": 7.422,
-            "mae_baseline": 7.901,
-            "bias": -0.05,
-            "coverage": 0.805
+            "mae": 7.421586375262021,
+            "mae_baseline": 7.900747361219699,
+            "bias": -0.04978321607193826,
+            "coverage": 0.8051359516616314
           },
           {
             "season": 2025,
-            "mae": 7.427,
-            "mae_baseline": 8.358,
-            "bias": 0.716,
-            "coverage": 0.824
+            "mae": 7.427177476821981,
+            "mae_baseline": 8.358049435017454,
+            "bias": 0.7158798780744452,
+            "coverage": 0.8242245199409158
           }
         ]
       },
@@ -6641,31 +6641,31 @@
         "seasons": [
           {
             "season": 2022,
-            "mae": 3.672,
-            "mae_baseline": 4.063,
-            "bias": 0.243,
-            "coverage": 0.821
+            "mae": 3.672788990846526,
+            "mae_baseline": 4.06290121365331,
+            "bias": 0.24286294935244987,
+            "coverage": 0.8200483091787439
           },
           {
             "season": 2023,
-            "mae": 3.608,
-            "mae_baseline": 3.913,
-            "bias": 0.219,
-            "coverage": 0.802
+            "mae": 3.6081566818718356,
+            "mae_baseline": 3.9130043431170356,
+            "bias": 0.21975089502266765,
+            "coverage": 0.8023483365949119
           },
           {
             "season": 2024,
-            "mae": 3.703,
-            "mae_baseline": 3.915,
-            "bias": -0.106,
-            "coverage": 0.804
+            "mae": 3.703245001809193,
+            "mae_baseline": 3.9151211180598193,
+            "bias": -0.10569290092768335,
+            "coverage": 0.8038969201759899
           },
           {
             "season": 2025,
-            "mae": 3.8,
-            "mae_baseline": 4.162,
-            "bias": -0.158,
-            "coverage": 0.808
+            "mae": 3.801308671181755,
+            "mae_baseline": 4.16215587722185,
+            "bias": -0.1584941497332614,
+            "coverage": 0.8071776155717761
           }
         ]
       },
@@ -6674,31 +6674,31 @@
         "seasons": [
           {
             "season": 2022,
-            "mae": 3.312,
-            "mae_baseline": 3.731,
-            "bias": 0.4,
-            "coverage": 0.817
+            "mae": 3.311589725007856,
+            "mae_baseline": 3.731461390086651,
+            "bias": 0.4004963159109976,
+            "coverage": 0.8162321278385197
           },
           {
             "season": 2023,
-            "mae": 3.311,
-            "mae_baseline": 3.614,
-            "bias": 0.277,
-            "coverage": 0.831
+            "mae": 3.3129968268219185,
+            "mae_baseline": 3.6140490067482425,
+            "bias": 0.276543616424071,
+            "coverage": 0.8224489795918367
           },
           {
             "season": 2024,
-            "mae": 3.358,
-            "mae_baseline": 3.688,
-            "bias": 0.033,
-            "coverage": 0.832
+            "mae": 3.358197532383131,
+            "mae_baseline": 3.6875457371018996,
+            "bias": 0.03278618629083545,
+            "coverage": 0.82217659137577
           },
           {
             "season": 2025,
-            "mae": 3.252,
-            "mae_baseline": 3.544,
-            "bias": 0.05,
-            "coverage": 0.819
+            "mae": 3.2520643260082385,
+            "mae_baseline": 3.543511265291272,
+            "bias": 0.04967129371257652,
+            "coverage": 0.8158945686900958
           }
         ]
       },
@@ -6707,31 +6707,31 @@
         "seasons": [
           {
             "season": 2022,
-            "mae": 2.392,
-            "mae_baseline": 2.763,
-            "bias": 0.132,
-            "coverage": 0.837
+            "mae": 2.391656237488842,
+            "mae_baseline": 2.763289690878261,
+            "bias": 0.13213331361229694,
+            "coverage": 0.8041322314049587
           },
           {
             "season": 2023,
-            "mae": 2.19,
-            "mae_baseline": 2.553,
-            "bias": 0.206,
-            "coverage": 0.846
+            "mae": 2.1898672677520667,
+            "mae_baseline": 2.552958825534953,
+            "bias": 0.2055725883468114,
+            "coverage": 0.8295549958018472
           },
           {
             "season": 2024,
-            "mae": 2.275,
-            "mae_baseline": 2.509,
-            "bias": 0.112,
-            "coverage": 0.858
+            "mae": 2.2748697524811616,
+            "mae_baseline": 2.5093730791338817,
+            "bias": 0.11177391792815543,
+            "coverage": 0.7928513403736799
           },
           {
             "season": 2025,
-            "mae": 2.391,
-            "mae_baseline": 2.687,
-            "bias": 0.02,
-            "coverage": 0.844
+            "mae": 2.391432938769298,
+            "mae_baseline": 2.6865789190845484,
+            "bias": 0.019662301261434603,
+            "coverage": 0.8073322932917316
           }
         ]
       },
@@ -6740,31 +6740,31 @@
         "seasons": [
           {
             "season": 2022,
-            "mae": 3.741,
-            "mae_baseline": 4.077,
-            "bias": -0.128,
-            "coverage": 0.806
+            "mae": 3.7405156120652214,
+            "mae_baseline": 4.076742647367069,
+            "bias": -0.12772237180158186,
+            "coverage": 0.806390977443609
           },
           {
             "season": 2023,
-            "mae": 3.826,
-            "mae_baseline": 4.197,
-            "bias": -0.111,
-            "coverage": 0.797
+            "mae": 3.826235400054395,
+            "mae_baseline": 4.197298288244248,
+            "bias": -0.11060450265790178,
+            "coverage": 0.7966101694915254
           },
           {
             "season": 2024,
-            "mae": 4.061,
-            "mae_baseline": 4.433,
-            "bias": -0.565,
-            "coverage": 0.789
+            "mae": 4.06068921272376,
+            "mae_baseline": 4.433332562832663,
+            "bias": -0.5652601253897646,
+            "coverage": 0.789179104477612
           },
           {
             "season": 2025,
-            "mae": 4.049,
-            "mae_baseline": 4.406,
-            "bias": -0.552,
-            "coverage": 0.8
+            "mae": 4.0491934466622705,
+            "mae_baseline": 4.406309231431341,
+            "bias": -0.5519818303910031,
+            "coverage": 0.7996289424860853
           }
         ]
       },
@@ -6773,31 +6773,31 @@
         "seasons": [
           {
             "season": 2022,
-            "mae": 4.231,
-            "mae_baseline": 4.592,
-            "bias": -0.295,
-            "coverage": 0.814
+            "mae": 4.2305027371173916,
+            "mae_baseline": 4.592132868324848,
+            "bias": -0.2954658775747296,
+            "coverage": 0.8136531365313653
           },
           {
             "season": 2023,
-            "mae": 4.832,
-            "mae_baseline": 5.235,
-            "bias": 0.046,
-            "coverage": 0.79
+            "mae": 4.832300942987719,
+            "mae_baseline": 5.23521079419562,
+            "bias": 0.04597115985347431,
+            "coverage": 0.7904411764705882
           },
           {
             "season": 2024,
-            "mae": 4.543,
-            "mae_baseline": 4.93,
-            "bias": 0.159,
-            "coverage": 0.807
+            "mae": 4.542984628865983,
+            "mae_baseline": 4.9297385374915565,
+            "bias": 0.15931427432830517,
+            "coverage": 0.8069852941176471
           },
           {
             "season": 2025,
-            "mae": 4.342,
-            "mae_baseline": 4.742,
-            "bias": -1.513,
-            "coverage": 0.805
+            "mae": 4.3422617142362165,
+            "mae_baseline": 4.741753035184057,
+            "bias": -1.5132712289803543,
+            "coverage": 0.8051470588235294
           }
         ]
       }
@@ -6816,26 +6816,26 @@
       {
         "name": "bias",
         "pass": false,
-        "detail": "Mean bias is outside \u00b10.3 for QB 2022, QB 2023, QB 2025, WR 2022, K 2024, K 2025, and DEF 2025."
+        "detail": "Mean bias is outside \u00b10.3 for QB 2022, WR 2022, QB 2023, K 2024, QB 2025, K 2025, DEF 2025."
       },
       {
         "name": "coverage",
-        "pass": false,
-        "detail": "TE pooled coverage is 0.846, above the 0.83 cap. The other positions are inside the band."
+        "pass": true,
+        "detail": "Pooled coverage is inside 0.77\u20130.83 for every position."
       },
       {
         "name": "lineup_points",
         "pass": true,
-        "detail": "+1591.3 lineup points versus the legacy baseline across 72 weeks. This is not a Yahoo comparison."
+        "detail": "+1472.1 lineup points versus the legacy baseline across 72 weeks. Graded on q50, the shipped objective. This is not a Yahoo comparison."
       }
     ],
     "notes": [
-      "The M3 candidate was not promoted.",
-      "Mean-head bias is still outside \u00b10.3 in seven position-seasons.",
-      "Calibrated 10/90 coverage is inside 80% \u00b1 3 points except at tight end.",
-      "q50 remains the primary accuracy metric. The mean head did not win three seasons.",
-      "These figures compare the model with the legacy baseline. They are not a claim against Yahoo. Yahoo capture is a later milestone.",
-      "Player rows on an example export are fictional. This Lab block is the published backtest."
+      "The candidate in this report was not promoted.",
+      "Mean-head bias is outside \u00b10.3 in 7 position-seasons.",
+      "Calibrated 10/90 coverage is inside 0.77\u20130.83 at every position.",
+      "q50 is the primary accuracy metric for this report.",
+      "These figures compare the model with the legacy baseline. They are not a claim against Yahoo.",
+      "This Lab block was generated from an evaluation report (model lgbm_skill_v1), not hand-copied constants."
     ]
   }
 }
