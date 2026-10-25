@@ -264,7 +264,7 @@
       Object.keys(coverage).map(function (position) {
         var value = coverage[position];
         var inside = value >= 0.77 && value <= 0.83;
-        return '<div class="l"><span class="pos" style="--c:' + posColor(position) + '">' + esc(SLOT[position] || position) + '</span><span class="num">' + Number(value).toFixed(3) + '</span><b class="' + (inside ? "pass" : "fail") + '">' + (inside ? "In band" : "Outside") + "</b></div>";
+        return '<div class="l cov"><span class="pos" style="--c:' + posColor(position) + '">' + esc(SLOT[position] || position) + '</span><span class="b"><i style="--c:' + posColor(position) + ";width:" + (value * 100) + '%"></i><span class="band"></span></span><span class="num">' + Number(value).toFixed(3) + '</span><b class="' + (inside ? "pass" : "fail") + '">' + (inside ? "In band" : "Outside") + "</b></div>";
       }).join("") + '</div></div><div class="card"><h2>Promotion rule</h2><ul class="crit">' + criteria + '</ul></div><div class="card"><h2>Improvement over baseline</h2><p class="sub">Baseline q50 MAE minus the model. Positive means the model was closer that season.</p><div class="mae">' + bars + '</div><p class="sub">Lineup points versus that baseline: +' + Number(lab.points_gained_vs_baseline).toFixed(1) + ' over the backtest. Not a Yahoo result.</p></div><div class="card wide"><h2>Notes</h2><ul class="why">' + notes + "</ul></div></div>";
   }
 
