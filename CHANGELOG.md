@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.9] — 2026-10-24
+
+### Removed
+
+- Manager names, completely (owner decision): the exporter no longer reads or writes them, the dashboard JSON drops `manager_display` and the top-level `anonymize_managers` field, the `[dashboard]` config section and its flag are gone, and the page no longer renders a manager name anywhere. Team names and players are unaffected. This also retires the anonymize path wholesale — including the known gap where waiver exports ignored the flag.
+
 ## [0.5.8] — 2026-10-24
 
 ### Added

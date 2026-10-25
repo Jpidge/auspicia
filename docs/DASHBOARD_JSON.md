@@ -18,16 +18,11 @@ Optional `--predictions path.json` overrides `q10`, `q50`, `q90`, `mean`, and `y
 
 Optional `--data-dir` fills `recent_points` and `snap_share` from the point-in-time store. Omit it to copy those lists from the roster file. The example export omits it, because the example players are not in the store. A real export passes the store and does not keep a roster-file series for an id the store does not know.
 
-The shipped roster file is fictional (`"example": true`). The site shows an **Example data** badge when that flag is true. Do not commit a real league roster or any secret to this repository.
+The shipped roster file is fictional (`"example": true`). The site shows an **Example data** badge when that flag is true. Secrets never go in this repository. Whether a published export carries the real league is the owner's call; the shipped example stays fictional.
 
 ## Manager names
 
-Display names come from each team's `manager` field in the roster file. The page reads `manager_display` and does not hardcode names.
-
-`[dashboard] anonymize_managers` in `gridiron_lab.toml` is the one switch:
-
-- `false` (default): `manager_display` is the roster file's `manager` string.
-- `true`: `manager_display` is `Manager {team_id}`, and the export fails if a roster `manager` string still appears in the JSON. Team names stay.
+There are none. The export carries team names and players only: manager names are not read from the roster file, not written to the JSON, and not shown on the page (owner decision, 2026-10-24).
 
 ## Lineup
 
@@ -60,7 +55,6 @@ with `win_probability_sd` = **25**. That spread is an assumption, not a fit on t
     {
       "team_id": 10,
       "name": "Purple Reign",
-      "manager": "Avery Quinn",
       "wins": 4,
       "losses": 2,
       "opponent_id": 11,
@@ -92,7 +86,6 @@ Top-level fields:
 | `version` | `"1.1"` |
 | `example` | `true` when the roster file says so |
 | `disclaimer` | Footer sentence. Example exports say the players are fictional. |
-| `anonymize_managers` | The config flag that produced this file |
 | `league` | `name`, `yahoo_id`, `teams`, `format`, `ppr`, `scoring_version` from config |
 | `lineup` | Slot counts plus `flex_positions` |
 | `week` | `season`, `week`, `kickoff_label`, `countdown_label`, `countdown_is_live` (always `false`; the label is static) |
@@ -105,7 +98,7 @@ Top-level fields:
 | `standings` | Same teams sorted by projected total, with `rank` and `share_of_leader` |
 | `lab` | Published M3.1 backtest, below, or a block generated from an evaluation report (`--lab-report`) |
 
-Each team includes `team_id`, `name`, `manager_display`, `wins`, `losses`, `record` (en dash), `opponent_id`, `opponent_name`, `projected_total`, `opponent_projected_total`, `win_probability`, `starters`, `bench`, `inactive`, and `calls`.
+Each team includes `team_id`, `name`, `wins`, `losses`, `record` (en dash), `opponent_id`, `opponent_name`, `projected_total`, `opponent_projected_total`, `win_probability`, `starters`, `bench`, `inactive`, and `calls`.
 
 Each player row includes `player_id`, `name`, `position`, `nfl_team`, `opponent`, `home`, `kickoff`, `injury`, `force_zero`, `bye`, `q10`, `q50`, `q90`, `mean`, `yahoo`, `yahoo_delta` (`q50 - yahoo` when both exist), `slot` (`QB`, `RB`, `WR`, `TE`, `FLEX`, `K`, `DST`, or `null` on the bench), `verdict` (`start`, `monitor`, `sit`), `notes`, `sparkline`, `recent_points`, `opp_rank`, `vegas_implied`, `snap_share`, and `practice`.
 

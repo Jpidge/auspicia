@@ -2,7 +2,7 @@
 
 League-wide Yahoo rosters are not available until M5. This exporter reads a
 roster file the caller supplies. The repository ships an example file of
-fictional players and managers. Real league files stay out of this repo.
+fictional players.
 """
 
 from __future__ import annotations
@@ -651,7 +651,7 @@ def build_dashboard(
     *,
     history: Mapping[str, RecentSeries] | None = None,
 ) -> dict[str, object]:
-    """Assemble one week of dashboard JSON. Manager names come from the roster file.
+    """Assemble one week of dashboard JSON.
 
     ``history`` is the point-in-time series from ``recent_series``. Omit it to
     copy ``recent_points`` and ``snap_share`` from the roster file.
@@ -661,16 +661,13 @@ def build_dashboard(
     if not isinstance(teams_raw, list) or not teams_raw:
         raise DashboardError("rosters.teams must be a non-empty list")
     prediction_rows = _prediction_index(predictions)
-    anonymize = config.dashboard.anonymize_managers
     prepared: list[dict[str, object]] = []
     names: dict[int, str] = {}
-    managers: dict[int, str] = {}
     for team in teams_raw:
         if not isinstance(team, dict):
             raise DashboardError("each team must be an object")
         team_id = _int(team, "team_id", "team")
         name = _text(team, "name", f"team {team_id}")
-        manager = _text(team, "manager", f"team {team_id}")
         players_raw = team.get("players")
         if not isinstance(players_raw, list):
             raise DashboardError(f"team {team_id} players must be a list")
@@ -683,12 +680,10 @@ def build_dashboard(
             players.append(merged)
         result = recommend(players, config.lineup)
         names[team_id] = name
-        managers[team_id] = manager
         prepared.append(
             {
                 "team_id": team_id,
                 "name": name,
-                "manager": manager,
                 "wins": _int(team, "wins", f"team {team_id}"),
                 "losses": _int(team, "losses", f"team {team_id}"),
                 "opponent_id": _int(team, "opponent_id", f"team {team_id}"),
@@ -708,12 +703,10 @@ def build_dashboard(
         opponent_total = totals.get(opponent_id)
         result = team["result"]
         assert isinstance(result, dict)
-        display = f"Manager {team_id}" if anonymize else str(team["manager"])
         exported_teams.append(
             {
                 "team_id": team_id,
                 "name": team["name"],
-                "manager_display": display,
                 "wins": team["wins"],
                 "losses": team["losses"],
                 "record": _record(int(team["wins"]), int(team["losses"])),
@@ -741,7 +734,6 @@ def build_dashboard(
                 "rank": rank,
                 "team_id": row["team_id"],
                 "name": row["name"],
-                "manager_display": row["manager_display"],
                 "record": row["record"],
                 "wins": row["wins"],
                 "opponent_id": row["opponent_id"],
@@ -754,7 +746,7 @@ def build_dashboard(
             }
         )
 
-    waivers = _waivers(roster_doc.get("waivers"), prepared, anonymize, managers, history)
+    waivers = _waivers(roster_doc.get("waivers"), prepared, history)
     default_team_id = config.league.my_team_id
     if default_team_id not in names:
         raise DashboardError(f"league.my_team_id {default_team_id} is not in the roster file")
@@ -763,11 +755,10 @@ def build_dashboard(
         "version": DASHBOARD_VERSION,
         "example": example,
         "disclaimer": (
-            "Fictional players, managers, and NFL-style teams. Not a real roster."
+            "Fictional players and NFL-style teams. Not a real roster."
             if example
             else "Roster file supplied by the exporter. Not from the Yahoo API."
         ),
-        "anonymize_managers": anonymize,
         "league": {
             "name": config.league.name,
             "yahoo_id": config.league.yahoo_id,
@@ -801,11 +792,8 @@ def build_dashboard(
 def _waivers(
     raw: object,
     teams: Sequence[Mapping[str, object]],
-    anonymize: bool,
-    managers: Mapping[int, str],
     history: Mapping[str, RecentSeries] | None,
 ) -> list[dict[str, object]]:
-    del anonymize, managers
     if raw is None:
         return []
     if not isinstance(raw, list):
@@ -904,12 +892,6 @@ def export_dashboard(
         )
     payload = build_dashboard(config, roster_doc, predictions, lab, history=history)
     text = json.dumps(payload, indent=2, allow_nan=False) + "\n"
-    if config.dashboard.anonymize_managers:
-        for team in roster_doc.get("teams", []):
-            if isinstance(team, dict):
-                manager = team.get("manager")
-                if isinstance(manager, str) and manager and manager in text:
-                    raise DashboardError("anonymized export still contains a manager name")
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(text, encoding="utf-8")
     return payload
