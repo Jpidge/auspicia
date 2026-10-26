@@ -6,6 +6,9 @@
 
 ``python -m gridiron_lab evaluate --season 2018-2025 --test-season 2022-2025 --output results.json``
 
+``python -m gridiron_lab predict --season 2026 --week 8 --rosters rosters.json
+--output predictions.json``
+
 ``python -m gridiron_lab export-dashboard --rosters examples/dashboard/rosters.json
 --output site/dashboard.json``
 """
@@ -31,6 +34,7 @@ from gridiron_lab.evaluate import EvalError, run_evaluation
 from gridiron_lab.features import FeatureError, build_features
 from gridiron_lab.lineup import LineupError
 from gridiron_lab.logging import configure_logging, get_logger
+from gridiron_lab.predict import PredictError, run_predict
 from gridiron_lab.scoring import ScoringError
 
 logger = get_logger("cli")
@@ -54,6 +58,8 @@ def run(argv: list[str] | None = None) -> int:
         return _run_features(args)
     if args.command == "evaluate":
         return _run_evaluate(args)
+    if args.command == "predict":
+        return _run_predict(args)
     if args.command == "export-dashboard":
         return _run_export_dashboard(args)
     parser.print_help()
@@ -144,6 +150,34 @@ def _run_evaluate(args: argparse.Namespace) -> int:
         return 2
     except OSError as exc:
         logger.error("Could not write the evaluation file: %s", exc.strerror or exc)
+        return 1
+    return 0
+
+
+def _run_predict(args: argparse.Namespace) -> int:
+    try:
+        data_dir = _data_dir(args.data_dir, args.config)
+        if args.history is not None:
+            history = parse_seasons(args.history)
+        else:
+            history = list(range(2018, args.season))
+        run_predict(
+            data_dir=data_dir,
+            season=args.season,
+            week=args.week,
+            history_seasons=history,
+            rosters_path=args.rosters,
+            output=args.output,
+            seed=args.seed,
+        )
+    except ConfigError as exc:
+        logger.error("%s", exc)
+        return 2
+    except (PredictError, DashboardError, FeatureError, IngestError) as exc:
+        logger.error("%s", exc)
+        return 2
+    except OSError as exc:
+        logger.error("Could not write the predictions file: %s", exc.strerror or exc)
         return 1
     return 0
 
@@ -244,6 +278,34 @@ def _parser() -> argparse.ArgumentParser:
         default=1000,
         help="Week resamples for the MAE-difference interval.",
     )
+    predict_parser = sub.add_parser(
+        "predict",
+        help=(
+            "Fit the predictor on earlier weeks and write one week's "
+            "predictions JSON for export-dashboard --predictions."
+        ),
+    )
+    predict_parser.add_argument("--season", type=int, required=True, help="Target season")
+    predict_parser.add_argument("--week", type=int, required=True, help="Target week")
+    predict_parser.add_argument(
+        "--history",
+        action="append",
+        dest="history",
+        help=(
+            "Training seasons to build, e.g. 2018-2025. Repeat to pass several. "
+            "Defaults to every season from 2018 up to the target season; the "
+            "target season's earlier weeks always train too."
+        ),
+    )
+    predict_parser.add_argument("--rosters", type=Path, required=True, help="Roster JSON input")
+    predict_parser.add_argument("--output", type=Path, required=True, help="Predictions JSON path")
+    predict_parser.add_argument(
+        "--data-dir",
+        type=Path,
+        help="Directory for Parquet and DuckDB. Defaults to the parent of paths.raw.",
+    )
+    predict_parser.add_argument("--config", type=Path, help="Path to gridiron_lab.toml")
+    predict_parser.add_argument("--seed", type=int, default=0)
     export_parser = sub.add_parser(
         "export-dashboard",
         help="Write dashboard JSON from a roster file. Does not call Yahoo.",

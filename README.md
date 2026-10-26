@@ -42,6 +42,7 @@ python -m gridiron_lab ingest --season 2025
 python -m gridiron_lab ingest --season 2018-2025 --data-dir data
 python -m gridiron_lab features --season 2024 --week 1 --policy simulated_capture --data-dir data
 python -m gridiron_lab evaluate --season 2018-2025 --test-season 2022-2025 --data-dir data --output /tmp/eval.json
+python -m gridiron_lab predict --season 2026 --week 8 --rosters rosters.json --data-dir data --output predictions.json
 python -m gridiron_lab export-dashboard \
   --rosters examples/dashboard/rosters.json \
   --output site/dashboard.json
@@ -52,7 +53,7 @@ python -m http.server -d site
 
 Open `http://127.0.0.1:8000/`. The page loads `dashboard.json` from the same origin. Opening the HTML file directly cannot fetch that JSON.
 
-`examples/dashboard/rosters.json` is fictional. The page shows an **Example data** badge. Real rosters stay in `Jpidge/gridiron-lab-data` and are not committed here. Pass `--predictions` to override `q10`, `q50`, `q90`, `mean`, and `yahoo` from a model file. The shape of both files is in [`docs/DASHBOARD_JSON.md`](docs/DASHBOARD_JSON.md).
+`examples/dashboard/rosters.json` is fictional. The page shows an **Example data** badge. The live site publishes the real league (the owner's decision, 2026-10-24): real dashboard exports are committed through pull requests, while raw captures stay in `Jpidge/gridiron-lab-data`. Pass `--predictions` to override `q10`, `q50`, `q90`, `mean`, and `yahoo` from a model file — build one with the `predict` command. The shape of both files is in [`docs/DASHBOARD_JSON.md`](docs/DASHBOARD_JSON.md).
 
 Downloads, the DuckDB file, and the evaluation JSON stay out of git. Re-running a season appends nothing when the payload is unchanged. The features command logs a row count and does not write a file. Evaluate does not write a model file.
 
@@ -64,16 +65,17 @@ The Team view lists every team in the file. The default is `league.my_team_id` (
 
 The dashboard carries team names and players only. Manager names are not exported or displayed.
 
-[`.github/workflows/pages.yml`](.github/workflows/pages.yml) deploys `site/` with `actions/deploy-pages` on a push to `main`. Pull request branches do not deploy. The repository's Pages source has to be **GitHub Actions**; that setting is confirmed by the owner. The workflow re-exports the example JSON before upload, so the deployed file matches the exporter. It does not read the private data repo.
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) deploys `site/` with `actions/deploy-pages` on a push to `main`. Pull request branches do not deploy. The repository's Pages source has to be **GitHub Actions**; that setting is confirmed by the owner. The workflow publishes the committed `site/` as-is; dashboard updates land through pull requests. It does not read the private data repo.
 
-## Later commands
+## Predict
 
-Planned with Yahoo integration — **not yet implemented**. The CLI today provides `ingest`, `features`, `evaluate`, and `export-dashboard` only.
+`predict` fits `GridironPredictor` on every earlier week in the store (the backtest's training filter and feature builder, unchanged) and writes one week's predictions for the players in a roster file, keyed by the roster file's `player_id`s for `export-dashboard --predictions`. Roster players are matched to store identities by normalized name and position, with team as tiebreak; anyone who cannot be resolved uniquely is listed under `unmatched`, never guessed. There is no persisted model artifact by design — each run fits fresh through the target week's Thursday capture, so a prediction can never come from a stale fit. Two honest limits: the backtest's conformal interval calibration is not applied yet (the output says `"conformal_adjusted": false`; q50 and mean are unaffected), and waivers are not predicted yet.
+
+Still planned with Yahoo integration — **not yet implemented**: a standalone `train` command and live Yahoo capture.
 
 ```bash
 cp .env.example .env    # YAHOO_CLIENT_ID / YAHOO_CLIENT_SECRET / YAHOO_REFRESH_TOKEN (never committed)
 gridiron-lab train
-gridiron-lab predict --week next
 ```
 
 All configuration lives in `gridiron_lab.toml`. Secrets come only from environment variables or GitHub Actions secrets.

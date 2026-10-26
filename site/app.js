@@ -93,6 +93,11 @@
   }
   function spark(values, width, height) {
     if (!values || values.length < 2) return "";
+    // Trendlines take direction colors (owner rule, 2026-10-24): green when
+    // the series ends higher than it started, red when lower, gray when the
+    // move is under half a point. Never the position color.
+    var delta = values[values.length - 1] - values[0];
+    var trend = Math.abs(delta) < 0.5 ? "var(--muted)" : delta > 0 ? "#22C55E" : "#EF4444";
     var max = Math.max.apply(null, values);
     var min = Math.min.apply(null, values);
     var span = (max - min) || 1;
@@ -106,7 +111,7 @@
       return (index ? "L" : "M") + point[0].toFixed(1) + " " + point[1].toFixed(1);
     }).join(" ");
     var last = pts[pts.length - 1];
-    return '<svg class="spark" viewBox="0 0 ' + width + " " + height + '" preserveAspectRatio="none" aria-hidden="true">' +
+    return '<svg class="spark" style="--c:' + trend + '" viewBox="0 0 ' + width + " " + height + '" preserveAspectRatio="none" aria-hidden="true">' +
       '<path d="' + path + " L" + last[0].toFixed(1) + " " + height + ' L4 ' + height + 'Z" fill="var(--c)" opacity=".12"/>' +
       '<path d="' + path + '" fill="none" stroke="var(--c)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>' +
       '<path d="M' + last[0].toFixed(1) + " " + last[1].toFixed(1) + 'l0 0" stroke="var(--c)" stroke-width="7" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>';
