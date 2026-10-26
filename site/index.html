@@ -100,6 +100,20 @@
     <section class="view" id="v-lab" role="tabpanel" aria-labelledby="t-lab" hidden>
       <div class="hero"><div><div class="sub">Model validation</div><h1>Lab</h1></div></div>
       <div id="lab-root"></div>
+      <div class="card engine-card">
+        <h2>How the engine works</h2>
+        <p class="sub">What the model looks at for each player, and how that becomes a projection.</p>
+        <ul class="why">
+          <li><b>Recent form, weighted.</b> His last game, his last 3 and last 5, and a weighted average that cares more about lately — plus the direction he's trending.</li>
+          <li><b>Opportunity.</b> Snap share, target and carry shares, air yards, red-zone work. Role is stickier than raw points, so the model trusts role more.</li>
+          <li><b>The matchup.</b> How many points the opponent has been giving up to his position lately.</li>
+          <li><b>The game environment.</b> The Vegas spread, the game total, and each team's implied points — high implied totals mean more scoring to share around. Kickers and defenses are projected mostly from these lines directly.</li>
+          <li><b>Availability and context.</b> Injury and practice reports, depth-chart rank, teammates out at his position, rest days, home or away, and last season's scoring rate for players with thin history.</li>
+          <li><b>A separate model per position.</b> Quarterbacks, running backs, receivers, and tight ends each get their own model, retrained on every week in the database before this one — using only information that existed before that week's games. No peeking at results.</li>
+          <li><b>An honest range, not just a number.</b> Every projection is a middle (the headline), a bad-week end, and a great-week end. Yahoo's number sits next to ours so the difference is always visible.</li>
+          <li><b>Graded in public.</b> The scores above come from replaying history week by week and comparing predictions with what actually happened. Live predictions currently use the model's raw range; the calibrated range from the backtest is the next upgrade.</li>
+        </ul>
+      </div>
     </section>
   </main>
   <footer>

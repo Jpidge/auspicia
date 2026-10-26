@@ -423,8 +423,8 @@ footer {
   h1 { font-size: 20px; }
   .mu .pts { font-size: 30px; }
   .matchup { order: 1; }
-  .tough { order: 2; }
-  .lineup-col { order: 3; }
+  .lineup-col { order: 2; }
+  .tough { order: 3; }
   .legend-card { order: 4; }
   .rbtn { grid-template-columns: 46px minmax(0, 1fr) auto; grid-template-areas: "s p m" "s r r"; gap: 8px 12px; padding: 12px; }
   .rbtn .slot { grid-area: s; }

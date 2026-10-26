@@ -4,6 +4,18 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.12] — 2026-10-25
+
+### Added
+
+- A `predict` command: fits `GridironPredictor` on every earlier week in the store — the backtest's feature builder, training filter, and Thursday-capture policy, unchanged — and writes one week's predictions JSON for `export-dashboard --predictions`, keyed by the roster file's player ids. Roster players resolve to store identities by normalized name and position with team as tiebreak; unresolvable players are listed under `unmatched`, never guessed. Bye and force-zero players are skipped so a prediction cannot override the exporter's display for them. The output discloses `"conformal_adjusted": false`: the backtest's interval calibration is not applied yet, so q10/q90 are the model's raw quantiles (q50 and mean are unaffected). Waivers are not predicted yet.
+- A "How the engine works" card in the Lab view: a plain-language list of what the model looks at for each player (form, opportunity, matchup, game environment, availability) and how it is graded, with no code terms.
+
+### Changed
+
+- Trendlines now take direction colors everywhere (owner rule, 2026-10-24): green `#22C55E` when a series ends higher than it started, red `#EF4444` when lower, gray when the move is under half a point. Previously the sparkline wore the position color.
+- On phones, the players (lineup) card now sits above the Toughest calls card; the side column's order was matchup, toughest calls, lineup, legend and is now matchup, lineup, toughest calls, legend.
+
 ## [0.5.11] — 2026-10-24
 
 ### Fixed
