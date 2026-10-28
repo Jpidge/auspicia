@@ -14,7 +14,7 @@ python -m gridiron_lab export-dashboard \
   --output site/dashboard.json
 ```
 
-Optional `--predictions path.json` overrides `q10`, `q50`, `q90`, `mean`, and `yahoo` by `player_id`. Optional `--config` defaults to `gridiron_lab.toml`.
+Optional `--predictions path.json` overrides `q10`, `q50`, `q90`, `mean`, and `yahoo` by `player_id`, and stamps `vegas_implied` when the prediction carries it (the `predict` command writes it from the target week's implied team total). Optional `--config` defaults to `gridiron_lab.toml`.
 
 Optional `--data-dir` fills `recent_points` and `snap_share` from the point-in-time store. Omit it to copy those lists from the roster file. The example export omits it, because the example players are not in the store. A real export passes the store and does not keep a roster-file series for an id the store does not know.
 

@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.17] — 2026-10-28
+
+### Added
+
+- The Vegas implied team total reaches the dashboard. `predict` now writes each predicted player's `vegas_implied` (the implied team total its feature row already computed from the week's spread and total), and `export-dashboard --predictions` stamps it onto the player row, so the drawer's "Vegas implied" stat shows the number the model actually used. Players without a prediction (byes, unresolved identities) keep `null` — no game, no line, no invented number.
+
 ## [0.5.16] — 2026-10-28
 
 ### Fixed
