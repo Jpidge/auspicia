@@ -265,12 +265,14 @@
       '<div class="lab"><div class="card"><h2>MAE by position</h2><p class="sub">Mean of seasonal q50 MAE, points per game. Lower is better. Compared with the legacy baseline, not Yahoo.</p><div class="mae">' +
       mae.map(function (item) {
         return '<div class="l"><span class="pos" style="--c:' + posColor(item.position) + '">' + esc(SLOT[item.position] || item.position) + '</span><span class="b"><i style="--c:' + posColor(item.position) + ";width:" + (item.mae / maxMae * 100) + '%"></i></span><b class="num">' + item.mae.toFixed(2) + "</b></div>";
-      }).join("") + '</div></div><div class="card"><h2>Interval coverage</h2><p class="sub">Share of outcomes inside the calibrated 10–90 range. Target band is 0.77 to 0.83.</p><div class="mae">' +
+      }).join("") + '</div></div><div class="card"><h2>Interval coverage</h2><p class="sub">Share of outcomes inside the calibrated 10–90 range; the shaded band is the 0.77 to 0.83 target. Scale zoomed to 0.70–0.90 so the differences actually show.</p><div class="mae">' +
       Object.keys(coverage).map(function (position) {
-        var value = coverage[position];
+        var value = Number(coverage[position]);
         var inside = value >= 0.77 && value <= 0.83;
-        return '<div class="l cov"><span class="pos" style="--c:' + posColor(position) + '">' + esc(SLOT[position] || position) + '</span><span class="b"><i style="--c:' + posColor(position) + ";width:" + (value * 100) + '%"></i><span class="band"></span></span><span class="num">' + Number(value).toFixed(3) + '</span><b class="' + (inside ? "pass" : "fail") + '">' + (inside ? "In band" : "Outside") + "</b></div>";
-      }).join("") + '</div></div><div class="card"><h2>Promotion rule</h2><ul class="crit">' + criteria + '</ul></div><div class="card"><h2>Improvement over baseline</h2><p class="sub">Baseline q50 MAE minus the model. Positive means the model was closer that season.</p><div class="mae">' + bars + '</div><p class="sub">Lineup points versus that baseline: +' + Number(lab.points_gained_vs_baseline).toFixed(1) + ' over the backtest. Not a Yahoo result.</p></div><div class="card wide"><h2>Notes</h2><ul class="why">' + notes + "</ul></div></div>";
+        var pct = Math.min(96, Math.max(4, (value - 0.70) / 0.20 * 100));
+        var status = inside ? "In band" : (value < 0.77 ? ((0.77 - value) * 100).toFixed(1) + " pt low" : ((value - 0.83) * 100).toFixed(1) + " pt high");
+        return '<div class="l cov"><span class="pos" style="--c:' + posColor(position) + '">' + esc(SLOT[position] || position) + '</span><span class="b"><span class="band"></span><i class="dot" style="--c:' + posColor(position) + ";left:" + pct.toFixed(1) + '%"></i></span><span class="num">' + (value * 100).toFixed(1) + '%</span><b class="' + (inside ? "pass" : "fail") + '">' + status + "</b></div>";
+      }).join("") + '<div class="l cov axis-row"><span></span><span class="ticks num"><span>0.70</span><span>0.80</span><span>0.90</span></span><span></span><span></span></div></div></div><div class="card"><h2>Promotion rule</h2><ul class="crit">' + criteria + '</ul></div><div class="card"><h2>Improvement over baseline</h2><p class="sub">Baseline q50 MAE minus the model. Positive means the model was closer that season.</p><div class="mae">' + bars + '</div><p class="sub">Lineup points versus that baseline: +' + Number(lab.points_gained_vs_baseline).toFixed(1) + ' over the backtest. Not a Yahoo result.</p></div><div class="card wide"><h2>Notes</h2><ul class="why">' + notes + "</ul></div></div>";
   }
 
   window.addEventListener("hashchange", function () {
