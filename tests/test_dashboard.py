@@ -330,6 +330,13 @@ def test_lab_prose_says_def() -> None:
     assert "DST" not in detail
 
 
+def test_site_start_pill_shows_on_mobile_and_is_green_on_carbon() -> None:
+    css = (SITE / "app.css").read_text(encoding="utf-8")
+    assert ".v-start { display: none; }" not in css
+    assert '[data-theme="carbon"] .v-start' in css
+    assert "background: var(--good)" in css
+
+
 def test_site_coverage_rows_have_dots_on_a_zoomed_scale() -> None:
     script = (SITE / "app.js").read_text(encoding="utf-8")
     css = (SITE / "app.css").read_text(encoding="utf-8")
