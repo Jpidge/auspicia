@@ -122,6 +122,34 @@ def test_predictions_override_the_roster_file() -> None:
     assert qb["q10"] == 20
 
 
+def test_prediction_vegas_implied_reaches_the_player_row() -> None:
+    config = load_config(ROOT / "gridiron_lab.toml")
+    payload = build_dashboard(
+        config,
+        _mini_roster(),
+        {
+            "players": [
+                {
+                    "player_id": "t10-qb",
+                    "q50": 30,
+                    "q10": 20,
+                    "q90": 40,
+                    "mean": 31,
+                    "vegas_implied": 26.75,
+                }
+            ]
+        },
+    )
+    teams = payload["teams"]
+    assert isinstance(teams, list)
+    starters = teams[0]["starters"]
+    assert isinstance(starters, list)
+    qb = next(player for player in starters if player["player_id"] == "t10-qb")
+    runner = next(player for player in starters if player["player_id"] == "t10-rb1")
+    assert qb["vegas_implied"] == 26.75
+    assert runner["vegas_implied"] is None
+
+
 def test_export_command_writes_json(tmp_path: Path) -> None:
     source = tmp_path / "rosters.json"
     source.write_text(json.dumps(_mini_roster()), encoding="utf-8")

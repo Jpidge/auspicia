@@ -163,6 +163,17 @@ def test_build_predictions_bridges_and_guards() -> None:
     assert [miss["player_id"] for miss in unmatched] == ["yh-d"]  # type: ignore[attr-defined]
 
 
+def test_build_predictions_carries_the_vegas_implied_total() -> None:
+    frames = _frames()
+    for row in frames[(2024, 2)]:
+        if row["player_id"] == "g1":
+            row["implied_team_total"] = 27.5
+    payload = build_predictions(frames, 2024, 2, _roster(), _NAMES, make_predictor=_Stub)
+    players = {entry["player_id"]: entry for entry in payload["players"]}  # type: ignore[attr-defined]
+    assert players["yh-a"]["vegas_implied"] == 27.5
+    assert "vegas_implied" not in players["yh-b"]
+
+
 def test_build_predictions_requires_a_target_week() -> None:
     with pytest.raises(PredictError):
         build_predictions(_frames(), 2024, 9, _roster(), _NAMES, make_predictor=_Stub)

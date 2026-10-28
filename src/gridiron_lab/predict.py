@@ -24,6 +24,7 @@ the headline number and the lineup objective — are unaffected.
 from __future__ import annotations
 
 import json
+import math
 import re
 import unicodedata
 from collections.abc import Callable, Mapping, Sequence
@@ -224,6 +225,13 @@ def build_predictions(
             yahoo = player.get("yahoo")
             if isinstance(yahoo, (int, float)) and not isinstance(yahoo, bool):
                 entry["yahoo"] = yahoo
+            implied = row.get("implied_team_total")
+            if (
+                isinstance(implied, (int, float))
+                and not isinstance(implied, bool)
+                and math.isfinite(float(implied))
+            ):
+                entry["vegas_implied"] = round(float(implied), 2)
             if pred.fallback is not None:
                 entry["fallback"] = pred.fallback
             players.append(entry)
