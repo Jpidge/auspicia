@@ -104,6 +104,71 @@ def _trained_through(train: Sequence[Mapping[str, object]]) -> str:
     return f"{season:04d}-W{week:02d}"
 
 
+_RANK_POSITIONS = frozenset({"QB", "RB", "WR", "TE", "K"})
+
+_PRACTICE_CODES = (
+    ("Full Participation", "FP"),
+    ("Limited Participation", "LP"),
+    ("Did Not Participate", "DNP"),
+)
+
+
+def _practice_code(value: object) -> str | None:
+    """Shorten an injury report's practice text to FP / LP / DNP."""
+
+    if not isinstance(value, str):
+        return None
+    for prefix, code in _PRACTICE_CODES:
+        if value.startswith(prefix):
+            return code
+    return None
+
+
+def _opponent_ranks(
+    frames: Mapping[tuple[int, int], list[dict[str, object]]],
+    season: int,
+    week: int,
+) -> dict[tuple[str, str], int]:
+    """Rank defenses by fantasy points allowed per game to each position.
+
+    Season-to-date before the target week, in the frames' own scored
+    ``actual`` points: rank 1 allows the fewest points (toughest matchup),
+    and tied defenses share a rank. Returns ``{(defense, position): rank}``
+    for the positions a rank is meaningful for — defenses themselves are
+    not ranked against an offense here.
+    """
+
+    per_game: dict[tuple[str, str, object], float] = {}
+    for (row_season, row_week), rows in frames.items():
+        if row_season != season or row_week >= week:
+            continue
+        for row in rows:
+            position = row.get("position")
+            opponent = row.get("opponent")
+            actual = row.get("actual")
+            if position not in _RANK_POSITIONS or not isinstance(opponent, str):
+                continue
+            if not isinstance(actual, (int, float)) or isinstance(actual, bool):
+                continue
+            if row.get("team") == opponent:
+                continue
+            game_key = row.get("game_id") or (row_season, row_week)
+            key = (opponent, str(position), game_key)
+            per_game[key] = per_game.get(key, 0.0) + float(actual)
+    totals: dict[tuple[str, str], list[float]] = {}
+    for (opponent, position, _game), points in per_game.items():
+        totals.setdefault((opponent, position), []).append(points)
+    allowed = {key: sum(values) / len(values) for key, values in totals.items()}
+    by_position: dict[str, list[tuple[str, float]]] = {}
+    for (opponent, position), value in allowed.items():
+        by_position.setdefault(position, []).append((opponent, value))
+    ranks: dict[tuple[str, str], int] = {}
+    for position, entries in by_position.items():
+        for opponent, value in entries:
+            ranks[(opponent, position)] = 1 + sum(1 for _other, other in entries if other < value)
+    return ranks
+
+
 def _is_trainable(row: Mapping[str, object]) -> bool:
     if row.get("force_zero"):
         return False
@@ -188,6 +253,7 @@ def build_predictions(
     by_row = {id(row): pred for row, pred in zip(target, predictions, strict=True)}
 
     index = _FrameIndex(target, names)
+    ranks = _opponent_ranks(frames, season, week)
     players: list[dict[str, object]] = []
     unmatched: list[dict[str, object]] = []
     teams = roster_doc.get("teams")
@@ -232,6 +298,15 @@ def build_predictions(
                 and math.isfinite(float(implied))
             ):
                 entry["vegas_implied"] = round(float(implied), 2)
+            position = row.get("position")
+            opponent = row.get("opponent")
+            if isinstance(position, str) and isinstance(opponent, str):
+                rank = ranks.get((opponent, position))
+                if rank is not None:
+                    entry["opp_rank"] = rank
+            practice = _practice_code(row.get("practice_status"))
+            if practice is not None:
+                entry["practice"] = practice
             if pred.fallback is not None:
                 entry["fallback"] = pred.fallback
             players.append(entry)

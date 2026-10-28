@@ -526,9 +526,12 @@ def _apply_prediction(
     row = dict(player)
     if prediction is None:
         return row
-    for key in ("q10", "q50", "q90", "mean", "yahoo", "vegas_implied"):
+    for key in ("q10", "q50", "q90", "mean", "yahoo", "vegas_implied", "opp_rank"):
         if key in prediction and prediction[key] is not None:
             row[key] = _finite(prediction[key], f"{row.get('player_id')}.{key}")
+    practice = prediction.get("practice")
+    if isinstance(practice, str) and practice:
+        row["practice"] = practice
     return row
 
 
