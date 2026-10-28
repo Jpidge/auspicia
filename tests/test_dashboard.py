@@ -330,13 +330,18 @@ def test_lab_prose_says_def() -> None:
     assert "DST" not in detail
 
 
-def test_site_coverage_rows_have_bars_with_a_target_band() -> None:
+def test_site_coverage_rows_have_dots_on_a_zoomed_scale() -> None:
     script = (SITE / "app.js").read_text(encoding="utf-8")
     css = (SITE / "app.css").read_text(encoding="utf-8")
     assert 'class="l cov"' in script
     assert 'class="band"' in script
+    assert 'class="dot"' in script
+    assert "(value - 0.70) / 0.20" in script
+    assert "axis-row" in script
     assert ".mae .band" in css
-    assert "left: 77%" in css
+    assert "left: 35%" in css
+    assert "width: 30%" in css
+    assert ".mae .dot" in css
 
 
 def test_site_theme_dropdown_offers_the_palettes() -> None:
