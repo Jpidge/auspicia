@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.15] — 2026-10-28
+
+### Fixed
+
+- The Lab's interval-coverage card is readable now: the old 0-to-1 bars compressed every value into the same last sliver against a hairline target stripe. Coverage is now a dot plot on a zoomed 0.70–0.90 scale with the 0.77–0.83 target as a shaded band — in or out reads at a glance — plus the exact percentage and, when a position misses, how many points low or high.
+
 ## [0.5.14] — 2026-10-28
 
 ### Changed
