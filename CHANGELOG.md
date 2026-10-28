@@ -4,6 +4,13 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.16] — 2026-10-28
+
+### Fixed
+
+- The Start verdict pill is back on mobile. A rule inherited from the original site build hid `.v-start` below 720px while Sit and Monitor stayed visible, which made "no pill" ambiguous; all three verdicts now render at every width, as they do on desktop.
+- On the Carbon theme the Start pill is green instead of white: Carbon's accent is near-white, so the accent-filled pill read as a white lozenge; it now fills with the theme's verdict green.
+
 ## [0.5.15] — 2026-10-28
 
 ### Fixed

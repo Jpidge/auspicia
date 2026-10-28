@@ -299,6 +299,9 @@ h2 { font-size: 15px; margin: 0 0 8px; text-transform: uppercase; letter-spacing
 .d-eq { background: var(--card2); color: var(--muted); }
 .v { min-width: 72px; min-height: 32px; border: 1px solid transparent; }
 .v-start { background: var(--accent); color: var(--accent-ink); }
+/* Owner call (2026-10-28): on Carbon the accent is near-white, which made the
+   Start pill white; it takes the theme's verdict green instead. */
+[data-theme="carbon"] .v-start { background: var(--good); color: #0b2013; }
 .v-sit { background: transparent; color: var(--bad); border-color: color-mix(in srgb, var(--bad) 55%, transparent); }
 .v-mon { background: var(--warnSoft); color: var(--warn); border-color: color-mix(in srgb, var(--warn) 40%, transparent); }
 .chev { width: 16px; height: 16px; color: var(--faint); flex: none; }
@@ -440,7 +443,6 @@ footer {
   .rbtn .meta { grid-area: m; align-self: start; }
   .rbtn .meta .yhw { display: none; }
   .yhm { display: flex; }
-  .v-start { display: none; }
   .chev { display: block; }
   .dgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .dgrid .stat:first-child { grid-column: 1 / -1; }
