@@ -174,6 +174,59 @@ def test_build_predictions_carries_the_vegas_implied_total() -> None:
     assert "vegas_implied" not in players["yh-b"]
 
 
+def test_build_predictions_carries_opp_rank_and_practice() -> None:
+    frames = {
+        (2023, 17): [_row("q9", 2023, 17, "QB", "KC", opponent="MIA", actual=99.0, game_id="g0")],
+        (2024, 1): [
+            _row("q1", 2024, 1, "QB", "KC", opponent="NYJ", actual=30.0, game_id="g1"),
+            _row("q2", 2024, 1, "QB", "BUF", opponent="NYJ", actual=10.0, game_id="g2"),
+            _row("q3", 2024, 1, "QB", "KC", opponent="MIA", actual=12.0, game_id="g3"),
+        ],
+        (2024, 2): [
+            _row(
+                "q1",
+                2024,
+                2,
+                "QB",
+                "KC",
+                opponent="MIA",
+                practice_status="Limited Participation in Practice",
+            ),
+            _row("q2", 2024, 2, "QB", "BUF", opponent="NYJ"),
+        ],
+    }
+    names = {"q1": "Test Passer", "q2": "Other Passer"}
+    roster = {
+        "teams": [
+            {
+                "team_id": 1,
+                "players": [
+                    {
+                        "player_id": "yh-q1",
+                        "name": "Test Passer",
+                        "position": "QB",
+                        "nfl_team": "KC",
+                    },
+                    {
+                        "player_id": "yh-q2",
+                        "name": "Other Passer",
+                        "position": "QB",
+                        "nfl_team": "BUF",
+                    },
+                ],
+            }
+        ]
+    }
+    payload = build_predictions(frames, 2024, 2, roster, names, make_predictor=_Stub)
+    players = {entry["player_id"]: entry for entry in payload["players"]}  # type: ignore[attr-defined]
+    # MIA allowed 12.0/game to QBs in 2024 (the 2023 row must not count): toughest, rank 1.
+    assert players["yh-q1"]["opp_rank"] == 1
+    # NYJ allowed (30 + 10) / 2 = 20.0/game across two games: rank 2.
+    assert players["yh-q2"]["opp_rank"] == 2
+    assert players["yh-q1"]["practice"] == "LP"
+    assert "practice" not in players["yh-q2"]
+
+
 def test_build_predictions_requires_a_target_week() -> None:
     with pytest.raises(PredictError):
         build_predictions(_frames(), 2024, 9, _roster(), _NAMES, make_predictor=_Stub)

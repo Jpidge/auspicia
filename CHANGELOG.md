@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.18] — 2026-10-28
+
+### Added
+
+- Opponent rank and practice status reach the dashboard the same way the Vegas total did. `predict` now writes `opp_rank` — the opposing defense's rank against the player's position by fantasy points allowed per game, season-to-date before the target week in the league's own scoring, **1 = fewest allowed (toughest)**, ties sharing a rank — for QB/RB/WR/TE/K (defenses are not ranked against an offense). It also writes `practice` (FP/LP/DNP) from the target week's injury report when the player is on it; unreported players stay blank rather than being assumed full-go. `export-dashboard --predictions` stamps both onto the player row.
+
 ## [0.5.17] — 2026-10-28
 
 ### Added
