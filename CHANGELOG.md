@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.14] — 2026-10-28
+
+### Changed
+
+- The live dashboard moves to **Week 8**: model projections trained on every week in the store through 2026-W07 headline, with Yahoo's numbers kept as the comparison. This week's league capture was taken fully pre-kickoff, so the Week 8 scorecard can grade model and Yahoo against the same frozen moment. The model's one lineup disagreement with the manager's Yahoo starters: Zach Charbonnet (7.10) flexed over Parker Washington (6.78).
+
 ## [0.5.13] — 2026-10-25
 
 ### Changed
