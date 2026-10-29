@@ -188,6 +188,34 @@ def test_force_zero_does_not_enter_mae() -> None:
     assert qb["mae"] == 0.0
 
 
+def test_rolling_origin_can_keep_row_level_residuals() -> None:
+    weeks = _weeks()
+    residuals: list[dict[str, object]] = []
+    report = rolling_origin(
+        weeks,
+        [2022],
+        seed=0,
+        n_boot=20,
+        teams=2,
+        make_model=_Flat,
+        make_baseline=_Flat,
+        residuals=residuals,
+    )
+    assert residuals, "expected the scored test rows to be captured"
+    assert all(row["season"] == 2022 for row in residuals)
+    assert all(row["player_id"] != "QB99" for row in residuals)
+    for key in ("actual", "mean", "q50", "baseline_mean", "points_ewma"):
+        assert key in residuals[0]
+    folds = report["folds"]
+    assert isinstance(folds, list)
+    positions = folds[0]["positions"]  # type: ignore[index]
+    assert isinstance(positions, dict)
+    qb_bias = positions["QB"]["bias"]  # type: ignore[index]
+    captured = [row for row in residuals if row["position"] == "QB"]
+    bias = sum(float(row["mean"]) - float(row["actual"]) for row in captured) / len(captured)
+    assert abs(bias - float(qb_bias)) < 1e-9
+
+
 def test_rolling_origin_is_deterministic() -> None:
     weeks = _weeks()
     first = rolling_origin(weeks, [2022], seed=0, n_boot=30, teams=2)

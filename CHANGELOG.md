@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.19] — 2026-10-28
+
+### Added
+
+- `evaluate --residuals-out` writes the backtest's row-level scored predictions (actual, mean/q50/interval heads, baseline, and the segmentation features) alongside the aggregate report. The report itself is unchanged — same predictions, same digest — but a bias can now be taken apart by segment to find its mechanism before anyone reaches for a fix. First use: the promotion gate's bias failures (QB, K, DST 2025).
+
 ## [0.5.18] — 2026-10-28
 
 ### Added
