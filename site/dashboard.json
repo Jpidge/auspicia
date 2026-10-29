@@ -79,7 +79,7 @@
             23.52,
             24.4
           ],
-          "opp_rank": null,
+          "opp_rank": 17.0,
           "vegas_implied": 22.0,
           "snap_share": [
             100.0,
@@ -120,7 +120,7 @@
             11.2,
             10.8
           ],
-          "opp_rank": null,
+          "opp_rank": 15.0,
           "vegas_implied": 23.0,
           "snap_share": [
             86.0,
@@ -161,7 +161,7 @@
             9.5,
             19.7
           ],
-          "opp_rank": null,
+          "opp_rank": 2.0,
           "vegas_implied": 21.75,
           "snap_share": [
             57.0,
@@ -202,7 +202,7 @@
             5.2,
             17.5
           ],
-          "opp_rank": null,
+          "opp_rank": 9.0,
           "vegas_implied": 24.75,
           "snap_share": [
             41.0,
@@ -243,7 +243,7 @@
             19.1,
             17.0
           ],
-          "opp_rank": null,
+          "opp_rank": 1.0,
           "vegas_implied": 20.0,
           "snap_share": [
             94.0,
@@ -283,7 +283,7 @@
             7.0,
             7.3
           ],
-          "opp_rank": null,
+          "opp_rank": 7.0,
           "vegas_implied": 22.0,
           "snap_share": [
             79.0,
@@ -319,7 +319,7 @@
             11.9,
             6.8
           ],
-          "opp_rank": null,
+          "opp_rank": 3.0,
           "vegas_implied": 22.0,
           "snap_share": [
             45.0,
@@ -356,7 +356,7 @@
             16.9,
             13.7
           ],
-          "opp_rank": null,
+          "opp_rank": 4.0,
           "vegas_implied": 22.0,
           "snap_share": [
             0.0,
@@ -433,7 +433,7 @@
             23.84,
             8.42
           ],
-          "opp_rank": null,
+          "opp_rank": 4.0,
           "vegas_implied": 22.25,
           "snap_share": [
             90.0,
@@ -443,7 +443,7 @@
             100.0,
             77.0
           ],
-          "practice": null
+          "practice": "FP"
         },
         {
           "player_id": "yh-t1-germie-bernard",
@@ -474,7 +474,7 @@
             14.7,
             2.7
           ],
-          "opp_rank": null,
+          "opp_rank": 16.0,
           "vegas_implied": 21.5,
           "snap_share": [
             79.0,
@@ -512,7 +512,7 @@
             11.8,
             6.9
           ],
-          "opp_rank": null,
+          "opp_rank": 14.0,
           "vegas_implied": 20.5,
           "snap_share": [
             6.0,
@@ -550,7 +550,7 @@
             3.18,
             5.0
           ],
-          "opp_rank": null,
+          "opp_rank": 31.0,
           "vegas_implied": 23.0,
           "snap_share": [
             37.0,
@@ -746,7 +746,7 @@
             13.02,
             29.28
           ],
-          "opp_rank": null,
+          "opp_rank": 31.0,
           "vegas_implied": 30.75,
           "snap_share": [
             100.0,
@@ -787,7 +787,7 @@
             7.3,
             11.7
           ],
-          "opp_rank": null,
+          "opp_rank": 29.0,
           "vegas_implied": 30.75,
           "snap_share": [
             76.0,
@@ -828,7 +828,7 @@
             6.7,
             20.7
           ],
-          "opp_rank": null,
+          "opp_rank": 32.0,
           "vegas_implied": 25.75,
           "snap_share": [
             29.0,
@@ -867,7 +867,7 @@
             4.9,
             8.6
           ],
-          "opp_rank": null,
+          "opp_rank": 11.0,
           "vegas_implied": 21.5,
           "snap_share": [
             58.0,
@@ -906,7 +906,7 @@
             4.8,
             4.9
           ],
-          "opp_rank": null,
+          "opp_rank": 24.0,
           "vegas_implied": 23.75,
           "snap_share": [
             64.0,
@@ -947,7 +947,7 @@
             18.0,
             8.2
           ],
-          "opp_rank": null,
+          "opp_rank": 28.0,
           "vegas_implied": 21.5,
           "snap_share": [
             38.0,
@@ -988,7 +988,7 @@
             16.4,
             3.9
           ],
-          "opp_rank": null,
+          "opp_rank": 7.0,
           "vegas_implied": 25.25,
           "snap_share": [
             86.0,
@@ -998,7 +998,7 @@
             84.0,
             85.0
           ],
-          "practice": null
+          "practice": "DNP"
         },
         {
           "player_id": "yh-t2-tyler-bass",
@@ -1029,7 +1029,7 @@
             13.7,
             18.7
           ],
-          "opp_rank": null,
+          "opp_rank": 12.0,
           "vegas_implied": 28.75,
           "snap_share": [
             0.0,
@@ -1106,7 +1106,7 @@
             10.6,
             8.2
           ],
-          "opp_rank": null,
+          "opp_rank": 2.0,
           "vegas_implied": 24.5,
           "snap_share": [
             0.0,
@@ -1144,7 +1144,7 @@
             2.7,
             4.8
           ],
-          "opp_rank": null,
+          "opp_rank": 1.0,
           "vegas_implied": 25.25,
           "snap_share": [
             44.0,
@@ -1182,7 +1182,7 @@
             11.6,
             13.0
           ],
-          "opp_rank": null,
+          "opp_rank": 14.0,
           "vegas_implied": 20.5,
           "snap_share": [
             51.0,
@@ -1223,7 +1223,7 @@
             11.44,
             1.38
           ],
-          "opp_rank": null,
+          "opp_rank": 18.0,
           "vegas_implied": 24.75,
           "snap_share": [
             56.0,
@@ -1264,7 +1264,7 @@
             2.0,
             2.3
           ],
-          "opp_rank": null,
+          "opp_rank": 30.0,
           "vegas_implied": 25.25,
           "snap_share": [
             60.0,
@@ -1433,7 +1433,7 @@
             34.94,
             22.02
           ],
-          "opp_rank": null,
+          "opp_rank": 1.0,
           "vegas_implied": 24.5,
           "snap_share": [
             100.0,
@@ -1474,7 +1474,7 @@
             1.5,
             2.7
           ],
-          "opp_rank": null,
+          "opp_rank": 9.0,
           "vegas_implied": 17.0,
           "snap_share": [
             93.0,
@@ -1515,7 +1515,7 @@
             13.4,
             22.3
           ],
-          "opp_rank": null,
+          "opp_rank": 18.0,
           "vegas_implied": 24.75,
           "snap_share": [
             67.0,
@@ -1556,7 +1556,7 @@
             4.9,
             23.0
           ],
-          "opp_rank": null,
+          "opp_rank": 26.0,
           "vegas_implied": 23.0,
           "snap_share": [
             78.0,
@@ -1597,7 +1597,7 @@
             5.0,
             22.4
           ],
-          "opp_rank": null,
+          "opp_rank": 10.0,
           "vegas_implied": 17.0,
           "snap_share": [
             65.0,
@@ -1638,7 +1638,7 @@
             3.7,
             10.8
           ],
-          "opp_rank": null,
+          "opp_rank": 20.0,
           "vegas_implied": 25.25,
           "snap_share": [
             98.0,
@@ -1676,7 +1676,7 @@
             11.0,
             12.28
           ],
-          "opp_rank": null,
+          "opp_rank": 8.0,
           "vegas_implied": 17.5,
           "snap_share": [
             77.0,
@@ -1714,7 +1714,7 @@
             18.6,
             11.6
           ],
-          "opp_rank": null,
+          "opp_rank": 7.0,
           "vegas_implied": 23.0,
           "snap_share": [
             0.0,
@@ -1788,7 +1788,7 @@
             17.3,
             17.5
           ],
-          "opp_rank": null,
+          "opp_rank": 17.0,
           "vegas_implied": 23.5,
           "snap_share": [
             7.0,
@@ -2081,7 +2081,7 @@
             18.5,
             26.12
           ],
-          "opp_rank": null,
+          "opp_rank": 2.0,
           "vegas_implied": 21.75,
           "snap_share": [
             100.0,
@@ -2120,7 +2120,7 @@
             6.4,
             5.7
           ],
-          "opp_rank": null,
+          "opp_rank": 7.0,
           "vegas_implied": 25.25,
           "snap_share": [
             90.0,
@@ -2160,7 +2160,7 @@
             12.8,
             4.4
           ],
-          "opp_rank": null,
+          "opp_rank": 30.0,
           "vegas_implied": 22.0,
           "snap_share": [
             92.0,
@@ -2200,7 +2200,7 @@
             10.6,
             8.3
           ],
-          "opp_rank": null,
+          "opp_rank": 14.0,
           "vegas_implied": 20.5,
           "snap_share": [
             34.0,
@@ -2241,7 +2241,7 @@
             6.7,
             16.1
           ],
-          "opp_rank": null,
+          "opp_rank": 20.0,
           "vegas_implied": 26.25,
           "snap_share": [
             55.0,
@@ -2282,7 +2282,7 @@
             12.5,
             12.9
           ],
-          "opp_rank": null,
+          "opp_rank": 4.0,
           "vegas_implied": 21.75,
           "snap_share": [
             86.0,
@@ -2323,7 +2323,7 @@
             13.0,
             4.9
           ],
-          "opp_rank": null,
+          "opp_rank": 25.0,
           "vegas_implied": 18.25,
           "snap_share": [
             75.0,
@@ -2364,7 +2364,7 @@
             10.9,
             1.0
           ],
-          "opp_rank": null,
+          "opp_rank": 1.0,
           "vegas_implied": 22.25,
           "snap_share": [
             1.0,
@@ -2441,7 +2441,7 @@
             4.42,
             15.2
           ],
-          "opp_rank": null,
+          "opp_rank": 9.0,
           "vegas_implied": 17.0,
           "snap_share": [
             66.0,
@@ -2481,7 +2481,7 @@
             1.0,
             13.1
           ],
-          "opp_rank": null,
+          "opp_rank": 8.0,
           "vegas_implied": 17.5,
           "snap_share": [
             71.0,
@@ -2521,7 +2521,7 @@
             4.44,
             10.0
           ],
-          "opp_rank": null,
+          "opp_rank": 26.0,
           "vegas_implied": 23.0,
           "snap_share": [
             35.0,
@@ -2562,7 +2562,7 @@
             5.0,
             2.7
           ],
-          "opp_rank": null,
+          "opp_rank": 21.0,
           "vegas_implied": 22.0,
           "snap_share": [
             19.0,
@@ -2723,7 +2723,7 @@
             33.6,
             36.88
           ],
-          "opp_rank": null,
+          "opp_rank": 13.0,
           "vegas_implied": 28.25,
           "snap_share": [
             100.0,
@@ -2764,7 +2764,7 @@
             14.7,
             12.2
           ],
-          "opp_rank": null,
+          "opp_rank": 14.0,
           "vegas_implied": 28.25,
           "snap_share": [
             94.0,
@@ -2805,7 +2805,7 @@
             3.7,
             8.3
           ],
-          "opp_rank": null,
+          "opp_rank": 11.0,
           "vegas_implied": 27.5,
           "snap_share": [
             65.0,
@@ -2846,7 +2846,7 @@
             10.4,
             13.4
           ],
-          "opp_rank": null,
+          "opp_rank": 29.0,
           "vegas_implied": 23.5,
           "snap_share": [
             31.0,
@@ -2882,7 +2882,7 @@
           "recent_points": [
             15.1
           ],
-          "opp_rank": null,
+          "opp_rank": 31.0,
           "vegas_implied": 25.25,
           "snap_share": [
             52.0
@@ -2918,7 +2918,7 @@
             14.8,
             1.8
           ],
-          "opp_rank": null,
+          "opp_rank": 1.0,
           "vegas_implied": 24.5,
           "snap_share": [
             81.0,
@@ -2956,7 +2956,7 @@
             9.2,
             5.5
           ],
-          "opp_rank": null,
+          "opp_rank": 29.0,
           "vegas_implied": 23.5,
           "snap_share": [
             58.0,
@@ -2994,7 +2994,7 @@
             11.5,
             9.3
           ],
-          "opp_rank": null,
+          "opp_rank": 8.0,
           "vegas_implied": 22.0,
           "snap_share": [
             0.0,
@@ -3070,7 +3070,7 @@
             5.5,
             2.2
           ],
-          "opp_rank": null,
+          "opp_rank": 24.0,
           "vegas_implied": 23.75,
           "snap_share": [
             43.0,
@@ -3108,7 +3108,7 @@
             9.8,
             6.3
           ],
-          "opp_rank": null,
+          "opp_rank": 24.0,
           "vegas_implied": 23.75,
           "snap_share": [
             6.0,
@@ -3145,7 +3145,7 @@
             6.7,
             1.7
           ],
-          "opp_rank": null,
+          "opp_rank": 24.0,
           "vegas_implied": 28.75,
           "snap_share": [
             76.0,
@@ -3184,7 +3184,7 @@
             0.4,
             2.3
           ],
-          "opp_rank": null,
+          "opp_rank": 18.0,
           "vegas_implied": 25.75,
           "snap_share": [
             71.0,
@@ -3344,7 +3344,7 @@
             26.74,
             35.34
           ],
-          "opp_rank": null,
+          "opp_rank": 22.0,
           "vegas_implied": 27.5,
           "snap_share": [
             88.0,
@@ -3385,7 +3385,7 @@
             8.2,
             12.6
           ],
-          "opp_rank": null,
+          "opp_rank": 13.0,
           "vegas_implied": 21.5,
           "snap_share": [
             62.0,
@@ -3426,7 +3426,7 @@
             4.4,
             2.6
           ],
-          "opp_rank": null,
+          "opp_rank": 17.0,
           "vegas_implied": 23.5,
           "snap_share": [
             88.0,
@@ -3467,7 +3467,7 @@
             5.3,
             12.2
           ],
-          "opp_rank": null,
+          "opp_rank": 2.0,
           "vegas_implied": 21.5,
           "snap_share": [
             51.0,
@@ -3508,7 +3508,7 @@
             7.6,
             33.5
           ],
-          "opp_rank": null,
+          "opp_rank": 7.0,
           "vegas_implied": 18.25,
           "snap_share": [
             55.0,
@@ -3549,7 +3549,7 @@
             0.7,
             9.5
           ],
-          "opp_rank": null,
+          "opp_rank": 32.0,
           "vegas_implied": 22.0,
           "snap_share": [
             66.0,
@@ -3590,7 +3590,7 @@
             9.6,
             20.7
           ],
-          "opp_rank": null,
+          "opp_rank": 25.0,
           "vegas_implied": 27.5,
           "snap_share": [
             49.0,
@@ -3631,7 +3631,7 @@
             4.4,
             6.8
           ],
-          "opp_rank": null,
+          "opp_rank": 9.0,
           "vegas_implied": 25.75,
           "snap_share": [
             0.0,
@@ -3707,7 +3707,7 @@
             20.26,
             15.9
           ],
-          "opp_rank": null,
+          "opp_rank": 32.0,
           "vegas_implied": 22.0,
           "snap_share": [
             17.0,
@@ -3745,7 +3745,7 @@
             3.1,
             27.0
           ],
-          "opp_rank": null,
+          "opp_rank": 13.0,
           "vegas_implied": 21.75,
           "snap_share": [
             43.0,
@@ -3784,7 +3784,7 @@
             3.9,
             6.9
           ],
-          "opp_rank": null,
+          "opp_rank": 2.0,
           "vegas_implied": 21.75,
           "snap_share": [
             84.0,
@@ -3825,7 +3825,7 @@
             2.7,
             3.8
           ],
-          "opp_rank": null,
+          "opp_rank": 17.0,
           "vegas_implied": 28.75,
           "snap_share": [
             72.0,
@@ -3866,7 +3866,7 @@
             1.1,
             5.5
           ],
-          "opp_rank": null,
+          "opp_rank": 25.0,
           "vegas_implied": 27.5,
           "snap_share": [
             40.0,
@@ -3907,7 +3907,7 @@
             4.04,
             1.56
           ],
-          "opp_rank": null,
+          "opp_rank": 2.0,
           "vegas_implied": 21.5,
           "snap_share": [
             25.0,
@@ -4006,7 +4006,7 @@
             10.48,
             6.0
           ],
-          "opp_rank": null,
+          "opp_rank": 8.0,
           "vegas_implied": 22.0,
           "snap_share": [
             100.0,
@@ -4047,7 +4047,7 @@
             7.0,
             19.4
           ],
-          "opp_rank": null,
+          "opp_rank": 29.0,
           "vegas_implied": 30.75,
           "snap_share": [
             75.0,
@@ -4088,7 +4088,7 @@
             3.2,
             6.6
           ],
-          "opp_rank": null,
+          "opp_rank": 27.0,
           "vegas_implied": 23.75,
           "snap_share": [
             94.0,
@@ -4129,7 +4129,7 @@
             12.0,
             16.1
           ],
-          "opp_rank": null,
+          "opp_rank": 20.0,
           "vegas_implied": 26.25,
           "snap_share": [
             45.0,
@@ -4169,7 +4169,7 @@
             14.8,
             16.3
           ],
-          "opp_rank": null,
+          "opp_rank": 27.0,
           "vegas_implied": 18.25,
           "snap_share": [
             19.0,
@@ -4209,7 +4209,7 @@
             5.3,
             4.4
           ],
-          "opp_rank": null,
+          "opp_rank": 22.0,
           "vegas_implied": 22.0,
           "snap_share": [
             71.0,
@@ -4249,7 +4249,7 @@
             6.0,
             11.7
           ],
-          "opp_rank": null,
+          "opp_rank": 18.0,
           "vegas_implied": 23.0,
           "snap_share": [
             41.0,
@@ -4289,7 +4289,7 @@
             8.9,
             8.0
           ],
-          "opp_rank": null,
+          "opp_rank": 3.0,
           "vegas_implied": 24.75,
           "snap_share": [
             0.0,
@@ -4365,7 +4365,7 @@
             9.7,
             0.9
           ],
-          "opp_rank": null,
+          "opp_rank": 22.0,
           "vegas_implied": 22.25,
           "snap_share": [
             84.0,
@@ -4374,7 +4374,7 @@
             75.0,
             66.0
           ],
-          "practice": null
+          "practice": "FP"
         },
         {
           "player_id": "yh-t7-harold-fannin-jr",
@@ -4405,7 +4405,7 @@
             0.9,
             7.1
           ],
-          "opp_rank": null,
+          "opp_rank": 13.0,
           "vegas_implied": 17.0,
           "snap_share": [
             86.0,
@@ -4446,7 +4446,7 @@
             1.9,
             12.7
           ],
-          "opp_rank": null,
+          "opp_rank": 21.0,
           "vegas_implied": 17.5,
           "snap_share": [
             63.0,
@@ -4618,7 +4618,7 @@
             30.8,
             32.44
           ],
-          "opp_rank": null,
+          "opp_rank": 25.0,
           "vegas_implied": 25.25,
           "snap_share": [
             100.0,
@@ -4659,7 +4659,7 @@
             2.4,
             4.8
           ],
-          "opp_rank": null,
+          "opp_rank": 3.0,
           "vegas_implied": 20.5,
           "snap_share": [
             61.0,
@@ -4700,7 +4700,7 @@
             2.2,
             20.8
           ],
-          "opp_rank": null,
+          "opp_rank": 14.0,
           "vegas_implied": 28.25,
           "snap_share": [
             72.0,
@@ -4741,7 +4741,7 @@
             25.9,
             5.7
           ],
-          "opp_rank": null,
+          "opp_rank": 6.0,
           "vegas_implied": 22.0,
           "snap_share": [
             68.0,
@@ -4782,7 +4782,7 @@
             3.9,
             3.9
           ],
-          "opp_rank": null,
+          "opp_rank": 16.0,
           "vegas_implied": 19.25,
           "snap_share": [
             58.0,
@@ -4822,7 +4822,7 @@
             4.1,
             14.4
           ],
-          "opp_rank": null,
+          "opp_rank": 19.0,
           "vegas_implied": 20.0,
           "snap_share": [
             93.0,
@@ -4862,7 +4862,7 @@
             15.7,
             2.6
           ],
-          "opp_rank": null,
+          "opp_rank": 3.0,
           "vegas_implied": 22.0,
           "snap_share": [
             46.0,
@@ -4903,7 +4903,7 @@
             9.0,
             5.3
           ],
-          "opp_rank": null,
+          "opp_rank": 5.0,
           "vegas_implied": 20.0,
           "snap_share": [
             0.0,
@@ -4980,7 +4980,7 @@
             20.88,
             23.5
           ],
-          "opp_rank": null,
+          "opp_rank": 6.0,
           "vegas_implied": 26.25,
           "snap_share": [
             100.0,
@@ -5054,7 +5054,7 @@
             5.1,
             2.3
           ],
-          "opp_rank": null,
+          "opp_rank": 30.0,
           "vegas_implied": 22.0,
           "snap_share": [
             83.0,
@@ -5094,7 +5094,7 @@
             0.2,
             1.4
           ],
-          "opp_rank": null,
+          "opp_rank": 11.0,
           "vegas_implied": 26.25,
           "snap_share": [
             20.0,
@@ -5135,7 +5135,7 @@
             3.96,
             0.28
           ],
-          "opp_rank": null,
+          "opp_rank": 2.0,
           "vegas_implied": 21.75,
           "snap_share": [
             62.0,
@@ -5294,7 +5294,7 @@
             32.26,
             25.0
           ],
-          "opp_rank": null,
+          "opp_rank": 24.0,
           "vegas_implied": 23.0,
           "snap_share": [
             100.0,
@@ -5332,7 +5332,7 @@
             3.5,
             10.4
           ],
-          "opp_rank": null,
+          "opp_rank": 31.0,
           "vegas_implied": 23.0,
           "snap_share": [
             63.0,
@@ -5372,7 +5372,7 @@
             8.6,
             4.0
           ],
-          "opp_rank": null,
+          "opp_rank": 22.0,
           "vegas_implied": 22.25,
           "snap_share": [
             82.0,
@@ -5413,7 +5413,7 @@
             32.7,
             12.3
           ],
-          "opp_rank": null,
+          "opp_rank": 5.0,
           "vegas_implied": 24.5,
           "snap_share": [
             74.0,
@@ -5454,7 +5454,7 @@
             11.0,
             21.5
           ],
-          "opp_rank": null,
+          "opp_rank": 22.0,
           "vegas_implied": 30.75,
           "snap_share": [
             80.0,
@@ -5494,7 +5494,7 @@
             6.1,
             4.8
           ],
-          "opp_rank": null,
+          "opp_rank": 31.0,
           "vegas_implied": 17.5,
           "snap_share": [
             95.0,
@@ -5534,7 +5534,7 @@
             11.8,
             13.6
           ],
-          "opp_rank": null,
+          "opp_rank": 21.0,
           "vegas_implied": 22.0,
           "snap_share": [
             81.0,
@@ -5575,7 +5575,7 @@
             9.0,
             16.2
           ],
-          "opp_rank": null,
+          "opp_rank": 10.0,
           "vegas_implied": 21.75,
           "snap_share": [
             0.0,
@@ -5686,7 +5686,7 @@
             3.42,
             10.4
           ],
-          "opp_rank": null,
+          "opp_rank": 1.0,
           "vegas_implied": 20.0,
           "snap_share": [
             6.0,
@@ -5726,7 +5726,7 @@
             0.0,
             1.7
           ],
-          "opp_rank": null,
+          "opp_rank": 5.0,
           "vegas_implied": 19.25,
           "snap_share": [
             49.0,
@@ -5917,7 +5917,7 @@
             22.24,
             20.96
           ],
-          "opp_rank": null,
+          "opp_rank": 14.0,
           "vegas_implied": 25.25,
           "snap_share": [
             100.0,
@@ -5958,7 +5958,7 @@
             8.34,
             15.2
           ],
-          "opp_rank": null,
+          "opp_rank": 4.0,
           "vegas_implied": 24.5,
           "snap_share": [
             90.0,
@@ -5998,7 +5998,7 @@
             8.0,
             13.8
           ],
-          "opp_rank": null,
+          "opp_rank": 8.0,
           "vegas_implied": 26.25,
           "snap_share": [
             70.0,
@@ -6038,7 +6038,7 @@
             7.8,
             13.7
           ],
-          "opp_rank": null,
+          "opp_rank": 11.0,
           "vegas_implied": 21.5,
           "snap_share": [
             71.0,
@@ -6079,7 +6079,7 @@
             3.6,
             18.5
           ],
-          "opp_rank": null,
+          "opp_rank": 30.0,
           "vegas_implied": 25.25,
           "snap_share": [
             36.0,
@@ -6120,7 +6120,7 @@
             5.3,
             17.1
           ],
-          "opp_rank": null,
+          "opp_rank": 2.0,
           "vegas_implied": 23.75,
           "snap_share": [
             88.0,
@@ -6154,7 +6154,7 @@
           "notes": [],
           "sparkline": [],
           "recent_points": [],
-          "opp_rank": null,
+          "opp_rank": 9.0,
           "vegas_implied": 24.75,
           "snap_share": null,
           "practice": null
@@ -6188,7 +6188,7 @@
             6.2,
             5.3
           ],
-          "opp_rank": null,
+          "opp_rank": 30.0,
           "vegas_implied": 19.25,
           "snap_share": [
             0.0,
@@ -6265,7 +6265,7 @@
             12.24,
             8.76
           ],
-          "opp_rank": null,
+          "opp_rank": 18.0,
           "vegas_implied": 19.25,
           "snap_share": [
             100.0,
@@ -6306,7 +6306,7 @@
             25.84,
             6.68
           ],
-          "opp_rank": null,
+          "opp_rank": 11.0,
           "vegas_implied": 27.5,
           "snap_share": [
             61.0,
@@ -6347,7 +6347,7 @@
             4.7,
             1.8
           ],
-          "opp_rank": null,
+          "opp_rank": 28.0,
           "vegas_implied": 20.0,
           "snap_share": [
             83.0,
@@ -6388,7 +6388,7 @@
             2.2,
             0.7
           ],
-          "opp_rank": null,
+          "opp_rank": 25.0,
           "vegas_implied": 18.25,
           "snap_share": [
             53.0,
@@ -6539,7 +6539,7 @@
             32.5,
             22.3
           ],
-          "opp_rank": null,
+          "opp_rank": 16.0,
           "vegas_implied": 28.75,
           "snap_share": [
             100.0,
@@ -6580,7 +6580,7 @@
             16.7,
             21.1
           ],
-          "opp_rank": null,
+          "opp_rank": 4.0,
           "vegas_implied": 24.5,
           "snap_share": [
             84.0,
@@ -6618,7 +6618,7 @@
             8.3,
             8.8
           ],
-          "opp_rank": null,
+          "opp_rank": 6.0,
           "vegas_implied": 22.0,
           "snap_share": [
             83.0,
@@ -6656,7 +6656,7 @@
             19.0,
             15.0
           ],
-          "opp_rank": null,
+          "opp_rank": 13.0,
           "vegas_implied": 21.75,
           "snap_share": [
             68.0,
@@ -6697,7 +6697,7 @@
             21.8,
             21.3
           ],
-          "opp_rank": null,
+          "opp_rank": 4.0,
           "vegas_implied": 28.75,
           "snap_share": [
             72.0,
@@ -6738,7 +6738,7 @@
             18.1,
             6.0
           ],
-          "opp_rank": null,
+          "opp_rank": 28.0,
           "vegas_implied": 22.25,
           "snap_share": [
             71.0,
@@ -6779,7 +6779,7 @@
             10.1,
             10.0
           ],
-          "opp_rank": null,
+          "opp_rank": 31.0,
           "vegas_implied": 27.5,
           "snap_share": [
             0.0,
@@ -6856,7 +6856,7 @@
             22.7,
             16.3
           ],
-          "opp_rank": null,
+          "opp_rank": 12.0,
           "vegas_implied": 22.0,
           "snap_share": [
             59.0,
@@ -6897,7 +6897,7 @@
             9.3,
             5.6
           ],
-          "opp_rank": null,
+          "opp_rank": 16.0,
           "vegas_implied": 21.5,
           "snap_share": [
             97.0,
@@ -6938,7 +6938,7 @@
             9.02,
             4.02
           ],
-          "opp_rank": null,
+          "opp_rank": 19.0,
           "vegas_implied": 18.25,
           "snap_share": [
             98.0,
@@ -6979,7 +6979,7 @@
             8.2,
             3.1
           ],
-          "opp_rank": null,
+          "opp_rank": 28.0,
           "vegas_implied": 20.0,
           "snap_share": [
             67.0,
@@ -7158,7 +7158,7 @@
             24.44,
             22.88
           ],
-          "opp_rank": null,
+          "opp_rank": 29.0,
           "vegas_implied": 25.75,
           "snap_share": [
             100.0,
@@ -7195,7 +7195,7 @@
             6.5,
             13.5
           ],
-          "opp_rank": null,
+          "opp_rank": 21.0,
           "vegas_implied": 17.5,
           "snap_share": [
             95.0,
@@ -7234,7 +7234,7 @@
             7.3,
             1.1
           ],
-          "opp_rank": null,
+          "opp_rank": 6.0,
           "vegas_implied": 22.0,
           "snap_share": [
             77.0,
@@ -7275,7 +7275,7 @@
             4.0,
             5.8
           ],
-          "opp_rank": null,
+          "opp_rank": 19.0,
           "vegas_implied": 28.25,
           "snap_share": [
             72.0,
@@ -7316,7 +7316,7 @@
             4.0,
             4.9
           ],
-          "opp_rank": null,
+          "opp_rank": 23.0,
           "vegas_implied": 25.75,
           "snap_share": [
             53.0,
@@ -7357,7 +7357,7 @@
             10.8,
             7.1
           ],
-          "opp_rank": null,
+          "opp_rank": 30.0,
           "vegas_implied": 25.25,
           "snap_share": [
             91.0,
@@ -7398,7 +7398,7 @@
             3.7,
             2.7
           ],
-          "opp_rank": null,
+          "opp_rank": 15.0,
           "vegas_implied": 23.0,
           "snap_share": [
             86.0,
@@ -7439,7 +7439,7 @@
             1.0,
             13.6
           ],
-          "opp_rank": null,
+          "opp_rank": 17.0,
           "vegas_implied": 30.75,
           "snap_share": [
             0.0,
@@ -7516,7 +7516,7 @@
             4.48,
             30.18
           ],
-          "opp_rank": null,
+          "opp_rank": 3.0,
           "vegas_implied": 20.5,
           "snap_share": [
             100.0,
@@ -7591,7 +7591,7 @@
             1.9,
             4.5
           ],
-          "opp_rank": null,
+          "opp_rank": 3.0,
           "vegas_implied": 20.5,
           "snap_share": [
             73.0,
@@ -7632,7 +7632,7 @@
             1.3,
             0.0
           ],
-          "opp_rank": null,
+          "opp_rank": 24.0,
           "vegas_implied": 30.75,
           "snap_share": [
             60.0,
@@ -7672,7 +7672,7 @@
             12.5,
             1.3
           ],
-          "opp_rank": null,
+          "opp_rank": 13.0,
           "vegas_implied": 21.75,
           "snap_share": [
             0.0,
