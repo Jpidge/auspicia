@@ -866,6 +866,56 @@ def _lineup_week(
     }
 
 
+_RESIDUAL_FEATURES = (
+    "is_home",
+    "team_spread",
+    "game_total",
+    "implied_team_total",
+    "vegas_missing",
+    "points_ewma",
+    "points_roll3",
+    "points_roll5",
+    "carries_roll5",
+    "designed_rushes_roll5",
+    "opp_points_allowed_pos_roll5",
+    "games_played",
+    "injury_status",
+    "practice_status",
+)
+
+
+def _residual_row(row: Mapping[str, object], scored: Scored) -> dict[str, object]:
+    """One scored test row, kept for offline bias diagnosis.
+
+    The report itself stays aggregate-only; this opt-in capture exists so a
+    bias can be taken apart by segment (game script, opponent strength,
+    recent form) instead of guessed at from season totals.
+    """
+
+    out: dict[str, object] = {
+        "season": scored.season,
+        "week": scored.week,
+        "player_id": scored.player_id,
+        "position": scored.position,
+        "team": row.get("team"),
+        "opponent": row.get("opponent"),
+        "actual": scored.actual,
+        "mean": scored.model.mean,
+        "q10": scored.model.q10,
+        "q50": scored.model.q50,
+        "q90": scored.model.q90,
+        "q10_raw": scored.q10_raw,
+        "q90_raw": scored.q90_raw,
+        "baseline_mean": scored.baseline.mean,
+        "baseline_q50": scored.baseline.q50,
+        "fallback": scored.model.fallback,
+        "regime": scored.model.regime,
+    }
+    for name in _RESIDUAL_FEATURES:
+        out[name] = row.get(name)
+    return _jsonable(out)  # type: ignore[return-value]
+
+
 def rolling_origin(
     weeks: Mapping[tuple[int, int], Sequence[Mapping[str, object]]],
     test_seasons: Sequence[int],
@@ -877,6 +927,7 @@ def rolling_origin(
     make_model: ModelFactory | None = None,
     make_baseline: BaselineFactory | None = None,
     calibration_weeks: int = CALIBRATION_WEEKS,
+    residuals: list[dict[str, object]] | None = None,
 ) -> dict[str, object]:
     """Fit before each test week and score that week.
 
@@ -971,6 +1022,8 @@ def rolling_origin(
                 )
                 by_season[season].append(scored)
                 digest_rows.append(scored)
+                if residuals is not None:
+                    residuals.append(_residual_row(row, scored))
             lineup_weeks.append(
                 _lineup_week(
                     rows,
@@ -1216,12 +1269,14 @@ def run_evaluation(
     n_boot: int = 1000,
     teams: int = DEFAULT_TEAMS,
     lineup: Lineup = DEFAULT_LINEUP,
+    residuals_out: Path | None = None,
 ) -> dict[str, object]:
     """Evaluate ``test_seasons`` and write one JSON file. No model file is written."""
 
     if policy != "simulated_capture":
         raise EvalError("the backtest policy is simulated_capture")
     weeks = collect_weeks(data_dir, seasons, policy=policy)
+    residuals: list[dict[str, object]] | None = [] if residuals_out is not None else None
     report = rolling_origin(
         weeks,
         test_seasons,
@@ -1229,7 +1284,19 @@ def run_evaluation(
         n_boot=n_boot,
         teams=teams,
         lineup=lineup,
+        residuals=residuals,
     )
+    if residuals_out is not None:
+        write_report(
+            {
+                "model_version": MODEL_VERSION,
+                "seed": seed,
+                "test_seasons": [int(season) for season in test_seasons],
+                "rows": residuals if residuals is not None else [],
+            },
+            residuals_out,
+        )
+        logger.info("Wrote residuals %s", residuals_out)
     experiment = report.get("experiment")
     if isinstance(experiment, dict):
         experiment["git_sha"] = git_sha()

@@ -135,6 +135,7 @@ def _run_evaluate(args: argparse.Namespace) -> int:
             n_boot=args.bootstrap,
             teams=config.league.teams,
             lineup=config.lineup,
+            residuals_out=args.residuals_out,
         )
     except ConfigError as exc:
         logger.error("%s", exc)
@@ -271,6 +272,11 @@ def _parser() -> argparse.ArgumentParser:
     )
     evaluate_parser.add_argument("--config", type=Path, help="Path to gridiron_lab.toml")
     evaluate_parser.add_argument("--output", type=Path, required=True, help="JSON results path")
+    evaluate_parser.add_argument(
+        "--residuals-out",
+        type=Path,
+        help="Also write row-level scored predictions (JSON) for bias diagnosis.",
+    )
     evaluate_parser.add_argument("--seed", type=int, default=0)
     evaluate_parser.add_argument(
         "--bootstrap",
