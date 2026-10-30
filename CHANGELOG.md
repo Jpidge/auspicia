@@ -4,6 +4,18 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.21] — 2026-10-29
+
+### Added
+
+- The player drawer now carries a **Boom/bust** tag. The exporter stamps `volatility` on each predicted player: the within-position percentile of his `q90 - q10` interval width among the week's predicted players (definition in `docs/DASHBOARD_JSON.md`). The drawer reads it as Steady (under 34), Balanced (34–66), or Boom/bust (67+) — informational only, in no verdict colors, beside the Median/Mean/10th–90th stats that were already there. No prediction, verdict, or total changes; the Week 8 re-export in this PR differs from 0.5.20 only by the new field. A display-only first slice of the boom/bust idea; a graded boom/bust index is still unbuilt.
+
+## [0.5.20] — 2026-10-29
+
+### Changed
+
+- The lineup optimizer's objective is now the **mean** (expected points), not q50 (owner decision 2026-10-29, superseding 2026-10-24, recorded in `docs/DESIGN.md`). `lineup.projection()` ranks on the mean with a q50 fallback, so starters, close calls, and team projected totals (now sums of starter means, and with them the win probabilities) all use expected points. The median stays the headline number on the player card. On the 2022–2025 backtest the mean-ranked lineup gained +1,591.28 points against the baseline lineup vs +1,472.10 for q50 ranking, with lower regret (10,550.36 vs 10,669.54). The promotion gate now grades the mean-head lineup figure (`graded_on: "mean"`); the q50-head figure is still computed and reported alongside. This does not change the current promotion verdict, which fails on the bias gates under either figure.
+
 ## [0.5.19] — 2026-10-28
 
 ### Added

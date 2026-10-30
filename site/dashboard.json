@@ -34,7 +34,7 @@
     "countdown_is_live": false
   },
   "default_team_id": 10,
-  "objective": "q50",
+  "objective": "mean",
   "close_call_margin": 1.0,
   "win_probability_sd": 25.0,
   "teams": [
@@ -46,9 +46,9 @@
       "record": "2\u20135",
       "opponent_id": 11,
       "opponent_name": "My Diggs Curves Left",
-      "projected_total": 83.48,
-      "opponent_projected_total": 91.48,
-      "win_probability": 0.3745,
+      "projected_total": 95.87,
+      "opponent_projected_total": 100.76,
+      "win_probability": 0.4225,
       "starters": [
         {
           "player_id": "yh-t1-kirk-cousins",
@@ -68,7 +68,7 @@
           "yahoo": 18.4,
           "yahoo_delta": -0.36999999999999744,
           "slot": "QB",
-          "verdict": "monitor",
+          "verdict": "start",
           "notes": [],
           "sparkline": [],
           "recent_points": [
@@ -80,6 +80,7 @@
             24.4
           ],
           "opp_rank": 17.0,
+          "volatility": 35,
           "vegas_implied": 22.0,
           "snap_share": [
             100.0,
@@ -109,7 +110,7 @@
           "yahoo": 7.56,
           "yahoo_delta": -1.0,
           "slot": "WR",
-          "verdict": "start",
+          "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
@@ -121,6 +122,7 @@
             10.8
           ],
           "opp_rank": 15.0,
+          "volatility": 57,
           "vegas_implied": 23.0,
           "snap_share": [
             86.0,
@@ -162,6 +164,7 @@
             19.7
           ],
           "opp_rank": 2.0,
+          "volatility": 47,
           "vegas_implied": 21.75,
           "snap_share": [
             57.0,
@@ -203,6 +206,7 @@
             17.5
           ],
           "opp_rank": 9.0,
+          "volatility": 44,
           "vegas_implied": 24.75,
           "snap_share": [
             41.0,
@@ -244,6 +248,7 @@
             17.0
           ],
           "opp_rank": 1.0,
+          "volatility": 90,
           "vegas_implied": 20.0,
           "snap_share": [
             94.0,
@@ -284,6 +289,7 @@
             7.3
           ],
           "opp_rank": 7.0,
+          "volatility": 100,
           "vegas_implied": 22.0,
           "snap_share": [
             79.0,
@@ -320,6 +326,7 @@
             6.8
           ],
           "opp_rank": 3.0,
+          "volatility": 48,
           "vegas_implied": 22.0,
           "snap_share": [
             45.0,
@@ -357,6 +364,7 @@
             13.7
           ],
           "opp_rank": 4.0,
+          "volatility": 23,
           "vegas_implied": 22.0,
           "snap_share": [
             0.0,
@@ -398,6 +406,7 @@
             8.72
           ],
           "opp_rank": null,
+          "volatility": 47,
           "vegas_implied": 25.25,
           "snap_share": null,
           "practice": null
@@ -422,7 +431,7 @@
           "yahoo": 20.24,
           "yahoo_delta": -2.3099999999999987,
           "slot": null,
-          "verdict": "monitor",
+          "verdict": "sit",
           "notes": [],
           "sparkline": [],
           "recent_points": [
@@ -434,6 +443,7 @@
             8.42
           ],
           "opp_rank": 4.0,
+          "volatility": 29,
           "vegas_implied": 22.25,
           "snap_share": [
             90.0,
@@ -475,6 +485,7 @@
             2.7
           ],
           "opp_rank": 16.0,
+          "volatility": 49,
           "vegas_implied": 21.5,
           "snap_share": [
             79.0,
@@ -513,6 +524,7 @@
             6.9
           ],
           "opp_rank": 14.0,
+          "volatility": 23,
           "vegas_implied": 20.5,
           "snap_share": [
             6.0,
@@ -551,6 +563,7 @@
             5.0
           ],
           "opp_rank": 31.0,
+          "volatility": 12,
           "vegas_implied": 23.0,
           "snap_share": [
             37.0,
@@ -594,6 +607,7 @@
             18.1
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             61.0,
@@ -635,6 +649,7 @@
             11.4
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             96.0,
@@ -673,6 +688,7 @@
             0.2
           ],
           "opp_rank": null,
+          "volatility": 4,
           "vegas_implied": null,
           "snap_share": [
             48.0,
@@ -684,24 +700,24 @@
       ],
       "calls": [
         {
-          "slot": "QB",
-          "margin": 0.1,
-          "starter_id": "yh-t1-kirk-cousins",
-          "starter_name": "Kirk Cousins",
-          "starter_projection": 18.03,
-          "alternative_id": "yh-t1-bryce-young",
-          "alternative_name": "Bryce Young",
-          "alternative_projection": 17.93
+          "slot": "WR",
+          "margin": 0.02,
+          "starter_id": "yh-t1-luther-burden-iii",
+          "starter_name": "Luther Burden III",
+          "starter_projection": 7.57,
+          "alternative_id": "yh-t1-germie-bernard",
+          "alternative_name": "Germie Bernard",
+          "alternative_projection": 7.55
         },
         {
           "slot": "WR",
-          "margin": 0.39,
-          "starter_id": "yh-t1-luther-burden-iii",
-          "starter_name": "Luther Burden III",
-          "starter_projection": 5.61,
+          "margin": 0.26,
+          "starter_id": "yh-t1-emeka-egbuka",
+          "starter_name": "Emeka Egbuka",
+          "starter_projection": 7.81,
           "alternative_id": "yh-t1-germie-bernard",
           "alternative_name": "Germie Bernard",
-          "alternative_projection": 5.22
+          "alternative_projection": 7.55
         }
       ]
     },
@@ -713,9 +729,9 @@
       "record": "4\u20133",
       "opponent_id": 9,
       "opponent_name": "1ST & SKOL",
-      "projected_total": 77.45,
-      "opponent_projected_total": 94.45,
-      "win_probability": 0.2483,
+      "projected_total": 90.48,
+      "opponent_projected_total": 104.04,
+      "win_probability": 0.2938,
       "starters": [
         {
           "player_id": "yh-t2-dak-prescott",
@@ -747,6 +763,7 @@
             29.28
           ],
           "opp_rank": 31.0,
+          "volatility": 59,
           "vegas_implied": 30.75,
           "snap_share": [
             100.0,
@@ -788,6 +805,7 @@
             11.7
           ],
           "opp_rank": 29.0,
+          "volatility": 84,
           "vegas_implied": 30.75,
           "snap_share": [
             76.0,
@@ -829,6 +847,7 @@
             20.7
           ],
           "opp_rank": 32.0,
+          "volatility": 90,
           "vegas_implied": 25.75,
           "snap_share": [
             29.0,
@@ -858,7 +877,7 @@
           "yahoo": 7.19,
           "yahoo_delta": -1.3100000000000005,
           "slot": "RB",
-          "verdict": "start",
+          "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
@@ -868,6 +887,7 @@
             8.6
           ],
           "opp_rank": 11.0,
+          "volatility": 33,
           "vegas_implied": 21.5,
           "snap_share": [
             58.0,
@@ -878,45 +898,46 @@
           "practice": null
         },
         {
-          "player_id": "yh-t2-tyler-allgeier",
-          "name": "Tyler Allgeier",
+          "player_id": "yh-t2-rj-harvey",
+          "name": "RJ Harvey",
           "position": "RB",
-          "nfl_team": "Ari",
-          "opponent": "Dal",
-          "home": false,
+          "nfl_team": "Den",
+          "opponent": "KC",
+          "home": true,
           "kickoff": "Sun 1:00 PM",
           "injury": null,
           "force_zero": false,
           "bye": false,
-          "q10": 1.0,
-          "q50": 5.08,
-          "q90": 14.64,
-          "mean": 6.98,
-          "yahoo": 6.69,
-          "yahoo_delta": -1.6100000000000003,
+          "q10": 1.24,
+          "q50": 4.34,
+          "q90": 13.99,
+          "mean": 7.19,
+          "yahoo": 5.38,
+          "yahoo_delta": -1.04,
           "slot": "RB",
           "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
-            1.9,
-            0.9,
-            10.9,
-            1.6,
-            4.8,
-            4.9
+            8.54,
+            4.7,
+            11.86,
+            0.7,
+            11.6,
+            13.0
           ],
-          "opp_rank": 24.0,
-          "vegas_implied": 23.75,
+          "opp_rank": 14.0,
+          "volatility": 21,
+          "vegas_implied": 20.5,
           "snap_share": [
-            64.0,
+            51.0,
             36.0,
-            55.0,
             44.0,
-            56.0,
-            47.0
+            37.0,
+            40.0,
+            26.0
           ],
-          "practice": "DNP"
+          "practice": null
         },
         {
           "player_id": "yh-t2-kyle-pitts-sr",
@@ -948,6 +969,7 @@
             8.2
           ],
           "opp_rank": 28.0,
+          "volatility": 19,
           "vegas_implied": 21.5,
           "snap_share": [
             38.0,
@@ -989,6 +1011,7 @@
             3.9
           ],
           "opp_rank": 7.0,
+          "volatility": 63,
           "vegas_implied": 25.25,
           "snap_share": [
             86.0,
@@ -1030,6 +1053,7 @@
             18.7
           ],
           "opp_rank": 12.0,
+          "volatility": 23,
           "vegas_implied": 28.75,
           "snap_share": [
             0.0,
@@ -1071,6 +1095,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 93,
           "vegas_implied": 23.0,
           "snap_share": null,
           "practice": null
@@ -1107,6 +1132,7 @@
             8.2
           ],
           "opp_rank": 2.0,
+          "volatility": 100,
           "vegas_implied": 24.5,
           "snap_share": [
             0.0,
@@ -1145,6 +1171,7 @@
             4.8
           ],
           "opp_rank": 1.0,
+          "volatility": 59,
           "vegas_implied": 25.25,
           "snap_share": [
             44.0,
@@ -1154,45 +1181,46 @@
           "practice": "LP"
         },
         {
-          "player_id": "yh-t2-rj-harvey",
-          "name": "RJ Harvey",
+          "player_id": "yh-t2-tyler-allgeier",
+          "name": "Tyler Allgeier",
           "position": "RB",
-          "nfl_team": "Den",
-          "opponent": "KC",
-          "home": true,
+          "nfl_team": "Ari",
+          "opponent": "Dal",
+          "home": false,
           "kickoff": "Sun 1:00 PM",
           "injury": null,
           "force_zero": false,
           "bye": false,
-          "q10": 1.24,
-          "q50": 4.34,
-          "q90": 13.99,
-          "mean": 7.19,
-          "yahoo": 5.38,
-          "yahoo_delta": -1.04,
+          "q10": 1.0,
+          "q50": 5.08,
+          "q90": 14.64,
+          "mean": 6.98,
+          "yahoo": 6.69,
+          "yahoo_delta": -1.6100000000000003,
           "slot": null,
           "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
-            8.54,
-            4.7,
-            11.86,
-            0.7,
-            11.6,
-            13.0
+            1.9,
+            0.9,
+            10.9,
+            1.6,
+            4.8,
+            4.9
           ],
-          "opp_rank": 14.0,
-          "vegas_implied": 20.5,
+          "opp_rank": 24.0,
+          "volatility": 27,
+          "vegas_implied": 23.75,
           "snap_share": [
-            51.0,
+            64.0,
             36.0,
+            55.0,
             44.0,
-            37.0,
-            40.0,
-            26.0
+            56.0,
+            47.0
           ],
-          "practice": null
+          "practice": "DNP"
         },
         {
           "player_id": "yh-t2-rashid-shaheed",
@@ -1224,6 +1252,7 @@
             1.38
           ],
           "opp_rank": 18.0,
+          "volatility": 22,
           "vegas_implied": 24.75,
           "snap_share": [
             56.0,
@@ -1265,6 +1294,7 @@
             2.3
           ],
           "opp_rank": 30.0,
+          "volatility": 8,
           "vegas_implied": 25.25,
           "snap_share": [
             60.0,
@@ -1308,6 +1338,7 @@
             16.0
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             52.0,
@@ -1348,6 +1379,7 @@
             2.5
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             42.0,
@@ -1361,6 +1393,26 @@
       ],
       "calls": [
         {
+          "slot": "RB",
+          "margin": 0.14,
+          "starter_id": "yh-t2-rico-dowdle",
+          "starter_name": "Rico Dowdle",
+          "starter_projection": 7.12,
+          "alternative_id": "yh-t2-tyler-allgeier",
+          "alternative_name": "Tyler Allgeier",
+          "alternative_projection": 6.98
+        },
+        {
+          "slot": "RB",
+          "margin": 0.21,
+          "starter_id": "yh-t2-rj-harvey",
+          "starter_name": "RJ Harvey",
+          "starter_projection": 7.19,
+          "alternative_id": "yh-t2-tyler-allgeier",
+          "alternative_name": "Tyler Allgeier",
+          "alternative_projection": 6.98
+        },
+        {
           "slot": "K",
           "margin": 0.44,
           "starter_id": "yh-t2-tyler-bass",
@@ -1369,26 +1421,6 @@
           "alternative_id": "yh-t2-jake-bates",
           "alternative_name": "Jake Bates",
           "alternative_projection": 8.59
-        },
-        {
-          "slot": "W/R/T",
-          "margin": 0.45,
-          "starter_id": "yh-t2-matthew-golden",
-          "starter_name": "Matthew Golden",
-          "starter_projection": 6.24,
-          "alternative_id": "yh-t2-a-j-brown",
-          "alternative_name": "A.J. Brown",
-          "alternative_projection": 5.79
-        },
-        {
-          "slot": "RB",
-          "margin": 0.74,
-          "starter_id": "yh-t2-tyler-allgeier",
-          "starter_name": "Tyler Allgeier",
-          "starter_projection": 5.08,
-          "alternative_id": "yh-t2-rj-harvey",
-          "alternative_name": "RJ Harvey",
-          "alternative_projection": 4.34
         }
       ]
     },
@@ -1400,9 +1432,9 @@
       "record": "5\u20132",
       "opponent_id": 6,
       "opponent_name": "Purple People Eaters",
-      "projected_total": 88.72,
-      "opponent_projected_total": 91.43,
-      "win_probability": 0.4568,
+      "projected_total": 99.71,
+      "opponent_projected_total": 100.81,
+      "win_probability": 0.4825,
       "starters": [
         {
           "player_id": "yh-t3-jared-goff",
@@ -1434,6 +1466,7 @@
             22.02
           ],
           "opp_rank": 1.0,
+          "volatility": 65,
           "vegas_implied": 24.5,
           "snap_share": [
             100.0,
@@ -1475,6 +1508,7 @@
             2.7
           ],
           "opp_rank": 9.0,
+          "volatility": 55,
           "vegas_implied": 17.0,
           "snap_share": [
             93.0,
@@ -1516,6 +1550,7 @@
             22.3
           ],
           "opp_rank": 18.0,
+          "volatility": 98,
           "vegas_implied": 24.75,
           "snap_share": [
             67.0,
@@ -1557,6 +1592,7 @@
             23.0
           ],
           "opp_rank": 26.0,
+          "volatility": 81,
           "vegas_implied": 23.0,
           "snap_share": [
             78.0,
@@ -1598,6 +1634,7 @@
             22.4
           ],
           "opp_rank": 10.0,
+          "volatility": 50,
           "vegas_implied": 17.0,
           "snap_share": [
             65.0,
@@ -1639,6 +1676,7 @@
             10.8
           ],
           "opp_rank": 20.0,
+          "volatility": 88,
           "vegas_implied": 25.25,
           "snap_share": [
             98.0,
@@ -1677,6 +1715,7 @@
             12.28
           ],
           "opp_rank": 8.0,
+          "volatility": 52,
           "vegas_implied": 17.5,
           "snap_share": [
             77.0,
@@ -1715,6 +1754,7 @@
             11.6
           ],
           "opp_rank": 7.0,
+          "volatility": 100,
           "vegas_implied": 23.0,
           "snap_share": [
             0.0,
@@ -1756,6 +1796,7 @@
             6.88
           ],
           "opp_rank": null,
+          "volatility": 80,
           "vegas_implied": 23.0,
           "snap_share": null,
           "practice": null
@@ -1789,6 +1830,7 @@
             17.5
           ],
           "opp_rank": 17.0,
+          "volatility": 37,
           "vegas_implied": 23.5,
           "snap_share": [
             7.0,
@@ -1829,6 +1871,7 @@
             8.1
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             48.0,
@@ -1869,6 +1912,7 @@
             0.6
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             72.0,
@@ -1909,6 +1953,7 @@
             14.02
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             85.0,
@@ -1949,6 +1994,7 @@
             14.2
           ],
           "opp_rank": null,
+          "volatility": 4,
           "vegas_implied": null,
           "snap_share": [
             49.0,
@@ -1989,6 +2035,7 @@
             9.82
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             2.0,
@@ -2029,6 +2076,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 6,
           "vegas_implied": null,
           "snap_share": [
             55.0,
@@ -2050,9 +2098,9 @@
       "record": "2\u20135",
       "opponent_id": 8,
       "opponent_name": "Sun Tzu's Battalion",
-      "projected_total": 81.18,
-      "opponent_projected_total": 84.99,
-      "win_probability": 0.4394,
+      "projected_total": 89.47,
+      "opponent_projected_total": 96.23,
+      "win_probability": 0.3934,
       "starters": [
         {
           "player_id": "yh-t4-caleb-williams",
@@ -2082,6 +2130,7 @@
             26.12
           ],
           "opp_rank": 2.0,
+          "volatility": 47,
           "vegas_implied": 21.75,
           "snap_share": [
             100.0,
@@ -2090,6 +2139,48 @@
             100.0
           ],
           "practice": null
+        },
+        {
+          "player_id": "yh-t4-carnell-tate",
+          "name": "Carnell Tate",
+          "position": "WR",
+          "nfl_team": "Ten",
+          "opponent": "Cin",
+          "home": false,
+          "kickoff": "Sun 1:00 PM",
+          "injury": null,
+          "force_zero": false,
+          "bye": false,
+          "q10": 1.53,
+          "q50": 6.22,
+          "q90": 16.56,
+          "mean": 8.02,
+          "yahoo": 7.98,
+          "yahoo_delta": -1.7600000000000007,
+          "slot": "WR",
+          "verdict": "monitor",
+          "notes": [],
+          "sparkline": [],
+          "recent_points": [
+            2.7,
+            5.8,
+            12.5,
+            0.6,
+            13.0,
+            4.9
+          ],
+          "opp_rank": 25.0,
+          "volatility": 67,
+          "vegas_implied": 18.25,
+          "snap_share": [
+            75.0,
+            88.0,
+            84.0,
+            76.0,
+            74.0,
+            89.0
+          ],
+          "practice": "DNP"
         },
         {
           "player_id": "yh-t4-christian-watson",
@@ -2121,6 +2212,7 @@
             5.7
           ],
           "opp_rank": 7.0,
+          "volatility": 88,
           "vegas_implied": 25.25,
           "snap_share": [
             90.0,
@@ -2129,86 +2221,6 @@
             80.0,
             88.0,
             81.0
-          ],
-          "practice": null
-        },
-        {
-          "player_id": "yh-t4-justin-jefferson",
-          "name": "Justin Jefferson",
-          "position": "WR",
-          "nfl_team": "Min",
-          "opponent": "Det",
-          "home": false,
-          "kickoff": "Sun 1:00 PM",
-          "injury": null,
-          "force_zero": false,
-          "bye": false,
-          "q10": 1.5,
-          "q50": 6.65,
-          "q90": 15.21,
-          "mean": 7.59,
-          "yahoo": 11.51,
-          "yahoo_delta": -4.859999999999999,
-          "slot": "WR",
-          "verdict": "monitor",
-          "notes": [],
-          "sparkline": [],
-          "recent_points": [
-            23.2,
-            5.5,
-            3.2,
-            12.8,
-            4.4
-          ],
-          "opp_rank": 30.0,
-          "vegas_implied": 22.0,
-          "snap_share": [
-            92.0,
-            100.0,
-            12.0,
-            89.0,
-            93.0
-          ],
-          "practice": null
-        },
-        {
-          "player_id": "yh-t4-j-k-dobbins",
-          "name": "J.K. Dobbins",
-          "position": "RB",
-          "nfl_team": "Den",
-          "opponent": "KC",
-          "home": true,
-          "kickoff": "Sun 1:00 PM",
-          "injury": null,
-          "force_zero": false,
-          "bye": false,
-          "q10": 1.3,
-          "q50": 6.03,
-          "q90": 15.38,
-          "mean": 7.4,
-          "yahoo": 4.84,
-          "yahoo_delta": 1.1900000000000004,
-          "slot": "RB",
-          "verdict": "start",
-          "notes": [],
-          "sparkline": [],
-          "recent_points": [
-            3.6,
-            5.3,
-            5.2,
-            13.4,
-            10.6,
-            8.3
-          ],
-          "opp_rank": 14.0,
-          "vegas_implied": 20.5,
-          "snap_share": [
-            34.0,
-            49.0,
-            32.0,
-            52.0,
-            52.0,
-            23.0
           ],
           "practice": null
         },
@@ -2242,6 +2254,7 @@
             16.1
           ],
           "opp_rank": 20.0,
+          "volatility": 79,
           "vegas_implied": 26.25,
           "snap_share": [
             55.0,
@@ -2252,6 +2265,46 @@
             51.0
           ],
           "practice": null
+        },
+        {
+          "player_id": "yh-t4-saquon-barkley",
+          "name": "Saquon Barkley",
+          "position": "RB",
+          "nfl_team": "Phi",
+          "opponent": "Was",
+          "home": false,
+          "kickoff": "Sun 8:20 PM",
+          "injury": "Q",
+          "force_zero": false,
+          "bye": false,
+          "q10": 1.04,
+          "q50": 4.99,
+          "q90": 15.62,
+          "mean": 7.87,
+          "yahoo": 9.31,
+          "yahoo_delta": -4.32,
+          "slot": "RB",
+          "verdict": "monitor",
+          "notes": [],
+          "sparkline": [],
+          "recent_points": [
+            8.0,
+            2.0,
+            8.0,
+            1.0,
+            13.1
+          ],
+          "opp_rank": 8.0,
+          "volatility": 31,
+          "vegas_implied": 17.5,
+          "snap_share": [
+            71.0,
+            16.0,
+            72.0,
+            7.0,
+            15.0
+          ],
+          "practice": "DNP"
         },
         {
           "player_id": "yh-t4-colston-loveland",
@@ -2283,6 +2336,7 @@
             12.9
           ],
           "opp_rank": 4.0,
+          "volatility": 69,
           "vegas_implied": 21.75,
           "snap_share": [
             86.0,
@@ -2295,45 +2349,46 @@
           "practice": null
         },
         {
-          "player_id": "yh-t4-carnell-tate",
-          "name": "Carnell Tate",
+          "player_id": "yh-t4-kc-concepcion-jr",
+          "name": "KC Concepcion Jr.",
           "position": "WR",
-          "nfl_team": "Ten",
-          "opponent": "Cin",
+          "nfl_team": "Cle",
+          "opponent": "Pit",
           "home": false,
           "kickoff": "Sun 1:00 PM",
           "injury": null,
           "force_zero": false,
           "bye": false,
-          "q10": 1.53,
-          "q50": 6.22,
-          "q90": 16.56,
-          "mean": 8.02,
-          "yahoo": 7.98,
-          "yahoo_delta": -1.7600000000000007,
+          "q10": 1.39,
+          "q50": 6.21,
+          "q90": 16.68,
+          "mean": 7.65,
+          "yahoo": 7.81,
+          "yahoo_delta": -1.5999999999999996,
           "slot": "FLEX",
           "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
-            2.7,
-            5.8,
-            12.5,
-            0.6,
-            13.0,
-            4.9
+            2.2,
+            0.94,
+            6.8,
+            0.5,
+            4.42,
+            15.2
           ],
-          "opp_rank": 25.0,
-          "vegas_implied": 18.25,
+          "opp_rank": 9.0,
+          "volatility": 73,
+          "vegas_implied": 17.0,
           "snap_share": [
-            75.0,
-            88.0,
-            84.0,
-            76.0,
-            74.0,
-            89.0
+            66.0,
+            86.0,
+            92.0,
+            16.0,
+            81.0,
+            79.0
           ],
-          "practice": "DNP"
+          "practice": null
         },
         {
           "player_id": "yh-t4-ryan-fitzgerald",
@@ -2365,6 +2420,7 @@
             1.0
           ],
           "opp_rank": 1.0,
+          "volatility": 100,
           "vegas_implied": 22.25,
           "snap_share": [
             1.0,
@@ -2406,6 +2462,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 47,
           "vegas_implied": 25.75,
           "snap_share": null,
           "practice": null
@@ -2413,84 +2470,86 @@
       ],
       "bench": [
         {
-          "player_id": "yh-t4-kc-concepcion-jr",
-          "name": "KC Concepcion Jr.",
+          "player_id": "yh-t4-justin-jefferson",
+          "name": "Justin Jefferson",
           "position": "WR",
-          "nfl_team": "Cle",
-          "opponent": "Pit",
+          "nfl_team": "Min",
+          "opponent": "Det",
           "home": false,
           "kickoff": "Sun 1:00 PM",
           "injury": null,
           "force_zero": false,
           "bye": false,
-          "q10": 1.39,
-          "q50": 6.21,
-          "q90": 16.68,
-          "mean": 7.65,
-          "yahoo": 7.81,
-          "yahoo_delta": -1.5999999999999996,
+          "q10": 1.5,
+          "q50": 6.65,
+          "q90": 15.21,
+          "mean": 7.59,
+          "yahoo": 11.51,
+          "yahoo_delta": -4.859999999999999,
           "slot": null,
           "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
-            2.2,
-            0.94,
-            6.8,
-            0.5,
-            4.42,
-            15.2
+            23.2,
+            5.5,
+            3.2,
+            12.8,
+            4.4
           ],
-          "opp_rank": 9.0,
-          "vegas_implied": 17.0,
+          "opp_rank": 30.0,
+          "volatility": 45,
+          "vegas_implied": 22.0,
           "snap_share": [
-            66.0,
-            86.0,
             92.0,
-            16.0,
-            81.0,
-            79.0
+            100.0,
+            12.0,
+            89.0,
+            93.0
           ],
           "practice": null
         },
         {
-          "player_id": "yh-t4-saquon-barkley",
-          "name": "Saquon Barkley",
+          "player_id": "yh-t4-j-k-dobbins",
+          "name": "J.K. Dobbins",
           "position": "RB",
-          "nfl_team": "Phi",
-          "opponent": "Was",
-          "home": false,
-          "kickoff": "Sun 8:20 PM",
-          "injury": "Q",
+          "nfl_team": "Den",
+          "opponent": "KC",
+          "home": true,
+          "kickoff": "Sun 1:00 PM",
+          "injury": null,
           "force_zero": false,
           "bye": false,
-          "q10": 1.04,
-          "q50": 4.99,
-          "q90": 15.62,
-          "mean": 7.87,
-          "yahoo": 9.31,
-          "yahoo_delta": -4.32,
+          "q10": 1.3,
+          "q50": 6.03,
+          "q90": 15.38,
+          "mean": 7.4,
+          "yahoo": 4.84,
+          "yahoo_delta": 1.1900000000000004,
           "slot": null,
-          "verdict": "sit",
+          "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
-            8.0,
-            2.0,
-            8.0,
-            1.0,
-            13.1
+            3.6,
+            5.3,
+            5.2,
+            13.4,
+            10.6,
+            8.3
           ],
-          "opp_rank": 8.0,
-          "vegas_implied": 17.5,
+          "opp_rank": 14.0,
+          "volatility": 29,
+          "vegas_implied": 20.5,
           "snap_share": [
-            71.0,
-            16.0,
-            72.0,
-            7.0,
-            15.0
+            34.0,
+            49.0,
+            32.0,
+            52.0,
+            52.0,
+            23.0
           ],
-          "practice": "DNP"
+          "practice": null
         },
         {
           "player_id": "yh-t4-kenny-gainwell",
@@ -2522,6 +2581,7 @@
             10.0
           ],
           "opp_rank": 26.0,
+          "volatility": 19,
           "vegas_implied": 23.0,
           "snap_share": [
             35.0,
@@ -2563,6 +2623,7 @@
             2.7
           ],
           "opp_rank": 21.0,
+          "volatility": 12,
           "vegas_implied": 22.0,
           "snap_share": [
             19.0,
@@ -2606,6 +2667,7 @@
             0.7
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             53.0,
@@ -2647,6 +2709,7 @@
             15.82
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             100.0,
@@ -2662,23 +2725,33 @@
       "calls": [
         {
           "slot": "W/R/T",
-          "margin": 0.01,
-          "starter_id": "yh-t4-carnell-tate",
-          "starter_name": "Carnell Tate",
-          "starter_projection": 6.22,
-          "alternative_id": "yh-t4-kc-concepcion-jr",
-          "alternative_name": "KC Concepcion Jr.",
-          "alternative_projection": 6.21
+          "margin": 0.06,
+          "starter_id": "yh-t4-kc-concepcion-jr",
+          "starter_name": "KC Concepcion Jr.",
+          "starter_projection": 7.65,
+          "alternative_id": "yh-t4-justin-jefferson",
+          "alternative_name": "Justin Jefferson",
+          "alternative_projection": 7.59
         },
         {
           "slot": "WR",
-          "margin": 0.44,
-          "starter_id": "yh-t4-justin-jefferson",
-          "starter_name": "Justin Jefferson",
-          "starter_projection": 6.65,
-          "alternative_id": "yh-t4-kc-concepcion-jr",
-          "alternative_name": "KC Concepcion Jr.",
-          "alternative_projection": 6.21
+          "margin": 0.43,
+          "starter_id": "yh-t4-carnell-tate",
+          "starter_name": "Carnell Tate",
+          "starter_projection": 8.02,
+          "alternative_id": "yh-t4-justin-jefferson",
+          "alternative_name": "Justin Jefferson",
+          "alternative_projection": 7.59
+        },
+        {
+          "slot": "RB",
+          "margin": 0.47,
+          "starter_id": "yh-t4-saquon-barkley",
+          "starter_name": "Saquon Barkley",
+          "starter_projection": 7.87,
+          "alternative_id": "yh-t4-j-k-dobbins",
+          "alternative_name": "J.K. Dobbins",
+          "alternative_projection": 7.4
         }
       ]
     },
@@ -2690,9 +2763,9 @@
       "record": "3\u20134",
       "opponent_id": 12,
       "opponent_name": "Big Nasty",
-      "projected_total": 89.42,
-      "opponent_projected_total": 77.76,
-      "win_probability": 0.6795,
+      "projected_total": 97.87,
+      "opponent_projected_total": 88.86,
+      "win_probability": 0.6407,
       "starters": [
         {
           "player_id": "yh-t5-joe-burrow",
@@ -2724,6 +2797,7 @@
             36.88
           ],
           "opp_rank": 13.0,
+          "volatility": 76,
           "vegas_implied": 28.25,
           "snap_share": [
             100.0,
@@ -2765,6 +2839,7 @@
             12.2
           ],
           "opp_rank": 14.0,
+          "volatility": 92,
           "vegas_implied": 28.25,
           "snap_share": [
             94.0,
@@ -2794,7 +2869,7 @@
           "yahoo": 6.41,
           "yahoo_delta": -1.9500000000000002,
           "slot": "WR",
-          "verdict": "start",
+          "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
@@ -2806,6 +2881,7 @@
             8.3
           ],
           "opp_rank": 11.0,
+          "volatility": 29,
           "vegas_implied": 27.5,
           "snap_share": [
             65.0,
@@ -2847,6 +2923,7 @@
             13.4
           ],
           "opp_rank": 29.0,
+          "volatility": 62,
           "vegas_implied": 23.5,
           "snap_share": [
             31.0,
@@ -2883,6 +2960,7 @@
             15.1
           ],
           "opp_rank": 31.0,
+          "volatility": 83,
           "vegas_implied": 25.25,
           "snap_share": [
             52.0
@@ -2919,6 +2997,7 @@
             1.8
           ],
           "opp_rank": 1.0,
+          "volatility": 81,
           "vegas_implied": 24.5,
           "snap_share": [
             81.0,
@@ -2957,6 +3036,7 @@
             5.5
           ],
           "opp_rank": 29.0,
+          "volatility": 77,
           "vegas_implied": 23.5,
           "snap_share": [
             58.0,
@@ -2995,6 +3075,7 @@
             9.3
           ],
           "opp_rank": 8.0,
+          "volatility": 46,
           "vegas_implied": 22.0,
           "snap_share": [
             0.0,
@@ -3036,6 +3117,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 80,
           "vegas_implied": 22.0,
           "snap_share": null,
           "practice": null
@@ -3071,6 +3153,7 @@
             2.2
           ],
           "opp_rank": 24.0,
+          "volatility": 60,
           "vegas_implied": 23.75,
           "snap_share": [
             43.0,
@@ -3109,6 +3192,7 @@
             6.3
           ],
           "opp_rank": 24.0,
+          "volatility": 25,
           "vegas_implied": 23.75,
           "snap_share": [
             6.0,
@@ -3136,7 +3220,7 @@
           "yahoo": 9.22,
           "yahoo_delta": -5.98,
           "slot": null,
-          "verdict": "sit",
+          "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
@@ -3146,6 +3230,7 @@
             1.7
           ],
           "opp_rank": 24.0,
+          "volatility": 25,
           "vegas_implied": 28.75,
           "snap_share": [
             76.0,
@@ -3185,6 +3270,7 @@
             2.3
           ],
           "opp_rank": 18.0,
+          "volatility": 25,
           "vegas_implied": 25.75,
           "snap_share": [
             71.0,
@@ -3228,6 +3314,7 @@
             6.6
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             79.0,
@@ -3262,6 +3349,7 @@
           "sparkline": [],
           "recent_points": [],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": null,
           "practice": null
@@ -3296,12 +3384,24 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": null,
           "practice": null
         }
       ],
-      "calls": []
+      "calls": [
+        {
+          "slot": "WR",
+          "margin": 0.38,
+          "starter_id": "yh-t5-jakobi-meyers",
+          "starter_name": "Jakobi Meyers",
+          "starter_projection": 5.77,
+          "alternative_id": "yh-t5-dj-moore",
+          "alternative_name": "DJ Moore",
+          "alternative_projection": 5.39
+        }
+      ]
     },
     {
       "team_id": 6,
@@ -3311,9 +3411,9 @@
       "record": "6\u20131",
       "opponent_id": 3,
       "opponent_name": "CM Skunks",
-      "projected_total": 91.43,
-      "opponent_projected_total": 88.72,
-      "win_probability": 0.5432,
+      "projected_total": 100.81,
+      "opponent_projected_total": 99.71,
+      "win_probability": 0.5175,
       "starters": [
         {
           "player_id": "yh-t6-trevor-lawrence",
@@ -3345,6 +3445,7 @@
             35.34
           ],
           "opp_rank": 22.0,
+          "volatility": 82,
           "vegas_implied": 27.5,
           "snap_share": [
             88.0,
@@ -3386,6 +3487,7 @@
             12.6
           ],
           "opp_rank": 13.0,
+          "volatility": 94,
           "vegas_implied": 21.5,
           "snap_share": [
             62.0,
@@ -3415,7 +3517,7 @@
           "yahoo": 9.71,
           "yahoo_delta": -3.3100000000000005,
           "slot": "WR",
-          "verdict": "start",
+          "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
@@ -3427,6 +3529,7 @@
             2.6
           ],
           "opp_rank": 17.0,
+          "volatility": 69,
           "vegas_implied": 23.5,
           "snap_share": [
             88.0,
@@ -3468,6 +3571,7 @@
             12.2
           ],
           "opp_rank": 2.0,
+          "volatility": 88,
           "vegas_implied": 21.5,
           "snap_share": [
             51.0,
@@ -3509,6 +3613,7 @@
             33.5
           ],
           "opp_rank": 7.0,
+          "volatility": 65,
           "vegas_implied": 18.25,
           "snap_share": [
             55.0,
@@ -3550,6 +3655,7 @@
             9.5
           ],
           "opp_rank": 32.0,
+          "volatility": 38,
           "vegas_implied": 22.0,
           "snap_share": [
             66.0,
@@ -3579,7 +3685,7 @@
           "yahoo": 13.29,
           "yahoo_delta": -4.049999999999999,
           "slot": "FLEX",
-          "verdict": "start",
+          "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
@@ -3591,6 +3697,7 @@
             20.7
           ],
           "opp_rank": 25.0,
+          "volatility": 46,
           "vegas_implied": 27.5,
           "snap_share": [
             49.0,
@@ -3632,6 +3739,7 @@
             6.8
           ],
           "opp_rank": 9.0,
+          "volatility": 46,
           "vegas_implied": 25.75,
           "snap_share": [
             0.0,
@@ -3673,6 +3781,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 13,
           "vegas_implied": 22.0,
           "snap_share": null,
           "practice": null
@@ -3708,6 +3817,7 @@
             15.9
           ],
           "opp_rank": 32.0,
+          "volatility": 24,
           "vegas_implied": 22.0,
           "snap_share": [
             17.0,
@@ -3736,7 +3846,7 @@
           "yahoo": 5.72,
           "yahoo_delta": 2.4799999999999995,
           "slot": null,
-          "verdict": "sit",
+          "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
@@ -3746,6 +3856,7 @@
             27.0
           ],
           "opp_rank": 13.0,
+          "volatility": 58,
           "vegas_implied": 21.75,
           "snap_share": [
             43.0,
@@ -3773,7 +3884,7 @@
           "yahoo": 6.11,
           "yahoo_delta": -1.2200000000000006,
           "slot": null,
-          "verdict": "sit",
+          "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
@@ -3785,6 +3896,7 @@
             6.9
           ],
           "opp_rank": 2.0,
+          "volatility": 51,
           "vegas_implied": 21.75,
           "snap_share": [
             84.0,
@@ -3793,6 +3905,48 @@
             99.0,
             96.0,
             94.0
+          ],
+          "practice": null
+        },
+        {
+          "player_id": "yh-t6-chris-rodriguez-jr",
+          "name": "Chris Rodriguez Jr.",
+          "position": "RB",
+          "nfl_team": "Jax",
+          "opponent": "Ind",
+          "home": true,
+          "kickoff": "Sun 1:00 PM",
+          "injury": null,
+          "force_zero": false,
+          "bye": false,
+          "q10": 0.52,
+          "q50": 3.31,
+          "q90": 12.85,
+          "mean": 5.71,
+          "yahoo": 5.7,
+          "yahoo_delta": -2.39,
+          "slot": null,
+          "verdict": "sit",
+          "notes": [],
+          "sparkline": [],
+          "recent_points": [
+            2.3,
+            1.3,
+            9.7,
+            9.5,
+            1.1,
+            5.5
+          ],
+          "opp_rank": 25.0,
+          "volatility": 17,
+          "vegas_implied": 27.5,
+          "snap_share": [
+            40.0,
+            22.0,
+            21.0,
+            25.0,
+            12.0,
+            30.0
           ],
           "practice": null
         },
@@ -3826,6 +3980,7 @@
             3.8
           ],
           "opp_rank": 17.0,
+          "volatility": 44,
           "vegas_implied": 28.75,
           "snap_share": [
             72.0,
@@ -3836,47 +3991,6 @@
             72.0
           ],
           "practice": "LP"
-        },
-        {
-          "player_id": "yh-t6-chris-rodriguez-jr",
-          "name": "Chris Rodriguez Jr.",
-          "position": "RB",
-          "nfl_team": "Jax",
-          "opponent": "Ind",
-          "home": true,
-          "kickoff": "Sun 1:00 PM",
-          "injury": null,
-          "force_zero": false,
-          "bye": false,
-          "q10": 0.52,
-          "q50": 3.31,
-          "q90": 12.85,
-          "mean": 5.71,
-          "yahoo": 5.7,
-          "yahoo_delta": -2.39,
-          "slot": null,
-          "verdict": "sit",
-          "notes": [],
-          "sparkline": [],
-          "recent_points": [
-            2.3,
-            1.3,
-            9.7,
-            9.5,
-            1.1,
-            5.5
-          ],
-          "opp_rank": 25.0,
-          "vegas_implied": 27.5,
-          "snap_share": [
-            40.0,
-            22.0,
-            21.0,
-            25.0,
-            12.0,
-            30.0
-          ],
-          "practice": null
         },
         {
           "player_id": "yh-t6-brian-robinson-jr",
@@ -3908,6 +4022,7 @@
             1.56
           ],
           "opp_rank": 2.0,
+          "volatility": 10,
           "vegas_implied": 21.5,
           "snap_share": [
             25.0,
@@ -3951,6 +4066,7 @@
             5.6
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             84.0,
@@ -3963,7 +4079,28 @@
           "practice": null
         }
       ],
-      "calls": []
+      "calls": [
+        {
+          "slot": "W/R/T",
+          "margin": 0.79,
+          "starter_id": "yh-t6-bhayshul-tuten",
+          "starter_name": "Bhayshul Tuten",
+          "starter_projection": 10.37,
+          "alternative_id": "yh-t6-kyle-monangai",
+          "alternative_name": "Kyle Monangai",
+          "alternative_projection": 9.58
+        },
+        {
+          "slot": "WR",
+          "margin": 0.92,
+          "starter_id": "yh-t6-garrett-wilson",
+          "starter_name": "Garrett Wilson",
+          "starter_projection": 7.99,
+          "alternative_id": "yh-t6-rome-odunze",
+          "alternative_name": "Rome Odunze",
+          "alternative_projection": 7.07
+        }
+      ]
     },
     {
       "team_id": 7,
@@ -3973,9 +4110,9 @@
       "record": "2\u20135",
       "opponent_id": 10,
       "opponent_name": "Purple Reign",
-      "projected_total": 78.87,
-      "opponent_projected_total": 91.5,
-      "win_probability": 0.3067,
+      "projected_total": 90.31,
+      "opponent_projected_total": 102.9,
+      "win_probability": 0.3073,
       "starters": [
         {
           "player_id": "yh-t7-patrick-mahomes",
@@ -4007,6 +4144,7 @@
             6.0
           ],
           "opp_rank": 8.0,
+          "volatility": 6,
           "vegas_implied": 22.0,
           "snap_share": [
             100.0,
@@ -4048,6 +4186,7 @@
             19.4
           ],
           "opp_rank": 29.0,
+          "volatility": 86,
           "vegas_implied": 30.75,
           "snap_share": [
             75.0,
@@ -4089,6 +4228,7 @@
             6.6
           ],
           "opp_rank": 27.0,
+          "volatility": 75,
           "vegas_implied": 23.75,
           "snap_share": [
             94.0,
@@ -4130,6 +4270,7 @@
             16.1
           ],
           "opp_rank": 20.0,
+          "volatility": 67,
           "vegas_implied": 26.25,
           "snap_share": [
             45.0,
@@ -4170,6 +4311,7 @@
             16.3
           ],
           "opp_rank": 27.0,
+          "volatility": 75,
           "vegas_implied": 18.25,
           "snap_share": [
             19.0,
@@ -4210,6 +4352,7 @@
             4.4
           ],
           "opp_rank": 22.0,
+          "volatility": 62,
           "vegas_implied": 22.0,
           "snap_share": [
             71.0,
@@ -4239,7 +4382,7 @@
           "yahoo": 10.04,
           "yahoo_delta": -3.579999999999999,
           "slot": "FLEX",
-          "verdict": "start",
+          "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
@@ -4250,6 +4393,7 @@
             11.7
           ],
           "opp_rank": 18.0,
+          "volatility": 38,
           "vegas_implied": 23.0,
           "snap_share": [
             41.0,
@@ -4290,6 +4434,7 @@
             8.0
           ],
           "opp_rank": 3.0,
+          "volatility": 23,
           "vegas_implied": 24.75,
           "snap_share": [
             0.0,
@@ -4331,12 +4476,55 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 47,
           "vegas_implied": 26.25,
           "snap_share": null,
           "practice": null
         }
       ],
       "bench": [
+        {
+          "player_id": "yh-t7-makai-lemon",
+          "name": "Makai Lemon",
+          "position": "WR",
+          "nfl_team": "Phi",
+          "opponent": "Was",
+          "home": false,
+          "kickoff": "Sun 8:20 PM",
+          "injury": null,
+          "force_zero": false,
+          "bye": false,
+          "q10": 0.69,
+          "q50": 4.59,
+          "q90": 14.17,
+          "mean": 7.32,
+          "yahoo": 5.21,
+          "yahoo_delta": -0.6200000000000001,
+          "slot": null,
+          "verdict": "monitor",
+          "notes": [],
+          "sparkline": [],
+          "recent_points": [
+            0.9,
+            2.9,
+            2.7,
+            4.3,
+            1.9,
+            12.7
+          ],
+          "opp_rank": 21.0,
+          "volatility": 41,
+          "vegas_implied": 17.5,
+          "snap_share": [
+            63.0,
+            70.0,
+            74.0,
+            81.0,
+            81.0,
+            91.0
+          ],
+          "practice": null
+        },
         {
           "player_id": "yh-t7-jalen-coker",
           "name": "Jalen Coker",
@@ -4366,6 +4554,7 @@
             0.9
           ],
           "opp_rank": 22.0,
+          "volatility": 39,
           "vegas_implied": 22.25,
           "snap_share": [
             84.0,
@@ -4406,6 +4595,7 @@
             7.1
           ],
           "opp_rank": 13.0,
+          "volatility": 50,
           "vegas_implied": 17.0,
           "snap_share": [
             86.0,
@@ -4414,47 +4604,6 @@
             93.0,
             89.0,
             83.0
-          ],
-          "practice": null
-        },
-        {
-          "player_id": "yh-t7-makai-lemon",
-          "name": "Makai Lemon",
-          "position": "WR",
-          "nfl_team": "Phi",
-          "opponent": "Was",
-          "home": false,
-          "kickoff": "Sun 8:20 PM",
-          "injury": null,
-          "force_zero": false,
-          "bye": false,
-          "q10": 0.69,
-          "q50": 4.59,
-          "q90": 14.17,
-          "mean": 7.32,
-          "yahoo": 5.21,
-          "yahoo_delta": -0.6200000000000001,
-          "slot": null,
-          "verdict": "sit",
-          "notes": [],
-          "sparkline": [],
-          "recent_points": [
-            0.9,
-            2.9,
-            2.7,
-            4.3,
-            1.9,
-            12.7
-          ],
-          "opp_rank": 21.0,
-          "vegas_implied": 17.5,
-          "snap_share": [
-            63.0,
-            70.0,
-            74.0,
-            81.0,
-            81.0,
-            91.0
           ],
           "practice": null
         }
@@ -4490,6 +4639,7 @@
             6.2
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             29.0,
@@ -4528,6 +4678,7 @@
             7.0
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             59.0,
@@ -4559,6 +4710,7 @@
           "sparkline": [],
           "recent_points": [],
           "opp_rank": null,
+          "volatility": 6,
           "vegas_implied": null,
           "snap_share": null,
           "practice": null
@@ -4567,13 +4719,23 @@
       "calls": [
         {
           "slot": "TE",
-          "margin": 0.38,
+          "margin": 0.04,
           "starter_id": "yh-t7-travis-kelce",
           "starter_name": "Travis Kelce",
-          "starter_projection": 5.29,
+          "starter_projection": 6.41,
           "alternative_id": "yh-t7-harold-fannin-jr",
           "alternative_name": "Harold Fannin Jr.",
-          "alternative_projection": 4.91
+          "alternative_projection": 6.37
+        },
+        {
+          "slot": "W/R/T",
+          "margin": 0.83,
+          "starter_id": "yh-t7-rachaad-white",
+          "starter_name": "Rachaad White",
+          "starter_projection": 8.15,
+          "alternative_id": "yh-t7-makai-lemon",
+          "alternative_name": "Makai Lemon",
+          "alternative_projection": 7.32
         }
       ]
     },
@@ -4585,9 +4747,9 @@
       "record": "4\u20133",
       "opponent_id": 4,
       "opponent_name": "Flippin Phins",
-      "projected_total": 84.99,
-      "opponent_projected_total": 81.18,
-      "win_probability": 0.5606,
+      "projected_total": 96.23,
+      "opponent_projected_total": 89.47,
+      "win_probability": 0.6066,
       "starters": [
         {
           "player_id": "yh-t8-drake-maye",
@@ -4619,6 +4781,7 @@
             32.44
           ],
           "opp_rank": 25.0,
+          "volatility": 100,
           "vegas_implied": 25.25,
           "snap_share": [
             100.0,
@@ -4631,45 +4794,44 @@
           "practice": "FP"
         },
         {
-          "player_id": "yh-t8-jaylen-waddle",
-          "name": "Jaylen Waddle",
+          "player_id": "yh-t8-jordan-addison",
+          "name": "Jordan Addison",
           "position": "WR",
-          "nfl_team": "Den",
-          "opponent": "KC",
-          "home": true,
+          "nfl_team": "Min",
+          "opponent": "Det",
+          "home": false,
           "kickoff": "Sun 1:00 PM",
-          "injury": "Q",
+          "injury": null,
           "force_zero": false,
           "bye": false,
-          "q10": 1.11,
-          "q50": 4.99,
-          "q90": 13.15,
-          "mean": 5.54,
-          "yahoo": 7.18,
-          "yahoo_delta": -2.1899999999999995,
+          "q10": 0.69,
+          "q50": 4.15,
+          "q90": 13.75,
+          "mean": 6.25,
+          "yahoo": 6.68,
+          "yahoo_delta": -2.5299999999999994,
           "slot": "WR",
           "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
-            13.8,
-            4.4,
-            9.5,
-            2.8,
-            2.4,
-            4.8
+            0.0,
+            2.1,
+            16.0,
+            5.1,
+            2.3
           ],
-          "opp_rank": 3.0,
-          "vegas_implied": 20.5,
+          "opp_rank": 30.0,
+          "volatility": 35,
+          "vegas_implied": 22.0,
           "snap_share": [
-            61.0,
-            73.0,
-            68.0,
-            65.0,
-            65.0,
-            56.0
+            83.0,
+            88.0,
+            98.0,
+            96.0,
+            83.0
           ],
-          "practice": "DNP"
+          "practice": null
         },
         {
           "player_id": "yh-t8-tee-higgins",
@@ -4701,6 +4863,7 @@
             20.8
           ],
           "opp_rank": 14.0,
+          "volatility": 82,
           "vegas_implied": 28.25,
           "snap_share": [
             72.0,
@@ -4742,6 +4905,7 @@
             5.7
           ],
           "opp_rank": 6.0,
+          "volatility": 94,
           "vegas_implied": 22.0,
           "snap_share": [
             68.0,
@@ -4783,6 +4947,7 @@
             3.9
           ],
           "opp_rank": 16.0,
+          "volatility": 40,
           "vegas_implied": 19.25,
           "snap_share": [
             58.0,
@@ -4823,6 +4988,7 @@
             14.4
           ],
           "opp_rank": 19.0,
+          "volatility": 75,
           "vegas_implied": 20.0,
           "snap_share": [
             93.0,
@@ -4863,6 +5029,7 @@
             2.6
           ],
           "opp_rank": 3.0,
+          "volatility": 35,
           "vegas_implied": 22.0,
           "snap_share": [
             46.0,
@@ -4904,6 +5071,7 @@
             5.3
           ],
           "opp_rank": 5.0,
+          "volatility": 100,
           "vegas_implied": 20.0,
           "snap_share": [
             0.0,
@@ -4945,6 +5113,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 100,
           "vegas_implied": 20.5,
           "snap_share": null,
           "practice": null
@@ -4981,6 +5150,7 @@
             23.5
           ],
           "opp_rank": 6.0,
+          "volatility": 53,
           "vegas_implied": 26.25,
           "snap_share": [
             100.0,
@@ -5022,48 +5192,52 @@
             7.84
           ],
           "opp_rank": null,
+          "volatility": 93,
           "vegas_implied": 27.5,
           "snap_share": null,
           "practice": null
         },
         {
-          "player_id": "yh-t8-jordan-addison",
-          "name": "Jordan Addison",
+          "player_id": "yh-t8-jaylen-waddle",
+          "name": "Jaylen Waddle",
           "position": "WR",
-          "nfl_team": "Min",
-          "opponent": "Det",
-          "home": false,
+          "nfl_team": "Den",
+          "opponent": "KC",
+          "home": true,
           "kickoff": "Sun 1:00 PM",
-          "injury": null,
+          "injury": "Q",
           "force_zero": false,
           "bye": false,
-          "q10": 0.69,
-          "q50": 4.15,
-          "q90": 13.75,
-          "mean": 6.25,
-          "yahoo": 6.68,
-          "yahoo_delta": -2.5299999999999994,
+          "q10": 1.11,
+          "q50": 4.99,
+          "q90": 13.15,
+          "mean": 5.54,
+          "yahoo": 7.18,
+          "yahoo_delta": -2.1899999999999995,
           "slot": null,
           "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
-            0.0,
-            2.1,
-            16.0,
-            5.1,
-            2.3
+            13.8,
+            4.4,
+            9.5,
+            2.8,
+            2.4,
+            4.8
           ],
-          "opp_rank": 30.0,
-          "vegas_implied": 22.0,
+          "opp_rank": 3.0,
+          "volatility": 24,
+          "vegas_implied": 20.5,
           "snap_share": [
-            83.0,
-            88.0,
-            98.0,
-            96.0,
-            83.0
+            61.0,
+            73.0,
+            68.0,
+            65.0,
+            65.0,
+            56.0
           ],
-          "practice": null
+          "practice": "DNP"
         },
         {
           "player_id": "yh-t8-tyler-higbee",
@@ -5095,6 +5269,7 @@
             1.4
           ],
           "opp_rank": 11.0,
+          "volatility": 12,
           "vegas_implied": 26.25,
           "snap_share": [
             20.0,
@@ -5136,6 +5311,7 @@
             0.28
           ],
           "opp_rank": 2.0,
+          "volatility": 10,
           "vegas_implied": 21.75,
           "snap_share": [
             62.0,
@@ -5179,6 +5355,7 @@
             0.98
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             60.0,
@@ -5220,6 +5397,7 @@
             3.9
           ],
           "opp_rank": null,
+          "volatility": 6,
           "vegas_implied": null,
           "snap_share": [
             54.0,
@@ -5245,13 +5423,13 @@
         },
         {
           "slot": "WR",
-          "margin": 0.84,
-          "starter_id": "yh-t8-jaylen-waddle",
-          "starter_name": "Jaylen Waddle",
-          "starter_projection": 4.99,
-          "alternative_id": "yh-t8-jordan-addison",
-          "alternative_name": "Jordan Addison",
-          "alternative_projection": 4.15
+          "margin": 0.71,
+          "starter_id": "yh-t8-jordan-addison",
+          "starter_name": "Jordan Addison",
+          "starter_projection": 6.25,
+          "alternative_id": "yh-t8-jaylen-waddle",
+          "alternative_name": "Jaylen Waddle",
+          "alternative_projection": 5.54
         }
       ]
     },
@@ -5263,9 +5441,9 @@
       "record": "5\u20132",
       "opponent_id": 2,
       "opponent_name": "Belichick Yo'self",
-      "projected_total": 94.45,
-      "opponent_projected_total": 77.45,
-      "win_probability": 0.7517,
+      "projected_total": 104.04,
+      "opponent_projected_total": 90.48,
+      "win_probability": 0.7062,
       "starters": [
         {
           "player_id": "yh-t9-jayden-daniels",
@@ -5295,6 +5473,7 @@
             25.0
           ],
           "opp_rank": 24.0,
+          "volatility": 71,
           "vegas_implied": 23.0,
           "snap_share": [
             100.0,
@@ -5333,6 +5512,7 @@
             10.4
           ],
           "opp_rank": 31.0,
+          "volatility": 33,
           "vegas_implied": 23.0,
           "snap_share": [
             63.0,
@@ -5373,6 +5553,7 @@
             4.0
           ],
           "opp_rank": 22.0,
+          "volatility": 71,
           "vegas_implied": 22.25,
           "snap_share": [
             82.0,
@@ -5414,6 +5595,7 @@
             12.3
           ],
           "opp_rank": 5.0,
+          "volatility": 100,
           "vegas_implied": 24.5,
           "snap_share": [
             74.0,
@@ -5455,6 +5637,7 @@
             21.5
           ],
           "opp_rank": 22.0,
+          "volatility": 98,
           "vegas_implied": 30.75,
           "snap_share": [
             80.0,
@@ -5495,6 +5678,7 @@
             4.8
           ],
           "opp_rank": 31.0,
+          "volatility": 56,
           "vegas_implied": 17.5,
           "snap_share": [
             95.0,
@@ -5535,6 +5719,7 @@
             13.6
           ],
           "opp_rank": 21.0,
+          "volatility": 69,
           "vegas_implied": 22.0,
           "snap_share": [
             81.0,
@@ -5576,6 +5761,7 @@
             16.2
           ],
           "opp_rank": 10.0,
+          "volatility": 46,
           "vegas_implied": 21.75,
           "snap_share": [
             0.0,
@@ -5617,6 +5803,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 80,
           "vegas_implied": 28.25,
           "snap_share": null,
           "practice": null
@@ -5653,6 +5840,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 13,
           "vegas_implied": 21.5,
           "snap_share": null,
           "practice": null
@@ -5687,6 +5875,7 @@
             10.4
           ],
           "opp_rank": 1.0,
+          "volatility": 15,
           "vegas_implied": 20.0,
           "snap_share": [
             6.0,
@@ -5727,6 +5916,7 @@
             1.7
           ],
           "opp_rank": 5.0,
+          "volatility": 8,
           "vegas_implied": 19.25,
           "snap_share": [
             49.0,
@@ -5769,6 +5959,7 @@
             9.4
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             75.0,
@@ -5810,6 +6001,7 @@
             1.2
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             69.0,
@@ -5851,6 +6043,7 @@
             12.5
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             0.0,
@@ -5884,9 +6077,9 @@
       "record": "3\u20134",
       "opponent_id": 7,
       "opponent_name": "Redzone",
-      "projected_total": 91.5,
-      "opponent_projected_total": 78.87,
-      "win_probability": 0.6933,
+      "projected_total": 102.9,
+      "opponent_projected_total": 90.31,
+      "win_probability": 0.6927,
       "starters": [
         {
           "player_id": "yh-t10-jordan-love",
@@ -5918,6 +6111,7 @@
             20.96
           ],
           "opp_rank": 14.0,
+          "volatility": 41,
           "vegas_implied": 25.25,
           "snap_share": [
             100.0,
@@ -5959,6 +6153,7 @@
             15.2
           ],
           "opp_rank": 4.0,
+          "volatility": 96,
           "vegas_implied": 24.5,
           "snap_share": [
             90.0,
@@ -5999,6 +6194,7 @@
             13.8
           ],
           "opp_rank": 8.0,
+          "volatility": 100,
           "vegas_implied": 26.25,
           "snap_share": [
             70.0,
@@ -6039,6 +6235,7 @@
             13.7
           ],
           "opp_rank": 11.0,
+          "volatility": 73,
           "vegas_implied": 21.5,
           "snap_share": [
             71.0,
@@ -6080,6 +6277,7 @@
             18.5
           ],
           "opp_rank": 30.0,
+          "volatility": 54,
           "vegas_implied": 25.25,
           "snap_share": [
             36.0,
@@ -6121,6 +6319,7 @@
             17.1
           ],
           "opp_rank": 2.0,
+          "volatility": 94,
           "vegas_implied": 23.75,
           "snap_share": [
             88.0,
@@ -6133,30 +6332,45 @@
           "practice": null
         },
         {
-          "player_id": "yh-t10-zach-charbonnet",
-          "name": "Zach Charbonnet",
-          "position": "RB",
-          "nfl_team": "Sea",
-          "opponent": "Chi",
+          "player_id": "yh-t10-parker-washington",
+          "name": "Parker Washington",
+          "position": "WR",
+          "nfl_team": "Jax",
+          "opponent": "Ind",
           "home": true,
-          "kickoff": "Mon 8:15 PM",
-          "injury": "Q",
+          "kickoff": "Sun 1:00 PM",
+          "injury": null,
           "force_zero": false,
           "bye": false,
-          "q10": 2.18,
-          "q50": 7.1,
-          "q90": 17.87,
-          "mean": 8.48,
-          "yahoo": 7.96,
-          "yahoo_delta": -0.8600000000000003,
+          "q10": 1.62,
+          "q50": 6.78,
+          "q90": 17.35,
+          "mean": 8.79,
+          "yahoo": 12.14,
+          "yahoo_delta": -5.36,
           "slot": "FLEX",
           "verdict": "monitor",
           "notes": [],
           "sparkline": [],
-          "recent_points": [],
-          "opp_rank": 9.0,
-          "vegas_implied": 24.75,
-          "snap_share": null,
+          "recent_points": [
+            14.1,
+            10.28,
+            10.0,
+            1.12,
+            25.84,
+            6.68
+          ],
+          "opp_rank": 11.0,
+          "volatility": 76,
+          "vegas_implied": 27.5,
+          "snap_share": [
+            61.0,
+            81.0,
+            81.0,
+            80.0,
+            82.0,
+            73.0
+          ],
           "practice": null
         },
         {
@@ -6189,6 +6403,7 @@
             5.3
           ],
           "opp_rank": 30.0,
+          "volatility": 100,
           "vegas_implied": 19.25,
           "snap_share": [
             0.0,
@@ -6230,6 +6445,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 80,
           "vegas_implied": 30.75,
           "snap_share": null,
           "practice": null
@@ -6266,6 +6482,7 @@
             8.76
           ],
           "opp_rank": 18.0,
+          "volatility": 12,
           "vegas_implied": 19.25,
           "snap_share": [
             100.0,
@@ -6278,44 +6495,31 @@
           "practice": null
         },
         {
-          "player_id": "yh-t10-parker-washington",
-          "name": "Parker Washington",
-          "position": "WR",
-          "nfl_team": "Jax",
-          "opponent": "Ind",
+          "player_id": "yh-t10-zach-charbonnet",
+          "name": "Zach Charbonnet",
+          "position": "RB",
+          "nfl_team": "Sea",
+          "opponent": "Chi",
           "home": true,
-          "kickoff": "Sun 1:00 PM",
-          "injury": null,
+          "kickoff": "Mon 8:15 PM",
+          "injury": "Q",
           "force_zero": false,
           "bye": false,
-          "q10": 1.62,
-          "q50": 6.78,
-          "q90": 17.35,
-          "mean": 8.79,
-          "yahoo": 12.14,
-          "yahoo_delta": -5.36,
+          "q10": 2.18,
+          "q50": 7.1,
+          "q90": 17.87,
+          "mean": 8.48,
+          "yahoo": 7.96,
+          "yahoo_delta": -0.8600000000000003,
           "slot": null,
           "verdict": "monitor",
           "notes": [],
           "sparkline": [],
-          "recent_points": [
-            14.1,
-            10.28,
-            10.0,
-            1.12,
-            25.84,
-            6.68
-          ],
-          "opp_rank": 11.0,
-          "vegas_implied": 27.5,
-          "snap_share": [
-            61.0,
-            81.0,
-            81.0,
-            80.0,
-            82.0,
-            73.0
-          ],
+          "recent_points": [],
+          "opp_rank": 9.0,
+          "volatility": 42,
+          "vegas_implied": 24.75,
+          "snap_share": null,
           "practice": null
         },
         {
@@ -6348,6 +6552,7 @@
             1.8
           ],
           "opp_rank": 28.0,
+          "volatility": 31,
           "vegas_implied": 20.0,
           "snap_share": [
             83.0,
@@ -6389,6 +6594,7 @@
             0.7
           ],
           "opp_rank": 25.0,
+          "volatility": 16,
           "vegas_implied": 18.25,
           "snap_share": [
             53.0,
@@ -6432,6 +6638,7 @@
             11.1
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             74.0,
@@ -6473,6 +6680,7 @@
             2.8
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             29.0,
@@ -6488,13 +6696,13 @@
       "calls": [
         {
           "slot": "W/R/T",
-          "margin": 0.32,
-          "starter_id": "yh-t10-zach-charbonnet",
-          "starter_name": "Zach Charbonnet",
-          "starter_projection": 7.1,
-          "alternative_id": "yh-t10-parker-washington",
-          "alternative_name": "Parker Washington",
-          "alternative_projection": 6.78
+          "margin": 0.31,
+          "starter_id": "yh-t10-parker-washington",
+          "starter_name": "Parker Washington",
+          "starter_projection": 8.79,
+          "alternative_id": "yh-t10-zach-charbonnet",
+          "alternative_name": "Zach Charbonnet",
+          "alternative_projection": 8.48
         }
       ]
     },
@@ -6506,9 +6714,9 @@
       "record": "4\u20133",
       "opponent_id": 1,
       "opponent_name": "Vader's Raiders",
-      "projected_total": 91.48,
-      "opponent_projected_total": 83.48,
-      "win_probability": 0.6255,
+      "projected_total": 100.76,
+      "opponent_projected_total": 95.87,
+      "win_probability": 0.5775,
       "starters": [
         {
           "player_id": "yh-t11-josh-allen",
@@ -6540,6 +6748,7 @@
             22.3
           ],
           "opp_rank": 16.0,
+          "volatility": 94,
           "vegas_implied": 28.75,
           "snap_share": [
             100.0,
@@ -6581,6 +6790,7 @@
             21.1
           ],
           "opp_rank": 4.0,
+          "volatility": 78,
           "vegas_implied": 24.5,
           "snap_share": [
             84.0,
@@ -6619,6 +6829,7 @@
             8.8
           ],
           "opp_rank": 6.0,
+          "volatility": 80,
           "vegas_implied": 22.0,
           "snap_share": [
             83.0,
@@ -6657,6 +6868,7 @@
             15.0
           ],
           "opp_rank": 13.0,
+          "volatility": 85,
           "vegas_implied": 21.75,
           "snap_share": [
             68.0,
@@ -6698,6 +6910,7 @@
             21.3
           ],
           "opp_rank": 4.0,
+          "volatility": 96,
           "vegas_implied": 28.75,
           "snap_share": [
             72.0,
@@ -6739,6 +6952,7 @@
             6.0
           ],
           "opp_rank": 28.0,
+          "volatility": 71,
           "vegas_implied": 22.25,
           "snap_share": [
             71.0,
@@ -6780,6 +6994,7 @@
             10.0
           ],
           "opp_rank": 31.0,
+          "volatility": 100,
           "vegas_implied": 27.5,
           "snap_share": [
             0.0,
@@ -6821,6 +7036,7 @@
             7.76
           ],
           "opp_rank": null,
+          "volatility": 80,
           "vegas_implied": 28.75,
           "snap_share": null,
           "practice": null
@@ -6857,6 +7073,7 @@
             16.3
           ],
           "opp_rank": 12.0,
+          "volatility": 61,
           "vegas_implied": 22.0,
           "snap_share": [
             59.0,
@@ -6898,6 +7115,7 @@
             5.6
           ],
           "opp_rank": 16.0,
+          "volatility": 65,
           "vegas_implied": 21.5,
           "snap_share": [
             97.0,
@@ -6939,6 +7157,7 @@
             4.02
           ],
           "opp_rank": 19.0,
+          "volatility": 43,
           "vegas_implied": 18.25,
           "snap_share": [
             98.0,
@@ -6980,6 +7199,7 @@
             3.1
           ],
           "opp_rank": 28.0,
+          "volatility": 18,
           "vegas_implied": 20.0,
           "snap_share": [
             67.0,
@@ -7023,6 +7243,7 @@
             6.8
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             48.0,
@@ -7064,6 +7285,7 @@
             20.52
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             100.0,
@@ -7105,6 +7327,7 @@
             11.26
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             33.0,
@@ -7127,9 +7350,9 @@
       "record": "2\u20135",
       "opponent_id": 5,
       "opponent_name": "Lynch Mob",
-      "projected_total": 77.76,
-      "opponent_projected_total": 89.42,
-      "win_probability": 0.3205,
+      "projected_total": 88.86,
+      "opponent_projected_total": 97.87,
+      "win_probability": 0.3593,
       "starters": [
         {
           "player_id": "yh-t12-lamar-jackson",
@@ -7159,6 +7382,7 @@
             22.88
           ],
           "opp_rank": 29.0,
+          "volatility": 88,
           "vegas_implied": 25.75,
           "snap_share": [
             100.0,
@@ -7196,6 +7420,7 @@
             13.5
           ],
           "opp_rank": 21.0,
+          "volatility": 53,
           "vegas_implied": 17.5,
           "snap_share": [
             95.0,
@@ -7235,6 +7460,7 @@
             1.1
           ],
           "opp_rank": 6.0,
+          "volatility": 27,
           "vegas_implied": 22.0,
           "snap_share": [
             77.0,
@@ -7276,6 +7502,7 @@
             5.8
           ],
           "opp_rank": 19.0,
+          "volatility": 56,
           "vegas_implied": 28.25,
           "snap_share": [
             72.0,
@@ -7317,6 +7544,7 @@
             4.9
           ],
           "opp_rank": 23.0,
+          "volatility": 92,
           "vegas_implied": 25.75,
           "snap_share": [
             53.0,
@@ -7358,6 +7586,7 @@
             7.1
           ],
           "opp_rank": 30.0,
+          "volatility": 31,
           "vegas_implied": 25.25,
           "snap_share": [
             91.0,
@@ -7370,43 +7599,44 @@
           "practice": null
         },
         {
-          "player_id": "yh-t12-chris-godwin-jr",
-          "name": "Chris Godwin Jr.",
+          "player_id": "yh-t12-courtland-sutton",
+          "name": "Courtland Sutton",
           "position": "WR",
-          "nfl_team": "TB",
-          "opponent": "Atl",
+          "nfl_team": "Den",
+          "opponent": "KC",
           "home": true,
           "kickoff": "Sun 1:00 PM",
           "injury": null,
           "force_zero": false,
           "bye": false,
-          "q10": 0.72,
-          "q50": 4.04,
-          "q90": 11.09,
-          "mean": 4.91,
-          "yahoo": 6.0,
-          "yahoo_delta": -1.96,
+          "q10": 0.42,
+          "q50": 3.47,
+          "q90": 12.07,
+          "mean": 5.07,
+          "yahoo": 6.29,
+          "yahoo_delta": -2.82,
           "slot": "FLEX",
           "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
-            5.8,
             2.5,
-            3.1,
-            4.0,
-            3.7,
-            2.7
+            4.6,
+            0.4,
+            7.8,
+            1.9,
+            4.5
           ],
-          "opp_rank": 15.0,
-          "vegas_implied": 23.0,
+          "opp_rank": 3.0,
+          "volatility": 20,
+          "vegas_implied": 20.5,
           "snap_share": [
-            86.0,
-            62.0,
-            89.0,
-            88.0,
-            92.0,
-            73.0
+            73.0,
+            87.0,
+            73.0,
+            81.0,
+            77.0,
+            70.0
           ],
           "practice": null
         },
@@ -7440,6 +7670,7 @@
             13.6
           ],
           "opp_rank": 17.0,
+          "volatility": 100,
           "vegas_implied": 30.75,
           "snap_share": [
             0.0,
@@ -7481,6 +7712,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 47,
           "vegas_implied": 24.75,
           "snap_share": null,
           "practice": null
@@ -7517,6 +7749,7 @@
             30.18
           ],
           "opp_rank": 3.0,
+          "volatility": 18,
           "vegas_implied": 20.5,
           "snap_share": [
             100.0,
@@ -7558,48 +7791,50 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 47,
           "vegas_implied": 22.25,
           "snap_share": null,
           "practice": null
         },
         {
-          "player_id": "yh-t12-courtland-sutton",
-          "name": "Courtland Sutton",
+          "player_id": "yh-t12-chris-godwin-jr",
+          "name": "Chris Godwin Jr.",
           "position": "WR",
-          "nfl_team": "Den",
-          "opponent": "KC",
+          "nfl_team": "TB",
+          "opponent": "Atl",
           "home": true,
           "kickoff": "Sun 1:00 PM",
           "injury": null,
           "force_zero": false,
           "bye": false,
-          "q10": 0.42,
-          "q50": 3.47,
-          "q90": 12.07,
-          "mean": 5.07,
-          "yahoo": 6.29,
-          "yahoo_delta": -2.82,
+          "q10": 0.72,
+          "q50": 4.04,
+          "q90": 11.09,
+          "mean": 4.91,
+          "yahoo": 6.0,
+          "yahoo_delta": -1.96,
           "slot": null,
           "verdict": "monitor",
           "notes": [],
           "sparkline": [],
           "recent_points": [
+            5.8,
             2.5,
-            4.6,
-            0.4,
-            7.8,
-            1.9,
-            4.5
+            3.1,
+            4.0,
+            3.7,
+            2.7
           ],
-          "opp_rank": 3.0,
-          "vegas_implied": 20.5,
+          "opp_rank": 15.0,
+          "volatility": 14,
+          "vegas_implied": 23.0,
           "snap_share": [
-            73.0,
-            87.0,
-            73.0,
-            81.0,
-            77.0,
-            70.0
+            86.0,
+            62.0,
+            89.0,
+            88.0,
+            92.0,
+            73.0
           ],
           "practice": null
         },
@@ -7633,6 +7868,7 @@
             0.0
           ],
           "opp_rank": 24.0,
+          "volatility": 6,
           "vegas_implied": 30.75,
           "snap_share": [
             60.0,
@@ -7673,6 +7909,7 @@
             1.3
           ],
           "opp_rank": 13.0,
+          "volatility": 6,
           "vegas_implied": 21.75,
           "snap_share": [
             0.0,
@@ -7714,6 +7951,7 @@
             1.1
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             49.0,
@@ -7728,23 +7966,13 @@
       "calls": [
         {
           "slot": "W/R/T",
-          "margin": 0.57,
-          "starter_id": "yh-t12-chris-godwin-jr",
-          "starter_name": "Chris Godwin Jr.",
-          "starter_projection": 4.04,
-          "alternative_id": "yh-t12-courtland-sutton",
-          "alternative_name": "Courtland Sutton",
-          "alternative_projection": 3.47
-        },
-        {
-          "slot": "WR",
-          "margin": 0.59,
-          "starter_id": "yh-t12-xavier-worthy",
-          "starter_name": "Xavier Worthy",
-          "starter_projection": 4.06,
-          "alternative_id": "yh-t12-courtland-sutton",
-          "alternative_name": "Courtland Sutton",
-          "alternative_projection": 3.47
+          "margin": 0.16,
+          "starter_id": "yh-t12-courtland-sutton",
+          "starter_name": "Courtland Sutton",
+          "starter_projection": 5.07,
+          "alternative_id": "yh-t12-chris-godwin-jr",
+          "alternative_name": "Chris Godwin Jr.",
+          "alternative_projection": 4.91
         },
         {
           "slot": "DEF",
@@ -7755,6 +7983,16 @@
           "alternative_id": "yh-t12-carolina",
           "alternative_name": "Carolina",
           "alternative_projection": 9.18
+        },
+        {
+          "slot": "WR",
+          "margin": 0.87,
+          "starter_id": "yh-t12-xavier-worthy",
+          "starter_name": "Xavier Worthy",
+          "starter_projection": 5.78,
+          "alternative_id": "yh-t12-chris-godwin-jr",
+          "alternative_name": "Chris Godwin Jr.",
+          "alternative_projection": 4.91
         }
       ]
     }
@@ -8145,8 +8383,8 @@
       "wins": 5,
       "opponent_id": 2,
       "opponent_name": "Belichick Yo'self",
-      "projected_total": 94.45,
-      "win_probability": 0.7517,
+      "projected_total": 104.04,
+      "win_probability": 0.7062,
       "share_of_leader": 1.0
     },
     {
@@ -8157,57 +8395,57 @@
       "wins": 3,
       "opponent_id": 7,
       "opponent_name": "Redzone",
-      "projected_total": 91.5,
-      "win_probability": 0.6933,
-      "share_of_leader": 0.9688
+      "projected_total": 102.9,
+      "win_probability": 0.6927,
+      "share_of_leader": 0.989
     },
     {
       "rank": 3,
-      "team_id": 11,
-      "name": "My Diggs Curves Left",
-      "record": "4\u20133",
-      "wins": 4,
-      "opponent_id": 1,
-      "opponent_name": "Vader's Raiders",
-      "projected_total": 91.48,
-      "win_probability": 0.6255,
-      "share_of_leader": 0.9686
-    },
-    {
-      "rank": 4,
       "team_id": 6,
       "name": "Purple People Eaters",
       "record": "6\u20131",
       "wins": 6,
       "opponent_id": 3,
       "opponent_name": "CM Skunks",
-      "projected_total": 91.43,
-      "win_probability": 0.5432,
-      "share_of_leader": 0.968
+      "projected_total": 100.81,
+      "win_probability": 0.5175,
+      "share_of_leader": 0.969
+    },
+    {
+      "rank": 4,
+      "team_id": 11,
+      "name": "My Diggs Curves Left",
+      "record": "4\u20133",
+      "wins": 4,
+      "opponent_id": 1,
+      "opponent_name": "Vader's Raiders",
+      "projected_total": 100.76,
+      "win_probability": 0.5775,
+      "share_of_leader": 0.9685
     },
     {
       "rank": 5,
-      "team_id": 5,
-      "name": "Lynch Mob",
-      "record": "3\u20134",
-      "wins": 3,
-      "opponent_id": 12,
-      "opponent_name": "Big Nasty",
-      "projected_total": 89.42,
-      "win_probability": 0.6795,
-      "share_of_leader": 0.9467
-    },
-    {
-      "rank": 6,
       "team_id": 3,
       "name": "CM Skunks",
       "record": "5\u20132",
       "wins": 5,
       "opponent_id": 6,
       "opponent_name": "Purple People Eaters",
-      "projected_total": 88.72,
-      "win_probability": 0.4568,
-      "share_of_leader": 0.9393
+      "projected_total": 99.71,
+      "win_probability": 0.4825,
+      "share_of_leader": 0.9584
+    },
+    {
+      "rank": 6,
+      "team_id": 5,
+      "name": "Lynch Mob",
+      "record": "3\u20134",
+      "wins": 3,
+      "opponent_id": 12,
+      "opponent_name": "Big Nasty",
+      "projected_total": 97.87,
+      "win_probability": 0.6407,
+      "share_of_leader": 0.9407
     },
     {
       "rank": 7,
@@ -8217,9 +8455,9 @@
       "wins": 4,
       "opponent_id": 4,
       "opponent_name": "Flippin Phins",
-      "projected_total": 84.99,
-      "win_probability": 0.5606,
-      "share_of_leader": 0.8998
+      "projected_total": 96.23,
+      "win_probability": 0.6066,
+      "share_of_leader": 0.9249
     },
     {
       "rank": 8,
@@ -8229,21 +8467,21 @@
       "wins": 2,
       "opponent_id": 11,
       "opponent_name": "My Diggs Curves Left",
-      "projected_total": 83.48,
-      "win_probability": 0.3745,
-      "share_of_leader": 0.8839
+      "projected_total": 95.87,
+      "win_probability": 0.4225,
+      "share_of_leader": 0.9215
     },
     {
       "rank": 9,
-      "team_id": 4,
-      "name": "Flippin Phins",
-      "record": "2\u20135",
-      "wins": 2,
-      "opponent_id": 8,
-      "opponent_name": "Sun Tzu's Battalion",
-      "projected_total": 81.18,
-      "win_probability": 0.4394,
-      "share_of_leader": 0.8595
+      "team_id": 2,
+      "name": "Belichick Yo'self",
+      "record": "4\u20133",
+      "wins": 4,
+      "opponent_id": 9,
+      "opponent_name": "1ST & SKOL",
+      "projected_total": 90.48,
+      "win_probability": 0.2938,
+      "share_of_leader": 0.8697
     },
     {
       "rank": 10,
@@ -8253,33 +8491,33 @@
       "wins": 2,
       "opponent_id": 10,
       "opponent_name": "Purple Reign",
-      "projected_total": 78.87,
-      "win_probability": 0.3067,
-      "share_of_leader": 0.835
+      "projected_total": 90.31,
+      "win_probability": 0.3073,
+      "share_of_leader": 0.868
     },
     {
       "rank": 11,
+      "team_id": 4,
+      "name": "Flippin Phins",
+      "record": "2\u20135",
+      "wins": 2,
+      "opponent_id": 8,
+      "opponent_name": "Sun Tzu's Battalion",
+      "projected_total": 89.47,
+      "win_probability": 0.3934,
+      "share_of_leader": 0.86
+    },
+    {
+      "rank": 12,
       "team_id": 12,
       "name": "Big Nasty",
       "record": "2\u20135",
       "wins": 2,
       "opponent_id": 5,
       "opponent_name": "Lynch Mob",
-      "projected_total": 77.76,
-      "win_probability": 0.3205,
-      "share_of_leader": 0.8233
-    },
-    {
-      "rank": 12,
-      "team_id": 2,
-      "name": "Belichick Yo'self",
-      "record": "4\u20133",
-      "wins": 4,
-      "opponent_id": 9,
-      "opponent_name": "1ST & SKOL",
-      "projected_total": 77.45,
-      "win_probability": 0.2483,
-      "share_of_leader": 0.82
+      "projected_total": 88.86,
+      "win_probability": 0.3593,
+      "share_of_leader": 0.8541
     }
   ],
   "lab": {
@@ -8287,7 +8525,7 @@
     "model_version": "lgbm_skill_v1",
     "primary_mae": "q50",
     "promoted": false,
-    "points_gained_vs_baseline": 1472.1,
+    "points_gained_vs_baseline": 1591.2800000000002,
     "mae_diff_by_season": [
       {
         "season": 2022,
@@ -8538,7 +8776,7 @@
       {
         "name": "lineup_points",
         "pass": true,
-        "detail": "+1472.1 lineup points versus the legacy baseline across 72 weeks. Graded on q50, the shipped objective. This is not a Yahoo comparison."
+        "detail": "+1591.3 lineup points versus the legacy baseline across 72 weeks. Graded on the mean, the shipped objective. This is not a Yahoo comparison."
       }
     ],
     "notes": [

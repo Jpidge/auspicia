@@ -14,12 +14,18 @@ from pathlib import Path
 
 from gridiron_lab.config import AppConfig, Lineup
 from gridiron_lab.features import RecentSeries, recent_series
-from gridiron_lab.lineup import CLOSE_CALL_MARGIN, FLEX_POSITIONS, recommend
+from gridiron_lab.lineup import (
+    CLOSE_CALL_MARGIN,
+    FLEX_POSITIONS,
+    LineupError,
+    normalize_position,
+    recommend,
+)
 
 DASHBOARD_VERSION = "1.1"
 RECENT_LIMIT = 6
 WIN_PROBABILITY_SD = 25.0
-OBJECTIVE = "q50"
+OBJECTIVE = "mean"
 
 # Published M3.1 backtest (main 33d5bbc). Not refit for the dashboard.
 # Columns: position, season, q50 MAE, baseline MAE, mean bias, adjusted coverage.
@@ -177,9 +183,9 @@ def lab_block_from_report(report: Mapping[str, object]) -> dict[str, object]:
 
     Every figure is read from the report: folds for the per-season rows,
     the calibration block for pooled coverage, the promotion checklist for
-    the criteria, and the q50 lineup total for points gained. Nothing is
+    the criteria, and the mean lineup total for points gained. Nothing is
     recomputed and nothing is invented. A report that cannot support the
-    block (no folds, no promotion verdict, no q50 lineup measurement)
+    block (no folds, no promotion verdict, no mean lineup measurement)
     raises instead of publishing a partial block.
     """
 
@@ -258,13 +264,13 @@ def lab_block_from_report(report: Mapping[str, object]) -> dict[str, object]:
         raise DashboardError("lab report.calibration.coverage_by_position has no measured coverage")
 
     lineup = _lab_section(report, "lineup")
-    raw_points = lineup.get("points_gained_q50_total")
+    raw_points = lineup.get("points_gained_total")
     if raw_points is None:
         raise DashboardError(
-            "lab report.lineup.points_gained_q50_total is missing; "
-            "the report has no q50 lineup measurement"
+            "lab report.lineup.points_gained_total is missing; "
+            "the report has no mean lineup measurement"
         )
-    points = _finite(raw_points, "lab report.lineup.points_gained_q50_total")
+    points = _finite(raw_points, "lab report.lineup.points_gained_total")
     week_rows = lineup.get("points_gained_per_week")
     weeks = len(week_rows) if isinstance(week_rows, list) else 0
 
@@ -390,7 +396,7 @@ def lab_block_from_report(report: Mapping[str, object]) -> dict[str, object]:
     span = f" across {weeks} weeks" if weeks else ""
     lineup_text = (
         f"{points:+.1f} lineup points versus the legacy baseline{span}. "
-        "Graded on q50, the shipped objective. This is not a Yahoo comparison."
+        "Graded on the mean, the shipped objective. This is not a Yahoo comparison."
     )
 
     criteria = [
@@ -535,6 +541,40 @@ def _apply_prediction(
     return row
 
 
+def _volatility_percentiles(players: Sequence[Mapping[str, object]]) -> dict[str, int]:
+    """Within-position percentile of each predicted player's interval width.
+
+    Boom/bust is the shape of the interval: for every player with a numeric
+    q10 and q90, the percentile is the share of the week's predicted players
+    at the same position whose q90-q10 width is no wider than his, as a
+    whole percentage. Players without an interval get no entry (and no
+    stamp). The site reads the stamp as a tag: under 34 Steady, 34-66
+    Balanced, 67 and over Boom/bust.
+    """
+
+    widths: dict[str, list[float]] = {}
+    own: dict[str, tuple[str, float]] = {}
+    for player in players:
+        q10 = _optional_number(player.get("q10"))
+        q90 = _optional_number(player.get("q90"))
+        player_id = str(player.get("player_id") or "")
+        if q10 is None or q90 is None or not player_id:
+            continue
+        try:
+            position = normalize_position(player.get("position"))
+        except LineupError:
+            continue
+        width = q90 - q10
+        widths.setdefault(position, []).append(width)
+        own[player_id] = (position, width)
+    return {
+        player_id: round(
+            100 * sum(1 for other in widths[position] if other <= width) / len(widths[position])
+        )
+        for player_id, (position, width) in own.items()
+    }
+
+
 def _win_probability(mine: float, theirs: float | None) -> float | None:
     if theirs is None:
         return None
@@ -624,6 +664,7 @@ def _player_out(
         "sparkline": player.get("sparkline") if isinstance(player.get("sparkline"), list) else [],
         "recent_points": recent_points,
         "opp_rank": player.get("opp_rank"),
+        "volatility": player.get("volatility"),
         "vegas_implied": _optional_number(player.get("vegas_implied")),
         "snap_share": snap_share,
         "practice": player.get("practice"),
@@ -664,8 +705,7 @@ def build_dashboard(
     if not isinstance(teams_raw, list) or not teams_raw:
         raise DashboardError("rosters.teams must be a non-empty list")
     prediction_rows = _prediction_index(predictions)
-    prepared: list[dict[str, object]] = []
-    names: dict[int, str] = {}
+    merged_teams: list[tuple[Mapping[str, object], int, str, list[dict[str, object]]]] = []
     for team in teams_raw:
         if not isinstance(team, dict):
             raise DashboardError("each team must be an object")
@@ -681,6 +721,20 @@ def build_dashboard(
             player_id = _text(player, "player_id", "player")
             merged = _apply_prediction(player, prediction_rows.get(player_id))
             players.append(merged)
+        merged_teams.append((team, team_id, name, players))
+
+    volatility = _volatility_percentiles(
+        [player for _, _, _, players in merged_teams for player in players]
+    )
+    for _, _, _, players in merged_teams:
+        for player in players:
+            stamp = volatility.get(str(player.get("player_id") or ""))
+            if stamp is not None:
+                player["volatility"] = stamp
+
+    prepared: list[dict[str, object]] = []
+    names: dict[int, str] = {}
+    for team, team_id, name, players in merged_teams:
         result = recommend(players, config.lineup)
         names[team_id] = name
         prepared.append(

@@ -13,6 +13,7 @@ from gridiron_lab.config import load_config
 from gridiron_lab.dashboard import (
     DASHBOARD_VERSION,
     DashboardError,
+    _volatility_percentiles,
     build_dashboard,
     lab_block_from_report,
     published_m3_lab,
@@ -28,6 +29,7 @@ UI_FIELDS = (
     "q50",
     "q90",
     "verdict",
+    "volatility",
     "win_probability",
     "projected_total",
     "aria-sort",
@@ -120,6 +122,44 @@ def test_predictions_override_the_roster_file() -> None:
     qb = next(player for player in starters if player["player_id"] == "t10-qb")
     assert qb["q50"] == 30
     assert qb["q10"] == 20
+
+
+def test_volatility_percentiles_rank_within_position() -> None:
+    def row(player_id: str, position: str, q10: float, q90: float) -> dict[str, object]:
+        return {"player_id": player_id, "position": position, "q10": q10, "q90": q90}
+
+    players: list[dict[str, object]] = [
+        row("rb-narrow", "RB", 4, 8),
+        row("rb-mid", "RB", 2, 12),
+        row("rb-wide", "RB", 0, 16),
+        row("wr-wide", "WR", 0, 30),
+        {"player_id": "rb-none", "position": "RB"},
+        row("xx-wide", "XX", 0, 99),
+    ]
+    assert _volatility_percentiles(players) == {
+        "rb-narrow": 33,
+        "rb-mid": 67,
+        "rb-wide": 100,
+        "wr-wide": 100,
+    }
+
+
+def test_volatility_reaches_the_player_row() -> None:
+    config = load_config(ROOT / "gridiron_lab.toml")
+    payload = build_dashboard(
+        config,
+        _mini_roster(),
+        {"players": [{"player_id": "t10-qb", "q50": 30, "q10": 20, "q90": 40, "mean": 31}]},
+    )
+    teams = payload["teams"]
+    assert isinstance(teams, list)
+    starters = teams[0]["starters"]
+    assert isinstance(starters, list)
+    qb = next(player for player in starters if player["player_id"] == "t10-qb")
+    assert qb["volatility"] == 100
+    bench = teams[0]["bench"]
+    assert isinstance(bench, list)
+    assert all(player["volatility"] is None for player in bench)
 
 
 def test_prediction_vegas_implied_reaches_the_player_row() -> None:
@@ -527,9 +567,9 @@ def _lab_report(primary: str = "q50") -> dict[str, object]:
             },
             "lineup_points": {
                 "pass": True,
-                "points_gained": 1600.5,
-                "points_gained_mean_head": 1750.0,
-                "graded_on": "q50",
+                "points_gained": 1750.0,
+                "points_gained_q50_head": 1600.5,
+                "graded_on": "mean",
             },
         },
     }
@@ -541,8 +581,8 @@ def test_lab_block_from_report_builds_the_block() -> None:
     assert lab["model_version"] == "lgbm_skill_v1"
     assert lab["primary_mae"] == "q50"
     assert lab["promoted"] is False
-    # The graded q50 figure, not the mean-head total.
-    assert lab["points_gained_vs_baseline"] == 1600.5
+    # The graded mean figure, not the q50-head total.
+    assert lab["points_gained_vs_baseline"] == 1750.0
     assert lab["mae_diff_by_season"] == [
         {"season": 2024, "mae_diff": -0.30},
         {"season": 2025, "mae_diff": -0.38},
@@ -580,7 +620,7 @@ def test_lab_block_from_report_builds_the_block() -> None:
     assert "TE pooled coverage is 0.846, above the 0.83 cap." in coverage_detail
     assert "The other positions are inside the band." in coverage_detail
     lineup_detail = str(by_name["lineup_points"]["detail"])
-    assert "+1600.5 lineup points" in lineup_detail
+    assert "+1750.0 lineup points" in lineup_detail
     assert "across 2 weeks" in lineup_detail
     notes = " ".join(lab["notes"])  # type: ignore[arg-type]
     assert "not promoted" in notes
@@ -607,7 +647,7 @@ def test_lab_block_from_report_rejects_incomplete_reports() -> None:
     report = _lab_report()
     lineup = report["lineup"]
     assert isinstance(lineup, dict)
-    lineup["points_gained_q50_total"] = None
+    lineup["points_gained_total"] = None
     with pytest.raises(DashboardError):
         lab_block_from_report(report)
     report = _lab_report()
@@ -639,5 +679,5 @@ def test_export_command_with_lab_report(tmp_path: Path) -> None:
     payload = json.loads(output.read_text(encoding="utf-8"))
     lab = payload["lab"]
     assert lab["source"] == "evaluation_report"
-    assert lab["points_gained_vs_baseline"] == 1600.5
+    assert lab["points_gained_vs_baseline"] == 1750.0
     assert lab["promoted"] is False
