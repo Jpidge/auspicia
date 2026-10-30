@@ -315,10 +315,10 @@ h2 { font-size: 15px; margin: 0 0 8px; text-transform: uppercase; letter-spacing
 .stat .val small { font-size: 12px; font-weight: 600; color: var(--muted); }
 .stat .sub { overflow-wrap: anywhere; }
 .stat svg.spark { display: block; width: 100%; height: 40px; margin-top: 4px; min-width: 0; }
-.def { position: relative; cursor: help; }
+.def { cursor: help; white-space: nowrap; }
 .def-i { display: inline-flex; align-items: center; justify-content: center; width: 13px; height: 13px; border: 1px solid currentColor; border-radius: 50%; font-size: 9px; font-style: normal; font-weight: 800; line-height: 1; vertical-align: 1px; opacity: 0.75; }
-.def::after { content: attr(data-def); position: absolute; left: 0; bottom: calc(100% + 7px); z-index: 40; width: 230px; max-width: 72vw; padding: 9px 11px; border-radius: 10px; background: var(--text); color: var(--bg); box-shadow: var(--shadow); font-size: 12px; font-weight: 600; line-height: 1.45; letter-spacing: normal; text-transform: none; white-space: normal; opacity: 0; visibility: hidden; transform: translateY(3px); transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s; pointer-events: none; }
-.def:hover::after, .def:focus::after, .def:focus-visible::after { opacity: 1; visibility: visible; transform: none; }
+#def-tip { position: fixed; z-index: 1000; width: max-content; max-width: min(260px, 78vw); padding: 9px 11px; border-radius: 10px; background: var(--text); color: var(--bg); box-shadow: var(--shadow); font-size: 12px; font-weight: 600; line-height: 1.45; opacity: 0; visibility: hidden; transition: opacity 0.15s ease, visibility 0.15s; pointer-events: none; }
+#def-tip.on { opacity: 1; visibility: visible; }
 .defs { display: grid; gap: 8px; margin: 12px 0 0; font-size: 13px; }
 .defs dt { font-weight: 700; }
 .defs dd { margin: 2px 0 0; color: var(--muted); line-height: 1.45; }
@@ -349,7 +349,7 @@ h2 { font-size: 15px; margin: 0 0 8px; text-transform: uppercase; letter-spacing
   min-height: 44px; min-width: 44px;
 }
 .pill[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-.wgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+.wgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
 .wc { display: flex; flex-direction: column; gap: 12px; }
 .ad { display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
 .ad .plus { color: var(--good); font-weight: 800; margin-right: 6px; }
@@ -385,8 +385,9 @@ h2 { font-size: 15px; margin: 0 0 8px; text-transform: uppercase; letter-spacing
   background: var(--warnSoft); color: var(--warn); font-weight: 600; font-size: 14px;
   border: 1px dashed color-mix(in srgb, var(--warn) 50%, transparent);
 }
-.lab { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.lab { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 .lab .wide { grid-column: 1 / -1; }
+.engine-card { margin-top: 24px; }
 .mae { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
 .mae .l { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; font-size: 13px; }
 .mae .b { height: 12px; background: var(--card2); border-radius: 6px; overflow: hidden; }

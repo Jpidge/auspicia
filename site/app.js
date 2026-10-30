@@ -47,6 +47,57 @@
     if (!DEFS[key]) return esc(label);
     return '<span class="def" tabindex="0" data-def="' + esc(DEFS[key]) + '" aria-label="' + esc(label + ": " + DEFS[key]) + '">' + esc(label) + ' <span class="def-i" aria-hidden="true">i</span></span>';
   }
+  // One shared tooltip for every .def label. It is position:fixed and
+  // clamped to the viewport because a per-label ::after gets clipped by the
+  // player row's overflow:hidden (and by the screen edge) — the bug John
+  // screenshotted on 2026-10-29. Fixed positioning answers to the viewport
+  // only, so no card edge can cut it off.
+  var tip = document.createElement("div");
+  tip.id = "def-tip";
+  tip.setAttribute("role", "note");
+  document.body.appendChild(tip);
+  var tipFor = null;
+  function showTip(def) {
+    var text = def.getAttribute("data-def");
+    if (!text) return;
+    tipFor = def;
+    tip.textContent = text;
+    tip.classList.add("on");
+    var rect = def.getBoundingClientRect();
+    var width = tip.offsetWidth;
+    var height = tip.offsetHeight;
+    var left = rect.left + rect.width / 2 - width / 2;
+    left = Math.max(8, Math.min(left, window.innerWidth - width - 8));
+    var top = rect.top - height - 8;
+    if (top < 8) top = rect.bottom + 8;
+    if (top + height > window.innerHeight - 8) top = Math.max(8, window.innerHeight - height - 8);
+    tip.style.left = left + "px";
+    tip.style.top = top + "px";
+  }
+  function hideTip() {
+    tipFor = null;
+    tip.classList.remove("on");
+  }
+  function defFrom(event) {
+    var target = event.target;
+    return target && target.closest ? target.closest(".def") : null;
+  }
+  document.addEventListener("mouseover", function (event) {
+    var def = defFrom(event);
+    if (def && def !== tipFor) showTip(def);
+  });
+  document.addEventListener("mouseout", function (event) {
+    if (tipFor && !tipFor.contains(event.relatedTarget)) hideTip();
+  });
+  document.addEventListener("focusin", function (event) {
+    var def = defFrom(event);
+    if (def) showTip(def);
+  });
+  document.addEventListener("focusout", function (event) {
+    if (tipFor && event.target === tipFor) hideTip();
+  });
+  window.addEventListener("scroll", hideTip, true);
+  window.addEventListener("resize", hideTip);
   function rangeText(player) {
     if (player.q10 == null || player.q90 == null) return "";
     return fmt(player.q10) + "–" + fmt(player.q90);
