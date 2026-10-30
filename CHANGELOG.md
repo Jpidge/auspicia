@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.20] — 2026-10-29
+
+### Changed
+
+- The lineup optimizer's objective is now the **mean** (expected points), not q50 (owner decision 2026-10-29, superseding 2026-10-24, recorded in `docs/DESIGN.md`). `lineup.projection()` ranks on the mean with a q50 fallback, so starters, close calls, and team projected totals (now sums of starter means, and with them the win probabilities) all use expected points. The median stays the headline number on the player card. On the 2022–2025 backtest the mean-ranked lineup gained +1,591.28 points against the baseline lineup vs +1,472.10 for q50 ranking, with lower regret (10,550.36 vs 10,669.54). The promotion gate now grades the mean-head lineup figure (`graded_on: "mean"`); the q50-head figure is still computed and reported alongside. This does not change the current promotion verdict, which fails on the bias gates under either figure.
+
 ## [0.5.19] — 2026-10-28
 
 ### Added

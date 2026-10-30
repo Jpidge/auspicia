@@ -19,7 +19,7 @@ from gridiron_lab.lineup import CLOSE_CALL_MARGIN, FLEX_POSITIONS, recommend
 DASHBOARD_VERSION = "1.1"
 RECENT_LIMIT = 6
 WIN_PROBABILITY_SD = 25.0
-OBJECTIVE = "q50"
+OBJECTIVE = "mean"
 
 # Published M3.1 backtest (main 33d5bbc). Not refit for the dashboard.
 # Columns: position, season, q50 MAE, baseline MAE, mean bias, adjusted coverage.
@@ -177,9 +177,9 @@ def lab_block_from_report(report: Mapping[str, object]) -> dict[str, object]:
 
     Every figure is read from the report: folds for the per-season rows,
     the calibration block for pooled coverage, the promotion checklist for
-    the criteria, and the q50 lineup total for points gained. Nothing is
+    the criteria, and the mean lineup total for points gained. Nothing is
     recomputed and nothing is invented. A report that cannot support the
-    block (no folds, no promotion verdict, no q50 lineup measurement)
+    block (no folds, no promotion verdict, no mean lineup measurement)
     raises instead of publishing a partial block.
     """
 
@@ -258,13 +258,13 @@ def lab_block_from_report(report: Mapping[str, object]) -> dict[str, object]:
         raise DashboardError("lab report.calibration.coverage_by_position has no measured coverage")
 
     lineup = _lab_section(report, "lineup")
-    raw_points = lineup.get("points_gained_q50_total")
+    raw_points = lineup.get("points_gained_total")
     if raw_points is None:
         raise DashboardError(
-            "lab report.lineup.points_gained_q50_total is missing; "
-            "the report has no q50 lineup measurement"
+            "lab report.lineup.points_gained_total is missing; "
+            "the report has no mean lineup measurement"
         )
-    points = _finite(raw_points, "lab report.lineup.points_gained_q50_total")
+    points = _finite(raw_points, "lab report.lineup.points_gained_total")
     week_rows = lineup.get("points_gained_per_week")
     weeks = len(week_rows) if isinstance(week_rows, list) else 0
 
@@ -390,7 +390,7 @@ def lab_block_from_report(report: Mapping[str, object]) -> dict[str, object]:
     span = f" across {weeks} weeks" if weeks else ""
     lineup_text = (
         f"{points:+.1f} lineup points versus the legacy baseline{span}. "
-        "Graded on q50, the shipped objective. This is not a Yahoo comparison."
+        "Graded on the mean, the shipped objective. This is not a Yahoo comparison."
     )
 
     criteria = [

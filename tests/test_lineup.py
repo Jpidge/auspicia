@@ -64,6 +64,38 @@ def test_flex_can_be_a_wide_receiver() -> None:
     assert "rb3" not in slots
 
 
+def test_flex_prefers_the_higher_mean_over_the_higher_median() -> None:
+    # The Washington/Charbonnet shape (Week 8, 2026): a skewed WR whose mean
+    # beats a steadier RB's while his median trails it. The objective is the
+    # mean (owner decision 2026-10-29), so the WR takes the FLEX.
+    def skewed(player_id: str, position: str, mean: float, q50: float) -> dict[str, object]:
+        return {
+            "player_id": player_id,
+            "name": player_id,
+            "position": position,
+            "mean": mean,
+            "q50": q50,
+        }
+
+    roster = [
+        skewed("qb", "QB", 20, 19),
+        skewed("rb1", "RB", 15, 14),
+        skewed("rb2", "RB", 14, 13),
+        skewed("steady_rb", "RB", 8.5, 7.1),
+        skewed("wr1", "WR", 16, 15),
+        skewed("wr2", "WR", 15, 14),
+        skewed("skewed_wr", "WR", 8.8, 6.8),
+        skewed("te", "TE", 9, 8),
+        skewed("k", "K", 7, 7),
+        skewed("dst", "DST", 6, 6),
+    ]
+    result = recommend(roster, LINEUP)
+    slots = _slots(result)
+    assert slots["skewed_wr"] == "FLEX"
+    assert "steady_rb" not in slots
+    assert result["projected_total"] == 110.8
+
+
 def test_force_zero_and_out_do_not_start() -> None:
     roster = [
         _player("hurt", "QB", 40, force_zero=True),

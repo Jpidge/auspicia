@@ -28,7 +28,7 @@ There are none. The export carries team names and players only: manager names ar
 
 Slots are read from `[lineup]` in `gridiron_lab.toml`. The shipped table is the league's real roster: 1 QB, 2 RB, 2 WR, 1 TE, 1 W/R/T flex (RB, WR, or TE), 1 K, 1 DEF (stored as DST), 6 bench, 1 IR. `DEF` on a player row is treated as DST.
 
-The objective is **q50** (the median on the card). Required slots are filled first, then flex takes the best remaining RB, WR, or TE. Ties break on `player_id`. A player with `force_zero`, `bye`, or injury `OUT`, `O`, `IR`, `PUP`, or `SUS` is not started when someone else can fill the slot. An empty slot stays empty.
+The objective is **mean** (expected points); the median (q50) is the headline on the card but does not drive selection. Required slots are filled first, then flex takes the best remaining RB, WR, or TE. Ties break on `player_id`. A player with `force_zero`, `bye`, or injury `OUT`, `O`, `IR`, `PUP`, or `SUS` is not started when someone else can fill the slot. An empty slot stays empty.
 
 A starter is `monitor` when a legal bench swap is within `close_call_margin` (1.0 q50 point). That bench player is `monitor` too. Other starters are `start`. Other eligible players are `sit`. Up to three calls are returned, smallest margin first.
 
@@ -65,7 +65,7 @@ with `win_probability_sd` = **25**. That spread is an assumption, not a fit on t
 }
 ```
 
-Each player needs `player_id`, `name`, `position`, and should include `nfl_team`, `opponent`, `home`, `kickoff`, `injury`, `force_zero`, `bye`, `q10`, `q50`, `q90`, `mean`, `yahoo`, `notes`, `opp_rank`, `vegas_implied`, `practice`. `q50` drives the lineup. Missing `q50` falls back to `mean`, then 0.
+Each player needs `player_id`, `name`, `position`, and should include `nfl_team`, `opponent`, `home`, `kickoff`, `injury`, `force_zero`, `bye`, `q10`, `q50`, `q90`, `mean`, `yahoo`, `notes`, `opp_rank`, `vegas_implied`, `practice`. `mean` drives the lineup. Missing `mean` falls back to `q50`, then 0.
 
 `recent_points` and `snap_share`, when present on the roster file, are copied only if `--data-dir` is omitted. Each is the last six numbers. A non-list or an empty list becomes an empty `recent_points` and a null `snap_share`. DST and DEF snap lists on the file are dropped.
 
@@ -90,7 +90,7 @@ Top-level fields:
 | `lineup` | Slot counts plus `flex_positions` |
 | `week` | `season`, `week`, `kickoff_label`, `countdown_label`, `countdown_is_live` (always `false`; the label is static) |
 | `default_team_id` | `league.my_team_id` (10, Purple Reign). The page remembers a different choice in `localStorage` and honors `#team=10`. |
-| `objective` | `"q50"` |
+| `objective` | `"mean"` |
 | `close_call_margin` | `1.0` |
 | `win_probability_sd` | `25` |
 | `teams` | One object per fantasy team, below |
