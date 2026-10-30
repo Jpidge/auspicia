@@ -365,13 +365,14 @@ def test_promotion_rule_passes_only_when_every_criterion_holds() -> None:
     assert lineup_block["pass"] is False
     assert negative["promoted"] is False
 
-    graded_on_q50 = promotion_rule(_report(folds, points=5.0, points_q50=-1.0))
-    graded_block = graded_on_q50["lineup_points"]
+    graded_on_mean = promotion_rule(_report(folds, points=-1.0, points_q50=5.0))
+    graded_block = graded_on_mean["lineup_points"]
     assert isinstance(graded_block, dict)
     assert graded_block["pass"] is False
     assert graded_block["points_gained"] == -1.0
-    assert graded_block["points_gained_mean_head"] == 5.0
-    assert graded_on_q50["promoted"] is False
+    assert graded_block["points_gained_q50_head"] == 5.0
+    assert graded_block["graded_on"] == "mean"
+    assert graded_on_mean["promoted"] is False
 
 
 class _MeanAboveMedian:
