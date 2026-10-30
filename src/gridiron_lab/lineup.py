@@ -1,9 +1,17 @@
 """Recommended lineups under the league's roster slots.
 
-The objective is q50, the median shown on the dashboard and the primary
-accuracy head. A player marked ``force_zero``, bye, or OUT/IR is not started
-when anyone else can fill the slot. Ties break on ``player_id`` so the same
-roster always yields the same lineup.
+The objective is the mean, the expected-points head: starters are chosen to
+maximize the lineup's expected total. The median (q50) stays the headline
+number on the dashboard card, but it is not the selection objective — on
+right-skewed scoring the median sits below the mean, so median ranking
+systematically benches high-variance players for steadier ones projected
+for fewer points on average. On the 2022–2025 backtest the mean-ranked
+lineup out-gained the q50-ranked one (+1,591.28 vs +1,472.10 points against
+the same baseline, with lower regret). Owner decision 2026-10-29,
+superseding the q50 objective recorded 2026-10-24. A player marked
+``force_zero``, bye, or OUT/IR is not started when anyone else can fill the
+slot. Ties break on ``player_id`` so the same roster always yields the
+same lineup.
 """
 
 from __future__ import annotations
@@ -42,11 +50,11 @@ def normalize_position(raw: object) -> str:
 
 
 def projection(player: Mapping[str, object]) -> float:
-    """q50 when present, otherwise the mean. Missing both is 0."""
+    """Mean when present, otherwise q50. Missing both is 0."""
 
-    value = player.get("q50")
+    value = player.get("mean")
     if value is None:
-        value = player.get("mean")
+        value = player.get("q50")
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return 0.0
     return float(value)
@@ -85,7 +93,7 @@ def select_starters(
     """Fill QB, RB, WR, TE, K, DST, then the best remaining FLEX.
 
     Each player has one position, so filling the required slots before FLEX
-    maximizes total q50. Ineligible players are left out.
+    maximizes total mean. Ineligible players are left out.
     """
 
     pools: dict[str, list[Mapping[str, object]]] = {position: [] for position in REQUIRED}
@@ -142,10 +150,11 @@ def recommend(
     players: Sequence[Mapping[str, object]],
     lineup: Lineup,
 ) -> dict[str, object]:
-    """Return starters, bench, inactive players, the q50 total, and close calls.
+    """Return starters, bench, inactive players, the projected total, and close calls.
 
-    A starter is ``monitor`` when a legal bench replacement is within
-    ``CLOSE_CALL_MARGIN`` q50 points. That replacement is ``monitor`` too.
+    The projected total is the sum of the starters' means. A starter is
+    ``monitor`` when a legal bench replacement is within
+    ``CLOSE_CALL_MARGIN`` points (mean). That replacement is ``monitor`` too.
     Other starters are ``start``. Everyone else who is eligible is ``sit``.
     """
 

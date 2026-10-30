@@ -527,9 +527,9 @@ def _lab_report(primary: str = "q50") -> dict[str, object]:
             },
             "lineup_points": {
                 "pass": True,
-                "points_gained": 1600.5,
-                "points_gained_mean_head": 1750.0,
-                "graded_on": "q50",
+                "points_gained": 1750.0,
+                "points_gained_q50_head": 1600.5,
+                "graded_on": "mean",
             },
         },
     }
@@ -541,8 +541,8 @@ def test_lab_block_from_report_builds_the_block() -> None:
     assert lab["model_version"] == "lgbm_skill_v1"
     assert lab["primary_mae"] == "q50"
     assert lab["promoted"] is False
-    # The graded q50 figure, not the mean-head total.
-    assert lab["points_gained_vs_baseline"] == 1600.5
+    # The graded mean figure, not the q50-head total.
+    assert lab["points_gained_vs_baseline"] == 1750.0
     assert lab["mae_diff_by_season"] == [
         {"season": 2024, "mae_diff": -0.30},
         {"season": 2025, "mae_diff": -0.38},
@@ -580,7 +580,7 @@ def test_lab_block_from_report_builds_the_block() -> None:
     assert "TE pooled coverage is 0.846, above the 0.83 cap." in coverage_detail
     assert "The other positions are inside the band." in coverage_detail
     lineup_detail = str(by_name["lineup_points"]["detail"])
-    assert "+1600.5 lineup points" in lineup_detail
+    assert "+1750.0 lineup points" in lineup_detail
     assert "across 2 weeks" in lineup_detail
     notes = " ".join(lab["notes"])  # type: ignore[arg-type]
     assert "not promoted" in notes
@@ -607,7 +607,7 @@ def test_lab_block_from_report_rejects_incomplete_reports() -> None:
     report = _lab_report()
     lineup = report["lineup"]
     assert isinstance(lineup, dict)
-    lineup["points_gained_q50_total"] = None
+    lineup["points_gained_total"] = None
     with pytest.raises(DashboardError):
         lab_block_from_report(report)
     report = _lab_report()
@@ -639,5 +639,5 @@ def test_export_command_with_lab_report(tmp_path: Path) -> None:
     payload = json.loads(output.read_text(encoding="utf-8"))
     lab = payload["lab"]
     assert lab["source"] == "evaluation_report"
-    assert lab["points_gained_vs_baseline"] == 1600.5
+    assert lab["points_gained_vs_baseline"] == 1750.0
     assert lab["promoted"] is False

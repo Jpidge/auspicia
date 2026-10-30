@@ -640,10 +640,10 @@ def promotion_rule(report: Mapping[str, object]) -> dict[str, object]:
     coverage_pass = measured > 0 and not coverage_failures
     lineup = report.get("lineup")
     points: object = None
-    points_mean: object = None
+    points_q50: object = None
     if isinstance(lineup, dict):
-        points = lineup.get("points_gained_q50_total")
-        points_mean = lineup.get("points_gained_total")
+        points = lineup.get("points_gained_total")
+        points_q50 = lineup.get("points_gained_q50_total")
     lineup_pass = (
         isinstance(points, (int, float)) and math.isfinite(float(points)) and float(points) >= 0
     )
@@ -674,8 +674,8 @@ def promotion_rule(report: Mapping[str, object]) -> dict[str, object]:
         "lineup_points": {
             "pass": lineup_pass,
             "points_gained": points,
-            "points_gained_mean_head": points_mean,
-            "graded_on": "q50",
+            "points_gained_q50_head": points_q50,
+            "graded_on": "mean",
         },
         "promoted": bool(
             mae_pass and position_pass and bias_pass and coverage_pass and lineup_pass
@@ -1142,8 +1142,9 @@ def rolling_origin(
                 "Intervals are CQR-adjusted on the last 8 weeks before the test week.",
                 "A boundary atom that straddles [0.77, 0.83] uses residual quantiles around q50.",
                 "min_data_in_leaf is min(40, max(5, n // 10)) so a small history can still split.",
-                "Lineup selection is graded on q50, the shipped objective "
-                "(owner decision 2026-10-24); the mean-head figure is reported alongside.",
+                "Lineup selection is graded on the mean, the shipped objective "
+                "(owner decision 2026-10-29, superseding 2026-10-24); the q50-head "
+                "figure is reported alongside.",
                 "force_zero rows predict 0 and are excluded from fit and from metrics.",
                 "The legacy baseline reads points_ewma, points_roll3, and points_roll5.",
                 "opportunity_momentum and td_dependency are absent on v2.0, so those terms are 0.",
@@ -1175,8 +1176,9 @@ def rolling_origin(
                 "Yahoo rosters are not in the store. Historical weeks use seeded "
                 "15-player rosters drawn by prior actual points, disjoint across teams. "
                 "Points gained is the model lineup minus the baseline lineup on the same rosters. "
-                "The promotion gate grades the q50 figure, the shipped selection rule "
-                "(owner decision 2026-10-24); the mean-head figure is reported alongside."
+                "The promotion gate grades the mean figure, the shipped selection rule "
+                "(owner decision 2026-10-29, superseding 2026-10-24); the q50-head "
+                "figure is reported alongside."
             ),
         },
         "prediction_digest": _prediction_digest(digest_rows),
