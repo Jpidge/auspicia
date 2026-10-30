@@ -4,6 +4,16 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.23] — 2026-10-29
+
+### Changed
+
+- Card-to-card spacing is now a consistent 24px: the Lab and waiver grids move up from 16px, and the standalone "How the engine works" card gets the same 24px above it instead of sitting directly against the Notes card.
+
+### Fixed
+
+- Definition tooltips were clipped by card edges: the per-label `::after` tooltip is absolutely positioned, and the player row's `overflow: hidden` (plus the screen edge for right-hand stats like Boom/bust) cut it off mid-sentence. The tooltips now render in a single shared `#def-tip` element with `position: fixed`, placed by script above the label (below it when there is no room) and clamped to the viewport, so no card edge can clip them. Labels also no longer let the ⓘ wrap onto its own line. Behavior is otherwise unchanged: hover, tap, or keyboard focus shows the same `DEFS` text, and the Definitions card is untouched.
+
 ## [0.5.22] — 2026-10-29
 
 ### Added

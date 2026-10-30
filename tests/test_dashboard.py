@@ -320,7 +320,22 @@ def test_site_reads_the_contract_fields() -> None:
     assert "[hidden] { display: none !important; }" in css
     # Definitions: one DEFS table feeds the label tooltips and the card.
     assert "data-def" in script
-    assert "attr(data-def)" in css
+    # The tooltip is one fixed, viewport-clamped element: a per-label
+    # ::after is clipped by the player row's overflow:hidden.
+    assert "def-tip" in script
+    assert "#def-tip" in css
+    assert "position: fixed" in css
+    assert ".def::after" not in css
+    # Main cards use the same 24px breathing room in every view, including
+    # the standalone engine card after the Lab grid.
+    assert (
+        ".lab { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }"
+    ) in css
+    assert ".engine-card { margin-top: 24px; }" in css
+    assert (
+        ".wgrid { display: grid; grid-template-columns: "
+        "repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }"
+    ) in css
     assert 'class="defs"' in script
     assert "Steady under 34" in script
     assert "the lineup is picked on the mean, not the median" in script
