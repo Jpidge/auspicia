@@ -34,7 +34,7 @@
     "countdown_is_live": false
   },
   "default_team_id": 10,
-  "objective": "q50",
+  "objective": "mean",
   "close_call_margin": 1.0,
   "win_probability_sd": 25.0,
   "teams": [

@@ -19,7 +19,7 @@ from gridiron_lab.lineup import CLOSE_CALL_MARGIN, FLEX_POSITIONS, recommend
 DASHBOARD_VERSION = "1.1"
 RECENT_LIMIT = 6
 WIN_PROBABILITY_SD = 25.0
-OBJECTIVE = "q50"
+OBJECTIVE = "mean"
 
 # Published M3.1 backtest (main 33d5bbc). Not refit for the dashboard.
 # Columns: position, season, q50 MAE, baseline MAE, mean bias, adjusted coverage.
