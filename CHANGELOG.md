@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.21] — 2026-10-29
+
+### Added
+
+- The player drawer now carries a **Boom/bust** tag. The exporter stamps `volatility` on each predicted player: the within-position percentile of his `q90 - q10` interval width among the week's predicted players (definition in `docs/DASHBOARD_JSON.md`). The drawer reads it as Steady (under 34), Balanced (34–66), or Boom/bust (67+) — informational only, in no verdict colors, beside the Median/Mean/10th–90th stats that were already there. No prediction, verdict, or total changes; the Week 8 re-export in this PR differs from 0.5.20 only by the new field. A display-only first slice of the boom/bust idea; a graded boom/bust index is still unbuilt.
+
 ## [0.5.20] — 2026-10-29
 
 ### Changed

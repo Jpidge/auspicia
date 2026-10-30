@@ -13,6 +13,7 @@ from gridiron_lab.config import load_config
 from gridiron_lab.dashboard import (
     DASHBOARD_VERSION,
     DashboardError,
+    _volatility_percentiles,
     build_dashboard,
     lab_block_from_report,
     published_m3_lab,
@@ -28,6 +29,7 @@ UI_FIELDS = (
     "q50",
     "q90",
     "verdict",
+    "volatility",
     "win_probability",
     "projected_total",
     "aria-sort",
@@ -120,6 +122,44 @@ def test_predictions_override_the_roster_file() -> None:
     qb = next(player for player in starters if player["player_id"] == "t10-qb")
     assert qb["q50"] == 30
     assert qb["q10"] == 20
+
+
+def test_volatility_percentiles_rank_within_position() -> None:
+    def row(player_id: str, position: str, q10: float, q90: float) -> dict[str, object]:
+        return {"player_id": player_id, "position": position, "q10": q10, "q90": q90}
+
+    players: list[dict[str, object]] = [
+        row("rb-narrow", "RB", 4, 8),
+        row("rb-mid", "RB", 2, 12),
+        row("rb-wide", "RB", 0, 16),
+        row("wr-wide", "WR", 0, 30),
+        {"player_id": "rb-none", "position": "RB"},
+        row("xx-wide", "XX", 0, 99),
+    ]
+    assert _volatility_percentiles(players) == {
+        "rb-narrow": 33,
+        "rb-mid": 67,
+        "rb-wide": 100,
+        "wr-wide": 100,
+    }
+
+
+def test_volatility_reaches_the_player_row() -> None:
+    config = load_config(ROOT / "gridiron_lab.toml")
+    payload = build_dashboard(
+        config,
+        _mini_roster(),
+        {"players": [{"player_id": "t10-qb", "q50": 30, "q10": 20, "q90": 40, "mean": 31}]},
+    )
+    teams = payload["teams"]
+    assert isinstance(teams, list)
+    starters = teams[0]["starters"]
+    assert isinstance(starters, list)
+    qb = next(player for player in starters if player["player_id"] == "t10-qb")
+    assert qb["volatility"] == 100
+    bench = teams[0]["bench"]
+    assert isinstance(bench, list)
+    assert all(player["volatility"] is None for player in bench)
 
 
 def test_prediction_vegas_implied_reaches_the_player_row() -> None:

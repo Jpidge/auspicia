@@ -72,6 +72,7 @@
       stat("10th–90th", esc(rangeText(player) || "—")) +
       stat("Median", fmt(player.q50)) +
       stat("Mean", fmt(player.mean)) +
+      stat("Boom/bust", boomBust(player)) +
       stat("Opp rank", player.opp_rank == null ? "—" : String(player.opp_rank)) +
       stat("Vegas implied", player.vegas_implied == null ? "—" : fmt(player.vegas_implied)) +
       snapStat(player) +
@@ -140,6 +141,13 @@
   function pct(value) {
     var max = 30;
     return Math.max(0, Math.min(100, (Number(value) / max) * 100));
+  }
+  function boomBust(player) {
+    // volatility is the within-position percentile of the q90-q10 width,
+    // stamped at export. The tag is information, not a verdict, so it takes
+    // no verdict colors.
+    if (player.volatility == null) return "—";
+    return player.volatility >= 67 ? "Boom/bust" : player.volatility >= 34 ? "Balanced" : "Steady";
   }
   function stat(label, value) {
     return '<div class="stat"><div class="k">' + esc(label) + '</div><div class="val num">' + value + "</div></div>";

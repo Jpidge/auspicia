@@ -80,6 +80,7 @@
             24.4
           ],
           "opp_rank": 17.0,
+          "volatility": 35,
           "vegas_implied": 22.0,
           "snap_share": [
             100.0,
@@ -121,6 +122,7 @@
             10.8
           ],
           "opp_rank": 15.0,
+          "volatility": 57,
           "vegas_implied": 23.0,
           "snap_share": [
             86.0,
@@ -162,6 +164,7 @@
             19.7
           ],
           "opp_rank": 2.0,
+          "volatility": 47,
           "vegas_implied": 21.75,
           "snap_share": [
             57.0,
@@ -203,6 +206,7 @@
             17.5
           ],
           "opp_rank": 9.0,
+          "volatility": 44,
           "vegas_implied": 24.75,
           "snap_share": [
             41.0,
@@ -244,6 +248,7 @@
             17.0
           ],
           "opp_rank": 1.0,
+          "volatility": 90,
           "vegas_implied": 20.0,
           "snap_share": [
             94.0,
@@ -284,6 +289,7 @@
             7.3
           ],
           "opp_rank": 7.0,
+          "volatility": 100,
           "vegas_implied": 22.0,
           "snap_share": [
             79.0,
@@ -320,6 +326,7 @@
             6.8
           ],
           "opp_rank": 3.0,
+          "volatility": 48,
           "vegas_implied": 22.0,
           "snap_share": [
             45.0,
@@ -357,6 +364,7 @@
             13.7
           ],
           "opp_rank": 4.0,
+          "volatility": 23,
           "vegas_implied": 22.0,
           "snap_share": [
             0.0,
@@ -398,6 +406,7 @@
             8.72
           ],
           "opp_rank": null,
+          "volatility": 47,
           "vegas_implied": 25.25,
           "snap_share": null,
           "practice": null
@@ -434,6 +443,7 @@
             8.42
           ],
           "opp_rank": 4.0,
+          "volatility": 29,
           "vegas_implied": 22.25,
           "snap_share": [
             90.0,
@@ -475,6 +485,7 @@
             2.7
           ],
           "opp_rank": 16.0,
+          "volatility": 49,
           "vegas_implied": 21.5,
           "snap_share": [
             79.0,
@@ -513,6 +524,7 @@
             6.9
           ],
           "opp_rank": 14.0,
+          "volatility": 23,
           "vegas_implied": 20.5,
           "snap_share": [
             6.0,
@@ -551,6 +563,7 @@
             5.0
           ],
           "opp_rank": 31.0,
+          "volatility": 12,
           "vegas_implied": 23.0,
           "snap_share": [
             37.0,
@@ -594,6 +607,7 @@
             18.1
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             61.0,
@@ -635,6 +649,7 @@
             11.4
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             96.0,
@@ -673,6 +688,7 @@
             0.2
           ],
           "opp_rank": null,
+          "volatility": 4,
           "vegas_implied": null,
           "snap_share": [
             48.0,
@@ -747,6 +763,7 @@
             29.28
           ],
           "opp_rank": 31.0,
+          "volatility": 59,
           "vegas_implied": 30.75,
           "snap_share": [
             100.0,
@@ -788,6 +805,7 @@
             11.7
           ],
           "opp_rank": 29.0,
+          "volatility": 84,
           "vegas_implied": 30.75,
           "snap_share": [
             76.0,
@@ -829,6 +847,7 @@
             20.7
           ],
           "opp_rank": 32.0,
+          "volatility": 90,
           "vegas_implied": 25.75,
           "snap_share": [
             29.0,
@@ -868,6 +887,7 @@
             8.6
           ],
           "opp_rank": 11.0,
+          "volatility": 33,
           "vegas_implied": 21.5,
           "snap_share": [
             58.0,
@@ -907,6 +927,7 @@
             13.0
           ],
           "opp_rank": 14.0,
+          "volatility": 21,
           "vegas_implied": 20.5,
           "snap_share": [
             51.0,
@@ -948,6 +969,7 @@
             8.2
           ],
           "opp_rank": 28.0,
+          "volatility": 19,
           "vegas_implied": 21.5,
           "snap_share": [
             38.0,
@@ -989,6 +1011,7 @@
             3.9
           ],
           "opp_rank": 7.0,
+          "volatility": 63,
           "vegas_implied": 25.25,
           "snap_share": [
             86.0,
@@ -1030,6 +1053,7 @@
             18.7
           ],
           "opp_rank": 12.0,
+          "volatility": 23,
           "vegas_implied": 28.75,
           "snap_share": [
             0.0,
@@ -1071,6 +1095,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 93,
           "vegas_implied": 23.0,
           "snap_share": null,
           "practice": null
@@ -1107,6 +1132,7 @@
             8.2
           ],
           "opp_rank": 2.0,
+          "volatility": 100,
           "vegas_implied": 24.5,
           "snap_share": [
             0.0,
@@ -1145,6 +1171,7 @@
             4.8
           ],
           "opp_rank": 1.0,
+          "volatility": 59,
           "vegas_implied": 25.25,
           "snap_share": [
             44.0,
@@ -1183,6 +1210,7 @@
             4.9
           ],
           "opp_rank": 24.0,
+          "volatility": 27,
           "vegas_implied": 23.75,
           "snap_share": [
             64.0,
@@ -1224,6 +1252,7 @@
             1.38
           ],
           "opp_rank": 18.0,
+          "volatility": 22,
           "vegas_implied": 24.75,
           "snap_share": [
             56.0,
@@ -1265,6 +1294,7 @@
             2.3
           ],
           "opp_rank": 30.0,
+          "volatility": 8,
           "vegas_implied": 25.25,
           "snap_share": [
             60.0,
@@ -1308,6 +1338,7 @@
             16.0
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             52.0,
@@ -1348,6 +1379,7 @@
             2.5
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             42.0,
@@ -1434,6 +1466,7 @@
             22.02
           ],
           "opp_rank": 1.0,
+          "volatility": 65,
           "vegas_implied": 24.5,
           "snap_share": [
             100.0,
@@ -1475,6 +1508,7 @@
             2.7
           ],
           "opp_rank": 9.0,
+          "volatility": 55,
           "vegas_implied": 17.0,
           "snap_share": [
             93.0,
@@ -1516,6 +1550,7 @@
             22.3
           ],
           "opp_rank": 18.0,
+          "volatility": 98,
           "vegas_implied": 24.75,
           "snap_share": [
             67.0,
@@ -1557,6 +1592,7 @@
             23.0
           ],
           "opp_rank": 26.0,
+          "volatility": 81,
           "vegas_implied": 23.0,
           "snap_share": [
             78.0,
@@ -1598,6 +1634,7 @@
             22.4
           ],
           "opp_rank": 10.0,
+          "volatility": 50,
           "vegas_implied": 17.0,
           "snap_share": [
             65.0,
@@ -1639,6 +1676,7 @@
             10.8
           ],
           "opp_rank": 20.0,
+          "volatility": 88,
           "vegas_implied": 25.25,
           "snap_share": [
             98.0,
@@ -1677,6 +1715,7 @@
             12.28
           ],
           "opp_rank": 8.0,
+          "volatility": 52,
           "vegas_implied": 17.5,
           "snap_share": [
             77.0,
@@ -1715,6 +1754,7 @@
             11.6
           ],
           "opp_rank": 7.0,
+          "volatility": 100,
           "vegas_implied": 23.0,
           "snap_share": [
             0.0,
@@ -1756,6 +1796,7 @@
             6.88
           ],
           "opp_rank": null,
+          "volatility": 80,
           "vegas_implied": 23.0,
           "snap_share": null,
           "practice": null
@@ -1789,6 +1830,7 @@
             17.5
           ],
           "opp_rank": 17.0,
+          "volatility": 37,
           "vegas_implied": 23.5,
           "snap_share": [
             7.0,
@@ -1829,6 +1871,7 @@
             8.1
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             48.0,
@@ -1869,6 +1912,7 @@
             0.6
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             72.0,
@@ -1909,6 +1953,7 @@
             14.02
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             85.0,
@@ -1949,6 +1994,7 @@
             14.2
           ],
           "opp_rank": null,
+          "volatility": 4,
           "vegas_implied": null,
           "snap_share": [
             49.0,
@@ -1989,6 +2035,7 @@
             9.82
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             2.0,
@@ -2029,6 +2076,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 6,
           "vegas_implied": null,
           "snap_share": [
             55.0,
@@ -2082,6 +2130,7 @@
             26.12
           ],
           "opp_rank": 2.0,
+          "volatility": 47,
           "vegas_implied": 21.75,
           "snap_share": [
             100.0,
@@ -2121,6 +2170,7 @@
             4.9
           ],
           "opp_rank": 25.0,
+          "volatility": 67,
           "vegas_implied": 18.25,
           "snap_share": [
             75.0,
@@ -2162,6 +2212,7 @@
             5.7
           ],
           "opp_rank": 7.0,
+          "volatility": 88,
           "vegas_implied": 25.25,
           "snap_share": [
             90.0,
@@ -2203,6 +2254,7 @@
             16.1
           ],
           "opp_rank": 20.0,
+          "volatility": 79,
           "vegas_implied": 26.25,
           "snap_share": [
             55.0,
@@ -2243,6 +2295,7 @@
             13.1
           ],
           "opp_rank": 8.0,
+          "volatility": 31,
           "vegas_implied": 17.5,
           "snap_share": [
             71.0,
@@ -2283,6 +2336,7 @@
             12.9
           ],
           "opp_rank": 4.0,
+          "volatility": 69,
           "vegas_implied": 21.75,
           "snap_share": [
             86.0,
@@ -2324,6 +2378,7 @@
             15.2
           ],
           "opp_rank": 9.0,
+          "volatility": 73,
           "vegas_implied": 17.0,
           "snap_share": [
             66.0,
@@ -2365,6 +2420,7 @@
             1.0
           ],
           "opp_rank": 1.0,
+          "volatility": 100,
           "vegas_implied": 22.25,
           "snap_share": [
             1.0,
@@ -2406,6 +2462,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 47,
           "vegas_implied": 25.75,
           "snap_share": null,
           "practice": null
@@ -2441,6 +2498,7 @@
             4.4
           ],
           "opp_rank": 30.0,
+          "volatility": 45,
           "vegas_implied": 22.0,
           "snap_share": [
             92.0,
@@ -2481,6 +2539,7 @@
             8.3
           ],
           "opp_rank": 14.0,
+          "volatility": 29,
           "vegas_implied": 20.5,
           "snap_share": [
             34.0,
@@ -2522,6 +2581,7 @@
             10.0
           ],
           "opp_rank": 26.0,
+          "volatility": 19,
           "vegas_implied": 23.0,
           "snap_share": [
             35.0,
@@ -2563,6 +2623,7 @@
             2.7
           ],
           "opp_rank": 21.0,
+          "volatility": 12,
           "vegas_implied": 22.0,
           "snap_share": [
             19.0,
@@ -2606,6 +2667,7 @@
             0.7
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             53.0,
@@ -2647,6 +2709,7 @@
             15.82
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             100.0,
@@ -2734,6 +2797,7 @@
             36.88
           ],
           "opp_rank": 13.0,
+          "volatility": 76,
           "vegas_implied": 28.25,
           "snap_share": [
             100.0,
@@ -2775,6 +2839,7 @@
             12.2
           ],
           "opp_rank": 14.0,
+          "volatility": 92,
           "vegas_implied": 28.25,
           "snap_share": [
             94.0,
@@ -2816,6 +2881,7 @@
             8.3
           ],
           "opp_rank": 11.0,
+          "volatility": 29,
           "vegas_implied": 27.5,
           "snap_share": [
             65.0,
@@ -2857,6 +2923,7 @@
             13.4
           ],
           "opp_rank": 29.0,
+          "volatility": 62,
           "vegas_implied": 23.5,
           "snap_share": [
             31.0,
@@ -2893,6 +2960,7 @@
             15.1
           ],
           "opp_rank": 31.0,
+          "volatility": 83,
           "vegas_implied": 25.25,
           "snap_share": [
             52.0
@@ -2929,6 +2997,7 @@
             1.8
           ],
           "opp_rank": 1.0,
+          "volatility": 81,
           "vegas_implied": 24.5,
           "snap_share": [
             81.0,
@@ -2967,6 +3036,7 @@
             5.5
           ],
           "opp_rank": 29.0,
+          "volatility": 77,
           "vegas_implied": 23.5,
           "snap_share": [
             58.0,
@@ -3005,6 +3075,7 @@
             9.3
           ],
           "opp_rank": 8.0,
+          "volatility": 46,
           "vegas_implied": 22.0,
           "snap_share": [
             0.0,
@@ -3046,6 +3117,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 80,
           "vegas_implied": 22.0,
           "snap_share": null,
           "practice": null
@@ -3081,6 +3153,7 @@
             2.2
           ],
           "opp_rank": 24.0,
+          "volatility": 60,
           "vegas_implied": 23.75,
           "snap_share": [
             43.0,
@@ -3119,6 +3192,7 @@
             6.3
           ],
           "opp_rank": 24.0,
+          "volatility": 25,
           "vegas_implied": 23.75,
           "snap_share": [
             6.0,
@@ -3156,6 +3230,7 @@
             1.7
           ],
           "opp_rank": 24.0,
+          "volatility": 25,
           "vegas_implied": 28.75,
           "snap_share": [
             76.0,
@@ -3195,6 +3270,7 @@
             2.3
           ],
           "opp_rank": 18.0,
+          "volatility": 25,
           "vegas_implied": 25.75,
           "snap_share": [
             71.0,
@@ -3238,6 +3314,7 @@
             6.6
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             79.0,
@@ -3272,6 +3349,7 @@
           "sparkline": [],
           "recent_points": [],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": null,
           "practice": null
@@ -3306,6 +3384,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": null,
           "practice": null
@@ -3366,6 +3445,7 @@
             35.34
           ],
           "opp_rank": 22.0,
+          "volatility": 82,
           "vegas_implied": 27.5,
           "snap_share": [
             88.0,
@@ -3407,6 +3487,7 @@
             12.6
           ],
           "opp_rank": 13.0,
+          "volatility": 94,
           "vegas_implied": 21.5,
           "snap_share": [
             62.0,
@@ -3448,6 +3529,7 @@
             2.6
           ],
           "opp_rank": 17.0,
+          "volatility": 69,
           "vegas_implied": 23.5,
           "snap_share": [
             88.0,
@@ -3489,6 +3571,7 @@
             12.2
           ],
           "opp_rank": 2.0,
+          "volatility": 88,
           "vegas_implied": 21.5,
           "snap_share": [
             51.0,
@@ -3530,6 +3613,7 @@
             33.5
           ],
           "opp_rank": 7.0,
+          "volatility": 65,
           "vegas_implied": 18.25,
           "snap_share": [
             55.0,
@@ -3571,6 +3655,7 @@
             9.5
           ],
           "opp_rank": 32.0,
+          "volatility": 38,
           "vegas_implied": 22.0,
           "snap_share": [
             66.0,
@@ -3612,6 +3697,7 @@
             20.7
           ],
           "opp_rank": 25.0,
+          "volatility": 46,
           "vegas_implied": 27.5,
           "snap_share": [
             49.0,
@@ -3653,6 +3739,7 @@
             6.8
           ],
           "opp_rank": 9.0,
+          "volatility": 46,
           "vegas_implied": 25.75,
           "snap_share": [
             0.0,
@@ -3694,6 +3781,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 13,
           "vegas_implied": 22.0,
           "snap_share": null,
           "practice": null
@@ -3729,6 +3817,7 @@
             15.9
           ],
           "opp_rank": 32.0,
+          "volatility": 24,
           "vegas_implied": 22.0,
           "snap_share": [
             17.0,
@@ -3767,6 +3856,7 @@
             27.0
           ],
           "opp_rank": 13.0,
+          "volatility": 58,
           "vegas_implied": 21.75,
           "snap_share": [
             43.0,
@@ -3806,6 +3896,7 @@
             6.9
           ],
           "opp_rank": 2.0,
+          "volatility": 51,
           "vegas_implied": 21.75,
           "snap_share": [
             84.0,
@@ -3847,6 +3938,7 @@
             5.5
           ],
           "opp_rank": 25.0,
+          "volatility": 17,
           "vegas_implied": 27.5,
           "snap_share": [
             40.0,
@@ -3888,6 +3980,7 @@
             3.8
           ],
           "opp_rank": 17.0,
+          "volatility": 44,
           "vegas_implied": 28.75,
           "snap_share": [
             72.0,
@@ -3929,6 +4022,7 @@
             1.56
           ],
           "opp_rank": 2.0,
+          "volatility": 10,
           "vegas_implied": 21.5,
           "snap_share": [
             25.0,
@@ -3972,6 +4066,7 @@
             5.6
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             84.0,
@@ -4049,6 +4144,7 @@
             6.0
           ],
           "opp_rank": 8.0,
+          "volatility": 6,
           "vegas_implied": 22.0,
           "snap_share": [
             100.0,
@@ -4090,6 +4186,7 @@
             19.4
           ],
           "opp_rank": 29.0,
+          "volatility": 86,
           "vegas_implied": 30.75,
           "snap_share": [
             75.0,
@@ -4131,6 +4228,7 @@
             6.6
           ],
           "opp_rank": 27.0,
+          "volatility": 75,
           "vegas_implied": 23.75,
           "snap_share": [
             94.0,
@@ -4172,6 +4270,7 @@
             16.1
           ],
           "opp_rank": 20.0,
+          "volatility": 67,
           "vegas_implied": 26.25,
           "snap_share": [
             45.0,
@@ -4212,6 +4311,7 @@
             16.3
           ],
           "opp_rank": 27.0,
+          "volatility": 75,
           "vegas_implied": 18.25,
           "snap_share": [
             19.0,
@@ -4252,6 +4352,7 @@
             4.4
           ],
           "opp_rank": 22.0,
+          "volatility": 62,
           "vegas_implied": 22.0,
           "snap_share": [
             71.0,
@@ -4292,6 +4393,7 @@
             11.7
           ],
           "opp_rank": 18.0,
+          "volatility": 38,
           "vegas_implied": 23.0,
           "snap_share": [
             41.0,
@@ -4332,6 +4434,7 @@
             8.0
           ],
           "opp_rank": 3.0,
+          "volatility": 23,
           "vegas_implied": 24.75,
           "snap_share": [
             0.0,
@@ -4373,6 +4476,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 47,
           "vegas_implied": 26.25,
           "snap_share": null,
           "practice": null
@@ -4409,6 +4513,7 @@
             12.7
           ],
           "opp_rank": 21.0,
+          "volatility": 41,
           "vegas_implied": 17.5,
           "snap_share": [
             63.0,
@@ -4449,6 +4554,7 @@
             0.9
           ],
           "opp_rank": 22.0,
+          "volatility": 39,
           "vegas_implied": 22.25,
           "snap_share": [
             84.0,
@@ -4489,6 +4595,7 @@
             7.1
           ],
           "opp_rank": 13.0,
+          "volatility": 50,
           "vegas_implied": 17.0,
           "snap_share": [
             86.0,
@@ -4532,6 +4639,7 @@
             6.2
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             29.0,
@@ -4570,6 +4678,7 @@
             7.0
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             59.0,
@@ -4601,6 +4710,7 @@
           "sparkline": [],
           "recent_points": [],
           "opp_rank": null,
+          "volatility": 6,
           "vegas_implied": null,
           "snap_share": null,
           "practice": null
@@ -4671,6 +4781,7 @@
             32.44
           ],
           "opp_rank": 25.0,
+          "volatility": 100,
           "vegas_implied": 25.25,
           "snap_share": [
             100.0,
@@ -4711,6 +4822,7 @@
             2.3
           ],
           "opp_rank": 30.0,
+          "volatility": 35,
           "vegas_implied": 22.0,
           "snap_share": [
             83.0,
@@ -4751,6 +4863,7 @@
             20.8
           ],
           "opp_rank": 14.0,
+          "volatility": 82,
           "vegas_implied": 28.25,
           "snap_share": [
             72.0,
@@ -4792,6 +4905,7 @@
             5.7
           ],
           "opp_rank": 6.0,
+          "volatility": 94,
           "vegas_implied": 22.0,
           "snap_share": [
             68.0,
@@ -4833,6 +4947,7 @@
             3.9
           ],
           "opp_rank": 16.0,
+          "volatility": 40,
           "vegas_implied": 19.25,
           "snap_share": [
             58.0,
@@ -4873,6 +4988,7 @@
             14.4
           ],
           "opp_rank": 19.0,
+          "volatility": 75,
           "vegas_implied": 20.0,
           "snap_share": [
             93.0,
@@ -4913,6 +5029,7 @@
             2.6
           ],
           "opp_rank": 3.0,
+          "volatility": 35,
           "vegas_implied": 22.0,
           "snap_share": [
             46.0,
@@ -4954,6 +5071,7 @@
             5.3
           ],
           "opp_rank": 5.0,
+          "volatility": 100,
           "vegas_implied": 20.0,
           "snap_share": [
             0.0,
@@ -4995,6 +5113,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 100,
           "vegas_implied": 20.5,
           "snap_share": null,
           "practice": null
@@ -5031,6 +5150,7 @@
             23.5
           ],
           "opp_rank": 6.0,
+          "volatility": 53,
           "vegas_implied": 26.25,
           "snap_share": [
             100.0,
@@ -5072,6 +5192,7 @@
             7.84
           ],
           "opp_rank": null,
+          "volatility": 93,
           "vegas_implied": 27.5,
           "snap_share": null,
           "practice": null
@@ -5106,6 +5227,7 @@
             4.8
           ],
           "opp_rank": 3.0,
+          "volatility": 24,
           "vegas_implied": 20.5,
           "snap_share": [
             61.0,
@@ -5147,6 +5269,7 @@
             1.4
           ],
           "opp_rank": 11.0,
+          "volatility": 12,
           "vegas_implied": 26.25,
           "snap_share": [
             20.0,
@@ -5188,6 +5311,7 @@
             0.28
           ],
           "opp_rank": 2.0,
+          "volatility": 10,
           "vegas_implied": 21.75,
           "snap_share": [
             62.0,
@@ -5231,6 +5355,7 @@
             0.98
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             60.0,
@@ -5272,6 +5397,7 @@
             3.9
           ],
           "opp_rank": null,
+          "volatility": 6,
           "vegas_implied": null,
           "snap_share": [
             54.0,
@@ -5347,6 +5473,7 @@
             25.0
           ],
           "opp_rank": 24.0,
+          "volatility": 71,
           "vegas_implied": 23.0,
           "snap_share": [
             100.0,
@@ -5385,6 +5512,7 @@
             10.4
           ],
           "opp_rank": 31.0,
+          "volatility": 33,
           "vegas_implied": 23.0,
           "snap_share": [
             63.0,
@@ -5425,6 +5553,7 @@
             4.0
           ],
           "opp_rank": 22.0,
+          "volatility": 71,
           "vegas_implied": 22.25,
           "snap_share": [
             82.0,
@@ -5466,6 +5595,7 @@
             12.3
           ],
           "opp_rank": 5.0,
+          "volatility": 100,
           "vegas_implied": 24.5,
           "snap_share": [
             74.0,
@@ -5507,6 +5637,7 @@
             21.5
           ],
           "opp_rank": 22.0,
+          "volatility": 98,
           "vegas_implied": 30.75,
           "snap_share": [
             80.0,
@@ -5547,6 +5678,7 @@
             4.8
           ],
           "opp_rank": 31.0,
+          "volatility": 56,
           "vegas_implied": 17.5,
           "snap_share": [
             95.0,
@@ -5587,6 +5719,7 @@
             13.6
           ],
           "opp_rank": 21.0,
+          "volatility": 69,
           "vegas_implied": 22.0,
           "snap_share": [
             81.0,
@@ -5628,6 +5761,7 @@
             16.2
           ],
           "opp_rank": 10.0,
+          "volatility": 46,
           "vegas_implied": 21.75,
           "snap_share": [
             0.0,
@@ -5669,6 +5803,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 80,
           "vegas_implied": 28.25,
           "snap_share": null,
           "practice": null
@@ -5705,6 +5840,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 13,
           "vegas_implied": 21.5,
           "snap_share": null,
           "practice": null
@@ -5739,6 +5875,7 @@
             10.4
           ],
           "opp_rank": 1.0,
+          "volatility": 15,
           "vegas_implied": 20.0,
           "snap_share": [
             6.0,
@@ -5779,6 +5916,7 @@
             1.7
           ],
           "opp_rank": 5.0,
+          "volatility": 8,
           "vegas_implied": 19.25,
           "snap_share": [
             49.0,
@@ -5821,6 +5959,7 @@
             9.4
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             75.0,
@@ -5862,6 +6001,7 @@
             1.2
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             69.0,
@@ -5903,6 +6043,7 @@
             12.5
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             0.0,
@@ -5970,6 +6111,7 @@
             20.96
           ],
           "opp_rank": 14.0,
+          "volatility": 41,
           "vegas_implied": 25.25,
           "snap_share": [
             100.0,
@@ -6011,6 +6153,7 @@
             15.2
           ],
           "opp_rank": 4.0,
+          "volatility": 96,
           "vegas_implied": 24.5,
           "snap_share": [
             90.0,
@@ -6051,6 +6194,7 @@
             13.8
           ],
           "opp_rank": 8.0,
+          "volatility": 100,
           "vegas_implied": 26.25,
           "snap_share": [
             70.0,
@@ -6091,6 +6235,7 @@
             13.7
           ],
           "opp_rank": 11.0,
+          "volatility": 73,
           "vegas_implied": 21.5,
           "snap_share": [
             71.0,
@@ -6132,6 +6277,7 @@
             18.5
           ],
           "opp_rank": 30.0,
+          "volatility": 54,
           "vegas_implied": 25.25,
           "snap_share": [
             36.0,
@@ -6173,6 +6319,7 @@
             17.1
           ],
           "opp_rank": 2.0,
+          "volatility": 94,
           "vegas_implied": 23.75,
           "snap_share": [
             88.0,
@@ -6214,6 +6361,7 @@
             6.68
           ],
           "opp_rank": 11.0,
+          "volatility": 76,
           "vegas_implied": 27.5,
           "snap_share": [
             61.0,
@@ -6255,6 +6403,7 @@
             5.3
           ],
           "opp_rank": 30.0,
+          "volatility": 100,
           "vegas_implied": 19.25,
           "snap_share": [
             0.0,
@@ -6296,6 +6445,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 80,
           "vegas_implied": 30.75,
           "snap_share": null,
           "practice": null
@@ -6332,6 +6482,7 @@
             8.76
           ],
           "opp_rank": 18.0,
+          "volatility": 12,
           "vegas_implied": 19.25,
           "snap_share": [
             100.0,
@@ -6366,6 +6517,7 @@
           "sparkline": [],
           "recent_points": [],
           "opp_rank": 9.0,
+          "volatility": 42,
           "vegas_implied": 24.75,
           "snap_share": null,
           "practice": null
@@ -6400,6 +6552,7 @@
             1.8
           ],
           "opp_rank": 28.0,
+          "volatility": 31,
           "vegas_implied": 20.0,
           "snap_share": [
             83.0,
@@ -6441,6 +6594,7 @@
             0.7
           ],
           "opp_rank": 25.0,
+          "volatility": 16,
           "vegas_implied": 18.25,
           "snap_share": [
             53.0,
@@ -6484,6 +6638,7 @@
             11.1
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             74.0,
@@ -6525,6 +6680,7 @@
             2.8
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             29.0,
@@ -6592,6 +6748,7 @@
             22.3
           ],
           "opp_rank": 16.0,
+          "volatility": 94,
           "vegas_implied": 28.75,
           "snap_share": [
             100.0,
@@ -6633,6 +6790,7 @@
             21.1
           ],
           "opp_rank": 4.0,
+          "volatility": 78,
           "vegas_implied": 24.5,
           "snap_share": [
             84.0,
@@ -6671,6 +6829,7 @@
             8.8
           ],
           "opp_rank": 6.0,
+          "volatility": 80,
           "vegas_implied": 22.0,
           "snap_share": [
             83.0,
@@ -6709,6 +6868,7 @@
             15.0
           ],
           "opp_rank": 13.0,
+          "volatility": 85,
           "vegas_implied": 21.75,
           "snap_share": [
             68.0,
@@ -6750,6 +6910,7 @@
             21.3
           ],
           "opp_rank": 4.0,
+          "volatility": 96,
           "vegas_implied": 28.75,
           "snap_share": [
             72.0,
@@ -6791,6 +6952,7 @@
             6.0
           ],
           "opp_rank": 28.0,
+          "volatility": 71,
           "vegas_implied": 22.25,
           "snap_share": [
             71.0,
@@ -6832,6 +6994,7 @@
             10.0
           ],
           "opp_rank": 31.0,
+          "volatility": 100,
           "vegas_implied": 27.5,
           "snap_share": [
             0.0,
@@ -6873,6 +7036,7 @@
             7.76
           ],
           "opp_rank": null,
+          "volatility": 80,
           "vegas_implied": 28.75,
           "snap_share": null,
           "practice": null
@@ -6909,6 +7073,7 @@
             16.3
           ],
           "opp_rank": 12.0,
+          "volatility": 61,
           "vegas_implied": 22.0,
           "snap_share": [
             59.0,
@@ -6950,6 +7115,7 @@
             5.6
           ],
           "opp_rank": 16.0,
+          "volatility": 65,
           "vegas_implied": 21.5,
           "snap_share": [
             97.0,
@@ -6991,6 +7157,7 @@
             4.02
           ],
           "opp_rank": 19.0,
+          "volatility": 43,
           "vegas_implied": 18.25,
           "snap_share": [
             98.0,
@@ -7032,6 +7199,7 @@
             3.1
           ],
           "opp_rank": 28.0,
+          "volatility": 18,
           "vegas_implied": 20.0,
           "snap_share": [
             67.0,
@@ -7075,6 +7243,7 @@
             6.8
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             48.0,
@@ -7116,6 +7285,7 @@
             20.52
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             100.0,
@@ -7157,6 +7327,7 @@
             11.26
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             33.0,
@@ -7211,6 +7382,7 @@
             22.88
           ],
           "opp_rank": 29.0,
+          "volatility": 88,
           "vegas_implied": 25.75,
           "snap_share": [
             100.0,
@@ -7248,6 +7420,7 @@
             13.5
           ],
           "opp_rank": 21.0,
+          "volatility": 53,
           "vegas_implied": 17.5,
           "snap_share": [
             95.0,
@@ -7287,6 +7460,7 @@
             1.1
           ],
           "opp_rank": 6.0,
+          "volatility": 27,
           "vegas_implied": 22.0,
           "snap_share": [
             77.0,
@@ -7328,6 +7502,7 @@
             5.8
           ],
           "opp_rank": 19.0,
+          "volatility": 56,
           "vegas_implied": 28.25,
           "snap_share": [
             72.0,
@@ -7369,6 +7544,7 @@
             4.9
           ],
           "opp_rank": 23.0,
+          "volatility": 92,
           "vegas_implied": 25.75,
           "snap_share": [
             53.0,
@@ -7410,6 +7586,7 @@
             7.1
           ],
           "opp_rank": 30.0,
+          "volatility": 31,
           "vegas_implied": 25.25,
           "snap_share": [
             91.0,
@@ -7451,6 +7628,7 @@
             4.5
           ],
           "opp_rank": 3.0,
+          "volatility": 20,
           "vegas_implied": 20.5,
           "snap_share": [
             73.0,
@@ -7492,6 +7670,7 @@
             13.6
           ],
           "opp_rank": 17.0,
+          "volatility": 100,
           "vegas_implied": 30.75,
           "snap_share": [
             0.0,
@@ -7533,6 +7712,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 47,
           "vegas_implied": 24.75,
           "snap_share": null,
           "practice": null
@@ -7569,6 +7749,7 @@
             30.18
           ],
           "opp_rank": 3.0,
+          "volatility": 18,
           "vegas_implied": 20.5,
           "snap_share": [
             100.0,
@@ -7610,6 +7791,7 @@
             0.0
           ],
           "opp_rank": null,
+          "volatility": 47,
           "vegas_implied": 22.25,
           "snap_share": null,
           "practice": null
@@ -7644,6 +7826,7 @@
             2.7
           ],
           "opp_rank": 15.0,
+          "volatility": 14,
           "vegas_implied": 23.0,
           "snap_share": [
             86.0,
@@ -7685,6 +7868,7 @@
             0.0
           ],
           "opp_rank": 24.0,
+          "volatility": 6,
           "vegas_implied": 30.75,
           "snap_share": [
             60.0,
@@ -7725,6 +7909,7 @@
             1.3
           ],
           "opp_rank": 13.0,
+          "volatility": 6,
           "vegas_implied": 21.75,
           "snap_share": [
             0.0,
@@ -7766,6 +7951,7 @@
             1.1
           ],
           "opp_rank": null,
+          "volatility": null,
           "vegas_implied": null,
           "snap_share": [
             49.0,
