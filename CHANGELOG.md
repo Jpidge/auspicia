@@ -4,6 +4,16 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.22] — 2026-10-29
+
+### Added
+
+- **Definitions, in place and in one place.** A single `DEFS` table in `site/app.js` now feeds both the label tooltips and a new **Definitions** card (replacing "How to read a row") on the Team view, so the two can never drift apart. Every player-drawer stat label (Last 6 weeks, 10th–90th, Median, Mean, Boom/bust, Opp rank, Vegas implied, Snap share, Practice) carries an ⓘ whose definition appears on hover, tap, or keyboard focus; the matchup card's projected totals and win probability are defined the same way, and the row chips (verdict, Yahoo delta), the median bar, the standings Proj header, and the share-of-leader bar carry `title` definitions. The Boom/bust entry states the rule in words: within-position percentile of the 10th–90th width — Steady under 34, Balanced 34–66, Boom/bust 67 and over — and that a wide range means more swing, not more points.
+
+### Fixed
+
+- The Toughest calls card labeled its projections "median"; they have been means since the 0.5.20 objective change, and now say so. The old legend card's claim that "the lineup maximizes median points" (stale since 0.5.20) is corrected in the new Definitions card.
+
 ## [0.5.21] — 2026-10-29
 
 ### Added

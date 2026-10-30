@@ -318,6 +318,17 @@ def test_site_reads_the_contract_fields() -> None:
     assert ">Viewing</span>" in script
     assert "not found, showing" in script
     assert "[hidden] { display: none !important; }" in css
+    # Definitions: one DEFS table feeds the label tooltips and the card.
+    assert "data-def" in script
+    assert "attr(data-def)" in css
+    assert 'class="defs"' in script
+    assert "Steady under 34" in script
+    assert "the lineup is picked on the mean, not the median" in script
+    # Stale median-objective copy is gone (the objective is the mean, 0.5.20).
+    assert "maximizes median" not in script
+    assert "maximizes mean (expected) points" in script
+    assert "median</small>" not in script
+    assert "mean</small>" in script
     assert "svg[hidden] { display: none; }" in css
     note = (SITE / "index.html").read_text(encoding="utf-8")
     assert 'id="team-note"' in note
