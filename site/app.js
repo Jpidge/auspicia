@@ -3,6 +3,35 @@
   var COLORS = { QB: "var(--qb)", RB: "var(--rb)", WR: "var(--wr)", TE: "var(--te)", K: "var(--k)", DST: "var(--def)", DEF: "var(--def)" };
   var SLOT = { QB: "QB", RB: "RB", WR: "WR", TE: "TE", FLEX: "W/R/T", K: "K", DST: "DEF" };
   var VERDICT = { start: "Start", monitor: "Monitor", sit: "Sit" };
+  var VERDICT_TIP = {
+    start: "In the recommended lineup, which maximizes total mean (expected points)",
+    monitor: "Close call: a legal bench replacement is within the close-call margin, so this spot is flagged",
+    sit: "Not in the recommended lineup"
+  };
+  // One source for every definition on the page: the drawer tooltips and the
+  // Definitions card both render from this table, so they cannot drift apart.
+  var DEFS = {
+    last6: "His actual fantasy points in each of the last six weeks he played, oldest to newest.",
+    range: "The model's 10th–90th percentile range: a bad week lands near the low end, a great week near the high end. Live ranges are the model's raw quantiles, not yet calibrated.",
+    median: "The typical week: half his outcomes land above it, half below. It is the big number on his row — but the lineup is picked on the mean, not the median.",
+    mean: "Expected points: his average outcome across many similar weeks. The recommended lineup is the one that maximizes total mean.",
+    boomBust: "How wide his range is versus the same position this week, by percentile of the 10th–90th width: Steady under 34, Balanced 34–66, Boom/bust 67 and over. Wide means more swing week to week — not more points.",
+    oppRank: "Toughness of the opposing defense against his position, by fantasy points allowed per game this season in this league's scoring. 1 = toughest (allows the fewest).",
+    vegas: "Points Vegas implies his NFL team will score, from the spread and the game total. Higher team totals usually mean more scoring to go around.",
+    practice: "His latest practice report this week: FP full, LP limited, DNP did not practice. Blank means he was not on the injury report — not a guarantee he plays.",
+    snap: "Share of his team's offensive snaps in his most recent game, and how it moved since the first week shown.",
+    projTotal: "Projected total: the sum of the recommended starters' mean projections.",
+    winProb: "Chance of outscoring the opponent, computed from the two projected totals assuming a typical spread of outcomes around them.",
+    yahooDelta: "Our median minus Yahoo's projection for him. Green = we are higher, red = Yahoo is higher.",
+    verdicts: "Start = in the recommended lineup. Monitor = a close call, flagged because a legal bench replacement is within the close-call margin. Sit = not in the recommended lineup.",
+    shareLeader: "This team's projected total as a share of the highest projected total in the league."
+  };
+  var DEF_ORDER = [
+    ["mean", "Mean"], ["median", "Median"], ["range", "10th–90th range"], ["boomBust", "Boom/bust"],
+    ["oppRank", "Opp rank"], ["vegas", "Vegas implied"], ["practice", "Practice"], ["snap", "Snap share"],
+    ["last6", "Last 6 weeks"], ["verdicts", "Start · Monitor · Sit"], ["projTotal", "Projected total"],
+    ["winProb", "Win probability"], ["yahooDelta", "Yahoo chip"]
+  ];
   var state = { data: null, view: "team", teamId: null, waiver: "ALL", sortKey: "projected_total", sortDir: -1 };
 
   function $(id) { return document.getElementById(id); }
@@ -13,6 +42,10 @@
   function fmt(value) {
     if (value == null || Number.isNaN(Number(value))) return "–";
     return Number(value).toFixed(1);
+  }
+  function defLabel(key, label) {
+    if (!DEFS[key]) return esc(label);
+    return '<span class="def" tabindex="0" data-def="' + esc(DEFS[key]) + '" aria-label="' + esc(label + ": " + DEFS[key]) + '">' + esc(label) + ' <span class="def-i" aria-hidden="true">i</span></span>';
   }
   function rangeText(player) {
     if (player.q10 == null || player.q90 == null) return "";
@@ -49,11 +82,11 @@
     var quiet = player.force_zero || player.bye || player.injury === "IR" || player.injury === "OUT";
     var delta = player.yahoo_delta;
     var deltaClass = delta > 0.2 ? "d-up" : delta < -0.2 ? "d-dn" : "d-eq";
-    var deltaHtml = player.yahoo == null ? "" : '<span class="chip ' + deltaClass + '">' + (delta > 0 ? "+" : delta < 0 ? "−" : "±") + Math.abs(delta).toFixed(1) + '<span class="dlabel"> vs Y!</span></span>';
-    var yahooHtml = player.yahoo == null ? "" : '<span class="yh">Y! <b class="num">' + fmt(player.yahoo) + "</b></span>" + deltaHtml;
+    var deltaHtml = player.yahoo == null ? "" : '<span class="chip ' + deltaClass + '" title="Our median minus Yahoo\'s projection">' + (delta > 0 ? "+" : delta < 0 ? "−" : "±") + Math.abs(delta).toFixed(1) + '<span class="dlabel"> vs Y!</span></span>';
+    var yahooHtml = player.yahoo == null ? "" : '<span class="yh" title="Yahoo\'s projection for this player">Y! <b class="num">' + fmt(player.yahoo) + "</b></span>" + deltaHtml;
     var proj = quiet ? '<span class="sub">Out — no projection</span>' : (
       '<span class="rng" aria-hidden="true"><span class="trk"></span><span class="band" style="left:' + pct(player.q10) + "%;width:" + Math.max(0, pct(player.q90) - pct(player.q10)) + '%"></span><span class="med" style="left:' + pct(player.q50) + '%"></span></span>' +
-      '<span class="medblock"><span class="mednum num">' + fmt(player.q50) + '</span><span class="rngline num">' + esc(rangeText(player)) + "</span></span>" +
+      '<span class="medblock" title="Median projection; the bar shows the 10th–90th range"><span class="mednum num">' + fmt(player.q50) + '</span><span class="rngline num">' + esc(rangeText(player)) + "</span></span>" +
       '<span class="yhm">' + yahooHtml + "</span>"
     );
     var verdict = VERDICT[player.verdict] || "Sit";
@@ -69,14 +102,14 @@
       '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></button>' +
       '<div class="drawer" role="region" aria-label="Details for ' + esc(player.name) + '"><div class="dgrid">' +
       pointsStat(player) +
-      stat("10th–90th", esc(rangeText(player) || "—")) +
-      stat("Median", fmt(player.q50)) +
-      stat("Mean", fmt(player.mean)) +
-      stat("Boom/bust", boomBust(player)) +
-      stat("Opp rank", player.opp_rank == null ? "—" : String(player.opp_rank)) +
-      stat("Vegas implied", player.vegas_implied == null ? "—" : fmt(player.vegas_implied)) +
+      stat("10th–90th", esc(rangeText(player) || "—"), "range") +
+      stat("Median", fmt(player.q50), "median") +
+      stat("Mean", fmt(player.mean), "mean") +
+      stat("Boom/bust", boomBust(player), "boomBust") +
+      stat("Opp rank", player.opp_rank == null ? "—" : String(player.opp_rank), "oppRank") +
+      stat("Vegas implied", player.vegas_implied == null ? "—" : fmt(player.vegas_implied), "vegas") +
       snapStat(player) +
-      stat("Practice", esc(player.practice || "—")) +
+      stat("Practice", esc(player.practice || "—"), "practice") +
       "</div>" + notes(player.notes) + "</div></div>";
   }
   function nums(values) {
@@ -122,7 +155,7 @@
     var body = values.length < 2
       ? '<div class="val num">—</div>'
       : spark(values, 120, 40) + '<div class="sub num">' + values.map(function (value) { return Number(value).toFixed(1); }).join(" · ") + "</div>";
-    return '<div class="stat"><div class="k">Last 6 weeks</div>' + body + "</div>";
+    return '<div class="stat"><div class="k">' + defLabel("last6", "Last 6 weeks") + "</div>" + body + "</div>";
   }
   function snapSeries(player) {
     if (player.position === "DST" || player.position === "DEF") return [];
@@ -131,12 +164,12 @@
   function snapStat(player) {
     var values = snapSeries(player);
     if (values.length < 2) {
-      return '<div class="stat"><div class="k">Snap share</div><div class="val num">—</div></div>';
+      return '<div class="stat"><div class="k">' + defLabel("snap", "Snap share") + '</div><div class="val num">—</div></div>';
     }
     var last = values[values.length - 1];
     var delta = last - values[0];
     var mark = delta >= 0 ? "▲" : "▼";
-    return '<div class="stat"><div class="k">Snap share</div><div class="val num">' + compact(last) + '%<small> ' + mark + compact(Math.abs(delta)) + "</small></div>" + spark(values, 120, 24) + "</div>";
+    return '<div class="stat"><div class="k">' + defLabel("snap", "Snap share") + '</div><div class="val num">' + compact(last) + '%<small> ' + mark + compact(Math.abs(delta)) + "</small></div>" + spark(values, 120, 24) + "</div>";
   }
   function pct(value) {
     var max = 30;
@@ -149,8 +182,9 @@
     if (player.volatility == null) return "—";
     return player.volatility >= 67 ? "Boom/bust" : player.volatility >= 34 ? "Balanced" : "Steady";
   }
-  function stat(label, value) {
-    return '<div class="stat"><div class="k">' + esc(label) + '</div><div class="val num">' + value + "</div></div>";
+  function stat(label, value, defKey) {
+    var head = defKey ? defLabel(defKey, label) : esc(label);
+    return '<div class="stat"><div class="k">' + head + '</div><div class="val num">' + value + "</div></div>";
   }
   function notes(items) {
     if (!items || !items.length) return "";
@@ -174,17 +208,19 @@
     var opp = team.opponent_projected_total;
     var wp = team.win_probability;
     var wpPct = wp == null ? null : Math.round(wp * 100);
-    $("matchup").innerHTML = '<div class="mu"><div class="t me"><span class="sub">' + esc(team.name) + " (" + esc(team.record) + ')</span><span class="pts num">' + fmt(team.projected_total) + '</span><span class="sub">Gridiron Lab proj.</span></div><span class="vs">VS</span><div class="t r"><span class="sub">' + esc(team.opponent_name || "No opponent") + '</span><span class="pts num">' + (opp == null ? "–" : fmt(opp)) + '</span><span class="sub">Gridiron Lab proj.</span></div></div>' +
-      (wpPct == null ? "" : '<div class="wp"><div class="wpbar" role="img" aria-label="Win probability ' + wpPct + ' percent"><i style="width:' + wpPct + '%"></i></div><div class="wplab"><span>Win probability <b class="num">' + wpPct + '%</b></span><span><b class="num">' + (100 - wpPct) + "%</b></span></div></div>");
+    $("matchup").innerHTML = '<div class="mu"><div class="t me"><span class="sub">' + esc(team.name) + " (" + esc(team.record) + ')</span><span class="pts num">' + fmt(team.projected_total) + '</span><span class="sub">' + defLabel("projTotal", "Gridiron Lab proj.") + '</span></div><span class="vs">VS</span><div class="t r"><span class="sub">' + esc(team.opponent_name || "No opponent") + '</span><span class="pts num">' + (opp == null ? "–" : fmt(opp)) + '</span><span class="sub">' + defLabel("projTotal", "Gridiron Lab proj.") + '</span></div></div>' +
+      (wpPct == null ? "" : '<div class="wp"><div class="wpbar" role="img" aria-label="Win probability ' + wpPct + ' percent"><i style="width:' + wpPct + '%"></i></div><div class="wplab"><span>' + defLabel("winProb", "Win probability") + ' <b class="num">' + wpPct + '%</b></span><span><b class="num">' + (100 - wpPct) + "%</b></span></div></div>");
     var calls = team.calls || [];
     var tough = $("tough-card");
     tough.classList.toggle("is-empty", !calls.length);
     tough.innerHTML = calls.length ? "<h2>Toughest calls</h2>" + '<div class="tc">' + calls.map(function (call) {
-      return '<div class="tci"><div class="q">' + esc(call.slot) + '</div><div class="pair"><div class="p win">' + esc(call.starter_name) + '<small class="num">' + fmt(call.starter_projection) + ' median</small></div><span class="or">OR</span><div class="p" style="text-align:right">' + esc(call.alternative_name) + '<small class="num">' + fmt(call.alternative_projection) + ' median</small></div></div><div class="sub">' + esc(call.starter_name) + " leads by " + fmt(call.margin) + ".</div></div>";
+      return '<div class="tci"><div class="q">' + esc(call.slot) + '</div><div class="pair"><div class="p win">' + esc(call.starter_name) + '<small class="num">' + fmt(call.starter_projection) + ' mean</small></div><span class="or">OR</span><div class="p" style="text-align:right">' + esc(call.alternative_name) + '<small class="num">' + fmt(call.alternative_projection) + ' mean</small></div></div><div class="sub">' + esc(call.starter_name) + " leads by " + fmt(call.margin) + ".</div></div>";
     }).join("") + "</div>" : '<p>Toughest calls: none within ' + data.close_call_margin + " point.</p>";
     var bench = (team.bench || []).concat(team.inactive || []);
     $("lineup-col").innerHTML = '<div class="sec-h"><h2>Recommended lineup</h2><span class="sub">Tap a row for details</span></div><p class="ylegend">Y! = Yahoo projection; chip = ours minus Yahoo</p><div class="list">' + team.starters.map(row).join("") + '</div><div class="sec-h"><h2>Bench</h2><span class="sub">' + data.lineup.bench + " bench · " + data.lineup.ir + ' IR</span></div><div class="list">' + bench.map(row).join("") + "</div>";
-    $("legend-card").innerHTML = '<h2>How to read a row</h2><div class="legend"><span><i class="sw"></i>10th–90th pct range</span><span><i class="sw m"></i>Median projection</span><span><span class="chip d-up">+2.1</span> ours minus Yahoo</span></div><p class="sub">The lineup maximizes median points under the league slots. A player on bye, OUT, or IR is not started when someone else can fill the slot.</p>';
+    $("legend-card").innerHTML = '<h2>Definitions</h2><div class="legend"><span><i class="sw"></i>10th–90th pct range</span><span><i class="sw m"></i>Median projection</span><span><span class="chip d-up">+2.1</span> ours minus Yahoo</span></div>' +
+      '<dl class="defs">' + DEF_ORDER.map(function (pair) { return "<div><dt>" + esc(pair[1]) + "</dt><dd>" + esc(DEFS[pair[0]]) + "</dd></div>"; }).join("") + "</dl>" +
+      '<p class="sub">The lineup maximizes mean (expected) points under the league slots. A player on bye, OUT, or IR is not started when someone else can fill the slot. Labels marked with an i carry the same definition in place — hover, tap, or tab to it.</p>';
   }
 
   function renderWaivers() {
@@ -231,7 +267,7 @@
       var mark = rowItem.team_id === mine ? " mine" : "";
       var you = rowItem.team_id === data.default_team_id ? ' <span class="chip d-eq">You</span>' : "";
       var viewing = rowItem.team_id === state.teamId && rowItem.team_id !== data.default_team_id ? ' <span class="chip d-eq">Viewing</span>' : "";
-      return '<tr class="' + mark.trim() + '"><td class="num">' + rowItem.rank + '</td><td class="tn"><div>' + esc(rowItem.name) + you + viewing + '</div><div class="opp-line">vs ' + esc(rowItem.opponent_name || "—") + '</div></td><td class="num hide-s">' + esc(rowItem.record) + '</td><td class="sub hide-s">' + esc(rowItem.opponent_name || "—") + '</td><td class="r num"><b>' + fmt(rowItem.projected_total) + '</b></td><td class="hide-s"><div class="mbar"><i style="width:' + (Number(rowItem.share_of_leader) * 100) + '%"></i></div></td></tr>';
+      return '<tr class="' + mark.trim() + '"><td class="num">' + rowItem.rank + '</td><td class="tn"><div>' + esc(rowItem.name) + you + viewing + '</div><div class="opp-line">vs ' + esc(rowItem.opponent_name || "—") + '</div></td><td class="num hide-s">' + esc(rowItem.record) + '</td><td class="sub hide-s">' + esc(rowItem.opponent_name || "—") + '</td><td class="r num"><b>' + fmt(rowItem.projected_total) + '</b></td><td class="hide-s"><div class="mbar" title="Share of the highest projected total"><i style="width:' + (Number(rowItem.share_of_leader) * 100) + '%"></i></div></td></tr>';
     }).join("");
     var headers = document.querySelectorAll("#ltbl th[data-k]");
     for (var i = 0; i < headers.length; i += 1) {
