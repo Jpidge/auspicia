@@ -494,6 +494,36 @@ def test_site_has_a_single_charcoal_theme() -> None:
         assert hex_value in css
 
 
+def test_site_control_center_states_the_engine_record() -> None:
+    html = (SITE / "control.html").read_text(encoding="utf-8")
+    assert "Control Center" in html
+    assert 'href="app.css"' in html
+    assert 'src="workflow.svg"' in html
+    assert (SITE / "workflow.svg").exists()
+    # The dashboard footer links to it; it is a separate page, not a tab.
+    index = (SITE / "index.html").read_text(encoding="utf-8")
+    assert 'href="control.html"' in index
+    # Gate status is stated honestly: not promoted, bias is the failure.
+    assert "Promoted:" in html
+    assert '<span class="fail">No</span>' in html
+    assert '<span class="fail">FAIL</span>' in html
+    # Benchmark figures from the 2022-2025 evaluation report.
+    for figure in ("3.63", "4.03", "3.65", "4.00", "1,591.28", "81.9"):
+        assert figure in html
+    # The theme system stays retired on this page too.
+    assert 'id="theme-select"' not in html
+
+
+def test_site_workflow_diagram_uses_the_charcoal_scheme() -> None:
+    svg = (SITE / "workflow.svg").read_text(encoding="utf-8")
+    # The diagram was recoloured from the retired navy chrome to charcoal;
+    # geometry and labels are unchanged, only fills and strokes moved.
+    assert "#0B1324" not in svg
+    assert "#16233F" not in svg
+    assert "#1e2023" in svg
+    assert "#2e3136" in svg
+
+
 def test_first_screen_is_under_the_gzip_budget() -> None:
     total = 0
     for name in ("index.html", "app.css", "app.js"):

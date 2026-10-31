@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>AUSPICIA · Control Center</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="theme-color" content="#0d0e0f">
+  <link rel="stylesheet" href="app.css">
+  <style>
+    .stack { display: flex; flex-direction: column; gap: 24px; }
+    .cc-back {
+      margin-left: auto; display: inline-flex; align-items: center; min-height: 44px;
+      padding: 8px 16px; border-radius: 12px; border: 1px solid var(--line);
+      background: var(--card); color: var(--muted); font-weight: 600; text-decoration: none;
+    }
+    .cc-back:hover { color: var(--text); }
+    .diagram { width: 100%; height: auto; display: block; border-radius: 12px; }
+    .gate-fails { margin: 8px 0 0; padding-left: 20px; color: var(--muted); font-size: 13px; }
+    .gate-fails li { margin: 2px 0; }
+    .status-line { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
+    .status-line .verdict { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; }
+    .tbl td.pos-name { font-weight: 700; white-space: nowrap; }
+    .card p { line-height: 1.55; }
+    .card p:first-of-type { margin-top: 0; }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <div class="top-in">
+      <div class="brand"><img class="brand-mark" src="emblem.svg" alt="AUSPICIA"><span>Control Center</span></div>
+      <a class="cc-back" href="index.html">Dashboard →</a>
+    </div>
+  </header>
+  <main>
+    <div class="hero">
+      <div>
+        <div class="sub">Behind the scenes · the engine's user manual</div>
+        <h1>Control Center</h1>
+      </div>
+    </div>
+    <div class="stack">
+
+      <section class="card" aria-label="What this page is">
+        <h2>What this page is</h2>
+        <p>AUSPICIA is three separate things, and this page is the third one:</p>
+        <ul class="why">
+          <li><b>The engine</b> — backstage. Its only job is to make the projections better: ingest data, build features, train, predict, evaluate, diagnose.</li>
+          <li><b>The dashboard</b> — the product. It plugs in the latest model's weekly numbers and shows verdicts, plainly. It does not explain the engine.</li>
+          <li><b>The Control Center</b> — this page. The manual for the engine: how each feature works, where the project stands, and how the model is actually doing.</li>
+        </ul>
+        <p class="sub">This page is read-only. It reads engine outputs — evaluation reports, gate status, benchmarks — and never changes them. There is no write path back from here to the engine or the dashboard.</p>
+      </section>
+
+      <section class="card" aria-label="How it all fits together">
+        <h2>How it all fits together</h2>
+        <img class="diagram" src="workflow.svg" alt="Workflow diagram: NFLverse, Yahoo, Vegas lines, and practice reports feed the engine — ingest, features, train, predict — which exports dashboard.json to the dashboard; evaluate and the promotion gates grade the model, with an improvement loop back to training. The Control Center reads the reports.">
+        <p class="sub">One contract worth remembering: Yahoo is not training fuel. It supplies the league's rosters (who to predict for) and Yahoo's own projections (the rival the scorecard grades against). Training data is NFLverse history, scored under this league's exact rules.</p>
+      </section>
+
+      <section class="card" aria-label="How the engine works">
+        <h2>How the engine works</h2>
+        <p class="sub">The pipeline, step by step. Every prediction is made using only information that existed before that week's games — no peeking at results.</p>
+        <ul class="why">
+          <li><b>1 · Ingest.</b> NFLverse play-by-play, player stats, schedules, and Vegas lines are loaded into a local store covering 2018 onward. Every row carries the moment it became known, so history can be replayed honestly.</li>
+          <li><b>2 · Features.</b> Raw facts become per-player-week signals: recent form (last game, last 3, last 5, a recency-weighted average, trend direction), opportunity (snap share, target and carry shares, air yards, red-zone work), matchup strength, and the game environment (spread, total, implied team points).</li>
+          <li><b>3 · Train.</b> A separate LightGBM model per skill position — QB, RB, WR, TE — trained on past seasons under this league's scoring (non-PPR, 6-point passing TDs, the 40+ yard TD bonus). Kickers and defenses use a simpler regression built mostly on the Vegas lines.</li>
+          <li><b>4 · Predict.</b> Each player gets a distribution, not a single number: a <b>mean</b> (expected points — the lineup is picked on this), a <b>median</b> (the typical week, the headline on his card), and a <b>10th–90th range</b> (bad week to great week). Win probability is arithmetic on the two teams' totals.</li>
+          <li><b>5 · Evaluate.</b> Two kinds of grading. The <i>backtest</i> replays 2022–2025 week by week — 72 rounds, training only on the past each time — and produces the benchmarks below. The <i>weekly scorecard</i> freezes live predictions before kickoff and grades them against actuals and Yahoo once the week is final.</li>
+          <li><b>6 · Promotion gates.</b> A model earns the claim "proven" only by passing all five written gates (next card). Until then the site still runs its numbers — by the owner's decision — but the Lab says, honestly, that it is not promoted.</li>
+        </ul>
+        <p class="sub">Known gaps, stated plainly: live weekly predictions use the model's <b>raw</b> ranges — the conformal calibration that holds up in the backtest is not applied live yet (that's M7 work). Win probability assumes a fixed spread of outcomes (standard deviation 25) that has not been fitted to results yet.</p>
+      </section>
+
+      <section class="card" aria-label="Promotion gates">
+        <h2>Promotion gates</h2>
+        <div class="status-line">
+          <span class="verdict">Promoted: <span class="fail">No</span></span>
+          <span class="sub">Model <span class="num">lgbm_skill_v1</span> · fails on bias only · the fix is the model, never the ruler</span>
+        </div>
+        <ul class="crit">
+          <li><span>1 · Accuracy beats the legacy baseline (q50 MAE, at least 3 of 4 seasons)</span><span class="pass">PASS</span></li>
+          <li><span>2 · No position left behind vs the baseline</span><span class="pass">PASS</span></li>
+          <li><span>3 · Mean bias within ±0.3 points, every position, every season</span><span class="fail">FAIL</span></li>
+          <li><span>4 · Interval coverage inside the 77–83% band</span><span class="pass">PASS</span></li>
+          <li><span>5 · Lineup points gained vs the baseline is not negative</span><span class="pass">PASS</span></li>
+        </ul>
+        <p style="margin-bottom: 0;">Gate 3's seven failures — all from the 2022–2025 backtest, mean head:</p>
+        <ul class="gate-fails">
+          <li>QB 2022 · <span class="num">+0.66</span></li>
+          <li>WR 2022 · <span class="num">+0.40</span></li>
+          <li>QB 2023 · <span class="num">+0.70</span></li>
+          <li>K 2024 · <span class="num">−0.57</span></li>
+          <li>QB 2025 · <span class="num">+0.72</span></li>
+          <li>K 2025 · <span class="num">−0.55</span></li>
+          <li>DST 2025 · <span class="num">−1.51</span></li>
+        </ul>
+        <p class="sub">The diagnosis so far: the quarterback overprediction is real but not a constant offset (QB 2024 sits at −0.05), and the K/DST 2025 failures are recent and tail-driven. The next engine step is a pre-registered, mechanism-level fix — written down as DESIGN §22 before it runs. One loose end is recorded openly first: the bias figures reproduce across reruns to about a thousandth of a point, but one rerun produced a different report digest and the cause is not yet pinned down. No fix gets built on an unexplained digest.</p>
+      </section>
+
+      <section class="card" aria-label="Benchmarks">
+        <h2>Benchmarks — the 2022–2025 backtest</h2>
+        <p class="sub">Rolling-origin replay: 72 weekly folds, each trained only on what came before it. Accuracy is q50 MAE — lower is better. The baseline is the legacy projection method.</p>
+        <div class="table-card" style="padding: 0; overflow-x: auto;">
+          <table class="tbl">
+            <thead>
+              <tr><th scope="col">Season</th><th scope="col" class="r">Model MAE</th><th scope="col" class="r">Baseline MAE</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="pos-name">2022</td><td class="r num">3.63</td><td class="r num">4.03</td></tr>
+              <tr><td class="pos-name">2023</td><td class="r num">3.61</td><td class="r num">3.93</td></tr>
+              <tr><td class="pos-name">2024</td><td class="r num">3.68</td><td class="r num">3.97</td></tr>
+              <tr><td class="pos-name">2025</td><td class="r num">3.68</td><td class="r num">4.06</td></tr>
+              <tr><td class="pos-name">Pooled</td><td class="r num">3.65</td><td class="r num">4.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="why">
+          <li><b>Interval coverage</b> (share of actuals landing inside the 10th–90th range; target band 77–83%): QB <span class="num">80.2%</span> · RB <span class="num">80.9%</span> · WR <span class="num">81.9%</span> · TE <span class="num">80.8%</span> · K <span class="num">79.8%</span> · DST <span class="num">80.4%</span> — every position in band, <span class="num">81.1%</span> pooled.</li>
+          <li><b>Lineup value:</b> across four seasons of simulated lineups, picking starters by the model's <b>mean</b> gained <span class="num">+1,591.28</span> points over the baseline's picks; picking by the median gained <span class="num">+1,472.10</span>. That gap is why the lineup is ranked on the mean.</li>
+          <li><b>Weekly scorecards</b> (live predictions vs actuals vs Yahoo): Week 8's predictions were frozen on Oct 28, before kickoff, and grade after the week finalizes on Nov 3. Week 7's grading is still to be computed — making the scorecard a routine weekly report is this page's standing job.</li>
+        </ul>
+        <p class="sub">Provenance: evaluation report <span class="num">lgbm_skill_v1-seed0</span>, git <span class="num">fa38e66</span>, LightGBM 4.6.0, features v2.0, league scoring ffc_yahoo_v1. Hyperparameters were not changed after seeing the test seasons.</p>
+      </section>
+
+      <section class="card" aria-label="Milestones and progress">
+        <h2>Milestones &amp; progress</h2>
+        <ul class="why">
+          <li><b>M0 · Repo, CI, scoring — done.</b> Skeleton, tests, continuous integration, the league's scoring ported and hand-checked.</li>
+          <li><b>M1 · Data layer — done.</b> The 2018–2025 store with as-of timestamps; re-ingesting changes nothing twice.</li>
+          <li><b>M2 · Features — done.</b> All feature groups built under both leakage policies, adversarially tested.</li>
+          <li><b>M3 · Models + evaluation — done.</b> Per-position models, the fold harness, and the promotion report above.</li>
+          <li><b>M4 · Site — done.</b> The dashboard, its JSON contract, and this page's predecessor, the Lab.</li>
+          <li><b>M6 · Decisions + Challenge — in progress.</b> Lineup decisions and the weekly scorecard against Yahoo. Week 8, 2026 is the first fully comparable Challenge week.</li>
+          <li><b>M7 · Intervals + QB — next.</b> Conformal intervals live, and the bias work behind the digest note and DESIGN §22.</li>
+          <li><b>M5 · Yahoo automation — blocked.</b> Waiting on Yahoo developer provisioning; the manual capture fallback is proven and is what the frozen scorecards use.</li>
+        </ul>
+        <p style="margin-bottom: 0;">Recent shipped versions:</p>
+        <ul class="why">
+          <li><b>0.5.20</b> — the lineup objective switched from the median to the mean (the backtest gap above).</li>
+          <li><b>0.5.21</b> — the boom/bust tag: each player's range width ranked within his position.</li>
+          <li><b>0.5.22</b> — plain-language definitions and label tooltips (they move to this page in the dashboard-simplification phase).</li>
+          <li><b>0.5.24</b> — AUSPICIA: the repo rename, emblem-and-title header, splash lockup.</li>
+          <li><b>0.5.25</b> — one charcoal scheme; the theme system retired. Colour means data.</li>
+          <li><b>0.5.26</b> — this Control Center.</li>
+        </ul>
+      </section>
+
+      <section class="card" aria-label="Definitions">
+        <h2>Definitions</h2>
+        <p class="sub">Every label the dashboard uses, in plain language. This is their permanent home; the dashboard keeps only the numbers.</p>
+        <dl class="defs">
+          <div><dt>Mean</dt><dd>Expected points: his average outcome across many similar weeks. The recommended lineup is the one that maximizes total mean.</dd></div>
+          <div><dt>Median</dt><dd>The typical week: half his outcomes land above it, half below. It is the big number on his row — but the lineup is picked on the mean, not the median.</dd></div>
+          <div><dt>10th–90th range</dt><dd>The model's 10th–90th percentile range: a bad week lands near the low end, a great week near the high end. Live ranges are the model's raw quantiles, not yet calibrated.</dd></div>
+          <div><dt>Boom/bust</dt><dd>How wide his range is versus the same position this week, by percentile of the 10th–90th width: Steady under 34, Balanced 34–66, Boom/bust 67 and over. Wide means more swing week to week — not more points.</dd></div>
+          <div><dt>Opp rank</dt><dd>Toughness of the opposing defense against his position, by fantasy points allowed per game this season in this league's scoring. 1 = toughest (allows the fewest).</dd></div>
+          <div><dt>Vegas implied</dt><dd>Points Vegas implies his NFL team will score, from the spread and the game total. Higher team totals usually mean more scoring to go around.</dd></div>
+          <div><dt>Practice</dt><dd>His latest practice report this week: FP full, LP limited, DNP did not practice. Blank means he was not on the injury report — not a guarantee he plays.</dd></div>
+          <div><dt>Snap share</dt><dd>Share of his team's offensive snaps in his most recent game, and how it moved since the first week shown.</dd></div>
+          <div><dt>Last 6 weeks</dt><dd>His actual fantasy points in each of the last six weeks he played, oldest to newest.</dd></div>
+          <div><dt>Start · Monitor · Sit</dt><dd>Start = in the recommended lineup. Monitor = a close call, flagged because a legal bench replacement is within the close-call margin. Sit = not in the recommended lineup.</dd></div>
+          <div><dt>Projected total</dt><dd>The sum of the recommended starters' mean projections.</dd></div>
+          <div><dt>Win probability</dt><dd>Chance of outscoring the opponent, computed from the two projected totals assuming a typical spread of outcomes around them.</dd></div>
+          <div><dt>Yahoo chip</dt><dd>Our median minus Yahoo's projection for him. Green = we are higher, red = Yahoo is higher.</dd></div>
+        </dl>
+      </section>
+
+    </div>
+  </main>
+  <footer>
+    <span>Control Center · AUSPICIA — read-only. Numbers: 2022–2025 backtest report and the promotion gates in DESIGN §20.</span>
+  </footer>
+</body>
+</html>
