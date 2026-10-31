@@ -517,6 +517,11 @@ def test_site_control_center_states_the_engine_record() -> None:
     assert "a title, not a switch" in html
     assert "already runs this model's projections" in html
     assert "<dt>Promoted</dt>" in html
+    # LightGBM is defined, and defined terms link down to their definitions.
+    assert 'id="def-lightgbm"' in html
+    assert "gradient boosting" in html
+    assert 'href="#def-lightgbm"' in html
+    assert 'class="deflink"' in html
     # Gate status is stated honestly: not promoted, bias is the failure.
     assert "Promoted:" in html
     assert '<span class="fail">No</span>' in html
