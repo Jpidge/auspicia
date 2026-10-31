@@ -13,7 +13,7 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 - The Control Center's version list catches up: 0.5.27 and 0.5.28 entries added (0.5.27's was missing).
 - The Control Center takes its full name (owner call, 2026-10-31): the header title and the document title now read "AUSPICIA Control Center".
 - The Control Center's back-link returns to "Dashboard →" (owner call, 2026-10-31), reverting the one-release AUSPICIA wording from 0.5.27.
-- The wordmark font is embedded (owner call, 2026-10-31): Archivo SemiBold — the logo font — is self-hosted as a 4.8 KB subset WOFF2 (`site/archivo-600.woff2`, letters/digits only, OFL). The Lab lockup's word is now live text in that font under the emblem (same geometry as the stacked asset), The splash keeps the outlined-path lockup asset.
+- The wordmark font is embedded (owner call, 2026-10-31): Archivo SemiBold — the logo font — is embedded as a 4.8 KB subset WOFF2 data URI inside `app.css` (letters/digits only, OFL). The Lab lockup's word is now live text in that font under the emblem (same geometry as the stacked asset), The splash keeps the outlined-path lockup asset.
 
 ### Fixed
 

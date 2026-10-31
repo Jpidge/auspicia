@@ -549,8 +549,9 @@ def test_site_header_is_helmet_button_centered_title_no_emblem() -> None:
     assert 'class="wordmark brandblock-word">AUSPICIA<' in lab
     assert 'src="emblem.svg"' in lab
     assert "@font-face" in css and "Archivo" in css
-    font_file = SITE / "archivo-600.woff2"
-    assert font_file.exists() and font_file.stat().st_size < 20000
+    # The subset rides inside the CSS as a data URI (a few KB), so there is
+    # no binary asset to ship.
+    assert "data:font/woff2;base64," in css
 
 
 def test_site_control_center_states_the_engine_record() -> None:
