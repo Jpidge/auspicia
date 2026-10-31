@@ -495,10 +495,11 @@ def test_site_has_a_single_charcoal_theme() -> None:
 
 
 def test_site_header_brand_gap_is_wide() -> None:
-    css = (SITE / "app.css").read_text(encoding="utf-8")
-    # Owner call (2026-10-31): roughly four to five spaces of air between
-    # the emblem and the page title in the header brand row.
-    assert ".brand { display: flex; align-items: center; gap: 30px;" in css
+    # Superseded by the header redesign (owner, 2026-10-31): the dashboard
+    # header dropped the emblem, so the brand row lives only on the Control
+    # Center, which keeps the wide emblem-to-title gap in its own styles.
+    html = (SITE / "control.html").read_text(encoding="utf-8")
+    assert ".brand { display: flex; align-items: center; gap: 30px;" in html
 
 
 def test_site_splash_lasts_long_enough_to_read() -> None:
@@ -510,16 +511,29 @@ def test_site_splash_lasts_long_enough_to_read() -> None:
     assert "setTimeout(hideSplash, 4000)" in script
 
 
-def test_site_team_picker_sits_top_right_without_a_label() -> None:
+def test_site_header_is_helmet_button_centered_title_no_emblem() -> None:
     html = (SITE / "index.html").read_text(encoding="utf-8")
     css = (SITE / "app.css").read_text(encoding="utf-8")
-    # Owner calls (2026-10-31): the team dropdown moves to the top of the
-    # Team view, right-aligned, and its visible "Team" label text is gone
-    # (the label survives screen-reader-only, for accessibility).
-    assert 'class="hero-side"' in html
-    assert ".hero-side { display: flex; flex-direction: column;" in css
-    assert '<span class="sr">Team</span>' in html
-    assert 'for="team-select">Team' not in html
+    script = (SITE / "app.js").read_text(encoding="utf-8")
+    # Owner design (2026-10-31, after the reference-app study): the header
+    # carries no emblem; the page title is centered; team switching hides
+    # behind a helmet button (owner-supplied gray helmet asset) — left on
+    # desktop, right on mobile — opening a team menu. The old hero dropdown
+    # and its short-lived top-right placement are both gone.
+    assert 'id="team-btn"' in html
+    assert 'src="helmet-gray.svg"' in html
+    assert 'id="team-menu"' in html
+    assert 'class="hdr-title" id="page-title"' in html
+    assert 'class="brand"' not in html
+    assert 'id="team-select"' not in html
+    assert ".hdr-title { position: absolute; left: 50%;" in css
+    assert ".teammenu { position: absolute; left: 0;" in css
+    assert ".teampick-wrap { margin-left: auto; }" in css
+    assert '"team-menu"' in script
+    # The big lockup gets its own spot at the top of the Lab view.
+    lab = html.split('id="v-lab"', 1)[1].split("</section>", 1)[0]
+    assert 'class="brandblock"' in lab
+    assert 'src="auspicia-stacked.svg"' in lab
 
 
 def test_site_control_center_states_the_engine_record() -> None:

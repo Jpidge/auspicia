@@ -10,6 +10,10 @@
   <meta name="theme-color" content="#0d0e0f">
   <link rel="stylesheet" href="app.css">
   <style>
+    /* The Control Center keeps the emblem header; its brand rules live here
+       now that the dashboard header no longer uses them. */
+    .brand { display: flex; align-items: center; gap: 30px; font-weight: 800; font-size: 18px; white-space: nowrap; }
+    .brand-mark { height: 30px; width: auto; display: block; }
     .stack { display: flex; flex-direction: column; gap: 24px; }
     .cc-back {
       margin-left: auto; display: inline-flex; align-items: center; min-height: 44px;

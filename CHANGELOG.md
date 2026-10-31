@@ -8,14 +8,13 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ### Changed
 
-- Header brand spacing (owner call, 2026-10-31): the gap between the emblem and the page title widens from 8px to 30px — roughly four to five spaces of air. Applies to both the dashboard and Control Center headers (one shared `.brand` rule).
-- The Control Center's back-link to the dashboard now reads "AUSPICIA" instead of "Dashboard →" (owner call, 2026-10-31). (This entry also carries the header-gap change, which the owner directed to ride along with the next edit rather than ship as its own PR — the standalone PR #45 was closed unmerged.)
+- **Dashboard header redesign** (owner design, 2026-10-31, after studying a reference app's chrome): the header no longer carries the emblem. The page title is centered; team switching moves behind a helmet button (owner-supplied gray helmet asset, `site/helmet-gray.svg`) at the left on desktop and the right on mobile, opening a team menu with the current team checked — replacing the hero dropdown entirely (including its brief top-right placement earlier in this release's batch). The view tabs stay right-aligned on desktop. The stacked AUSPICIA lockup gets its own spot at the top of the Lab view. The Control Center keeps its emblem header; the brand rules it relied on moved into its own style block, including the widened 30px emblem-to-title gap the owner asked for earlier the same day (that gap tweak was directed to ride along in this batch rather than ship as its own PR — the standalone PR #45 was closed unmerged).
+- The Control Center's back-link to the dashboard now reads "AUSPICIA" instead of "Dashboard →" (owner call, 2026-10-31).
 - The Control Center's Promotion gates card now explains what is being promoted (owner call, 2026-10-31): the model itself, from "in use" to "proven" — a title, not a usage switch; the dashboard already runs the model's projections. Definitions gain "Promotion gate" and "Promoted" entries saying the same in glossary form.
 - Definitions gain a "LightGBM" entry (what the ML is and how gradient boosting works), and defined terms throughout the Control Center now link down to their definition — LightGBM, mean, median, the range, win probability, Vegas implied, gates, promoted (owner call, 2026-10-31).
 - "How the engine works" drops its step 6 (owner call, 2026-10-31): the promotion-gates bullet was a definition sitting in a process list — steps 1–5 explain the process; the gate is defined in Definitions and detailed in its own card.
 - Definitions gain an "MAE" entry (mean absolute error) — it was used in the gates list and the benchmark table but defined nowhere (owner catch, 2026-10-31); its mentions now link to the definition like the other terms.
 - Definitions gain a "Bias" entry (the model's systematic lean, vs MAE's scatter), linked from the gates card (owner call, 2026-10-31).
-- Team view: the team dropdown moves to the top of the page, right-aligned above the kickoff countdown, and its visible "Team" label text is removed (the label remains for screen readers) (owner calls, 2026-10-31).
 - The AUSPICIA splash flash lasts a couple of beats longer: minimum display 550ms → 1250ms, long enough to read the lockup, short of annoying (owner call, 2026-10-31). The 4-second failsafe is unchanged.
 
 ## [0.5.26] — 2026-10-31
