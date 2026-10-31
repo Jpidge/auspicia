@@ -455,10 +455,10 @@ def test_lab_prose_says_def() -> None:
     assert "DST" not in detail
 
 
-def test_site_start_pill_shows_on_mobile_and_is_green_on_carbon() -> None:
+def test_site_start_pill_shows_on_mobile_and_is_green() -> None:
     css = (SITE / "app.css").read_text(encoding="utf-8")
     assert ".v-start { display: none; }" not in css
-    assert '[data-theme="carbon"] .v-start' in css
+    assert ".v-start { background: var(--good); color: #0b2013; }" in css
     assert "background: var(--good)" in css
 
 
@@ -476,36 +476,22 @@ def test_site_coverage_rows_have_dots_on_a_zoomed_scale() -> None:
     assert ".mae .dot" in css
 
 
-def test_site_theme_dropdown_offers_the_palettes() -> None:
+def test_site_has_a_single_charcoal_theme() -> None:
     html = (SITE / "index.html").read_text(encoding="utf-8")
     script = (SITE / "app.js").read_text(encoding="utf-8")
     css = (SITE / "app.css").read_text(encoding="utf-8")
-    assert 'id="theme-select"' in html
-    assert 'id="theme"' not in html
-    assert 'aria-label="Theme"' in html
-    assert 'for="theme-select"' not in html
-    for value, label in (
-        ("rowan", "Rowan Light"),
-        ("aqua", "Aqua Night"),
-        ("midnight", "Midnight"),
-        ("carbon", "Carbon"),
-        ("light", "Light"),
-        ("dark", "Dark"),
-    ):
-        assert f'<option value="{value}">{label}</option>' in html or (
-            f'<option value="{value}" selected>{label}</option>' in html
-        )
-    assert "day-night" not in html
-    assert "day-night" not in script
-    for name in ("rowan", "aqua", "midnight", "carbon", "light"):
-        assert f'[data-theme="{name}"]' in css
-    for name in ("rowan", "aqua", "midnight", "carbon", "light", "dark"):
-        assert f'"{name}"' in script
-    assert "gl-theme" in script
-    assert "#efe6d5" in css
-    assert "#2ec4b6" in css
-    assert "#5b87ff" in css
-    assert "#0d0e0f" in css
+    # The theme system was retired by owner decision (2026-10-31): one
+    # charcoal scheme, no dropdown, no stored preference, no palettes.
+    assert 'id="theme-select"' not in html
+    assert "[data-theme" not in css
+    assert "gl-theme" not in script
+    assert "THEME_MODES" not in script
+    # Charcoal chrome tokens (the former Carbon palette, promoted to :root).
+    for hex_value in ("#0d0e0f", "#16181a", "#1e2023", "#2e3136", "#f2f3f4", "#8a9096"):
+        assert hex_value in css
+    # Data colours are unchanged: colour is reserved for data and the emblem.
+    for hex_value in ("#3ddc84", "#ff6b6b", "#ffc24b"):
+        assert hex_value in css
 
 
 def test_first_screen_is_under_the_gzip_budget() -> None:
