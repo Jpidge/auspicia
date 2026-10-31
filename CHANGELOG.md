@@ -4,6 +4,13 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.26] — 2026-10-31
+
+### Added
+
+- **Control Center** (`site/control.html`): the third part of the three-part architecture (owner direction, 2026-10-31) — a separate, read-only page behind the dashboard that serves as the engine's user manual. It carries the system workflow diagram, the pipeline explained step by step, the promotion-gate status (not promoted; fails on bias only, with the seven failing position-seasons listed), the 2022–2025 backtest benchmarks (MAE by season, interval coverage by position, lineup gains), the milestone list, and the plain-language definitions. It reads engine outputs and changes nothing; there is no write path back. The dashboard footer links to it — it is a page, not a fifth tab.
+- `site/workflow.svg`: the workflow diagram recoloured from the retired navy chrome to the charcoal scheme (geometry and labels unchanged; the mint improvement loop and amber gates keep their data emphasis).
+
 ## [0.5.25] — 2026-10-31
 
 ### Changed
