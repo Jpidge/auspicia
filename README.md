@@ -61,7 +61,7 @@ Downloads, the DuckDB file, and the evaluation JSON stay out of git. Re-running 
 
 `site/` is static: `index.html`, `app.css`, `app.js`, and `dashboard.json`. No CDN and no third-party request. The first screen (HTML, CSS, and JS, gzipped) stays under 150 KB; `tests/test_dashboard.py` checks that budget and that the script still reads the JSON fields it renders.
 
-The Team view lists every team in the file. The default is `league.my_team_id` (Purple Reign, Yahoo team 10). A choice is stored in `localStorage` under `gl-team`. `#team=10` selects that team for the visit and then saves it. `#waivers`, `#league`, and `#lab` open the other views. The theme is picked from the header dropdown — Rowan Light, Aqua Night, Midnight, Carbon, plus the original Light and Dark — and is stored under `gl-theme`.
+The Team view lists every team in the file. The default is `league.my_team_id` (Purple Reign, Yahoo team 10). A choice is stored in `localStorage` under `gl-team`. `#team=10` selects that team for the visit and then saves it. `#waivers`, `#league`, and `#lab` open the other views. The site has a single charcoal colour scheme (owner decision, 2026-10-31): neutral gray chrome, with colour reserved for the emblem and for data (verdicts, charts, trendlines).
 
 The dashboard carries team names and players only. Manager names are not exported or displayed.
 

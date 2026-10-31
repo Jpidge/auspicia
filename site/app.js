@@ -489,20 +489,6 @@
       show(tabs[(next + tabs.length) % tabs.length].getAttribute("data-v"), true);
     });
   });
-  var THEME_MODES = ["rowan", "aqua", "midnight", "carbon", "light", "dark"];
-  var themeSelect = $("theme-select");
-  function applyTheme(mode) {
-    document.documentElement.setAttribute("data-theme", mode);
-    themeSelect.value = mode;
-  }
-  themeSelect.addEventListener("change", function () {
-    applyTheme(themeSelect.value);
-    try { localStorage.setItem("gl-theme", themeSelect.value); } catch (error) { /* ignore */ }
-  });
-  var savedTheme = null;
-  try { savedTheme = localStorage.getItem("gl-theme"); } catch (error) { savedTheme = null; }
-  applyTheme(THEME_MODES.indexOf(savedTheme) !== -1 ? savedTheme : "dark");
-
   var splashStart = Date.now();
   function hideSplash() {
     var wait = Math.max(0, 550 - (Date.now() - splashStart));

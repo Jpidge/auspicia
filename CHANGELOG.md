@@ -4,6 +4,19 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.25] — 2026-10-31
+
+### Changed
+
+- **Single charcoal colour scheme** (owner decision, 2026-10-31, Phase 3 of the AUSPICIA transition): the site's chrome — backgrounds, cards, borders, text — is now a neutral charcoal/gray scale based on the former Carbon palette. Colour is reserved for the emblem and for data: verdict colours, position colours, charts, and trendlines are byte-for-byte unchanged.
+- `theme-color` follows the new chrome (#0d0e0f).
+- One deliberate deviation from the old Carbon tokens: `--faint` is lifted #777c80 → #8a9096. Carbon's faint managed only 3.5–3.9:1 on card surfaces (below AA for the small text it carries); the new value passes AA on every surface (4.58:1 or better) while staying visibly fainter than `--muted`.
+
+### Removed
+
+- The theme system: the header theme dropdown, the five `[data-theme]` palettes (Rowan Light, Aqua Night, Midnight, Carbon, Light, and the navy Dark default), the `gl-theme` localStorage preference, and their wiring in `app.js`. The Carbon Start-pill override (owner call, 2026-10-28) is folded into the base rule — the Start pill keeps its verdict green.
+
+
 ## [0.5.24] — 2026-10-31
 
 ### Added
