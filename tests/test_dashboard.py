@@ -501,6 +501,15 @@ def test_site_header_brand_gap_is_wide() -> None:
     assert ".brand { display: flex; align-items: center; gap: 30px;" in css
 
 
+def test_site_splash_lasts_long_enough_to_read() -> None:
+    script = (SITE / "app.js").read_text(encoding="utf-8")
+    # Owner call (2026-10-31): the AUSPICIA splash flash runs a couple of
+    # beats longer than the original 550ms — long enough to read, not long
+    # enough to annoy. The 4s failsafe stays as the outer bound.
+    assert "1250 - (Date.now() - splashStart)" in script
+    assert "setTimeout(hideSplash, 4000)" in script
+
+
 def test_site_team_picker_sits_top_right_without_a_label() -> None:
     html = (SITE / "index.html").read_text(encoding="utf-8")
     css = (SITE / "app.css").read_text(encoding="utf-8")

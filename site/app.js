@@ -491,7 +491,7 @@
   });
   var splashStart = Date.now();
   function hideSplash() {
-    var wait = Math.max(0, 550 - (Date.now() - splashStart));
+    var wait = Math.max(0, 1250 - (Date.now() - splashStart));
     setTimeout(function () {
       var splash = $("splash");
       if (splash) {
