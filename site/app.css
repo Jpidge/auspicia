@@ -57,8 +57,23 @@ header.top {
   align-items: center;
   gap: 16px;
 }
-.brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; white-space: nowrap; }
-.brand-mark { height: 30px; width: auto; display: block; }
+.hdr-title { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 18px; white-space: nowrap; pointer-events: none; }
+.teampick-wrap { position: relative; }
+.teambtn { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: var(--card2); border: 1px solid var(--line); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.teambtn img { width: 100%; height: 100%; display: block; }
+@media (min-width: 721px) {
+  /* Desktop: the button sits at the left edge, so the helmet is flipped to
+     face into the page. On mobile (button at the right) it already does. */
+  .teambtn img { transform: scaleX(-1); }
+}
+.teambtn:hover { border-color: var(--muted); }
+.teammenu { position: absolute; left: 0; top: calc(100% + 8px); background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 6px; min-width: 232px; z-index: 60; box-shadow: 0 16px 40px rgba(0,0,0,.5); }
+.tm-item { display: block; width: 100%; text-align: left; padding: 10px 12px; border-radius: 9px; background: none; border: 0; color: var(--text); font: inherit; cursor: pointer; }
+.tm-item:hover { background: var(--card2); }
+.tm-item.cur { background: var(--card2); font-weight: 650; }
+.tm-item.cur::after { content: "\2713"; float: right; color: var(--muted); }
+.brandblock { text-align: center; padding: 30px 0 10px; }
+.brandblock img { width: 190px; height: auto; }
 #splash {
   position: fixed; inset: 0; z-index: 2000; background: #0d0e0f;
   display: grid; place-items: center;
@@ -100,11 +115,6 @@ h2 { font-size: 15px; margin: 0 0 8px; text-transform: uppercase; letter-spacing
 .sub { color: var(--muted); font-size: 13px; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 16px; }
 .hero { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
-.team-pick { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 700; color: var(--muted); }
-.team-pick select {
-  min-height: 44px; min-width: 240px; border-radius: 12px; border: 1px solid var(--line);
-  background: var(--card); color: var(--text); font-weight: 700; padding: 0 12px;
-}
 .kick { display: flex; align-items: center; gap: 8px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 8px 16px; }
 .kick b { font-family: var(--mono); font-size: 16px; color: var(--accent); }
 .cols { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: 24px; align-items: start; }
@@ -327,6 +337,7 @@ footer a { color: var(--muted); font-weight: 600; margin-left: auto; }
   .pill { flex: none; }
   .tbl .hide-s { display: none; }
   .opp-line { display: block; }
-  .team-pick select { min-width: 0; width: 100%; }
+  .teampick-wrap { margin-left: auto; }
+  .teammenu { left: auto; right: 0; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

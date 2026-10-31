@@ -14,7 +14,11 @@
   <div id="splash" aria-hidden="true"><img src="auspicia-stacked.svg" alt=""></div>
   <header class="top">
     <div class="top-in">
-      <div class="brand"><img class="brand-mark" src="emblem.svg" alt="AUSPICIA"><span id="page-title">Team</span></div>
+      <div class="teampick-wrap">
+        <button id="team-btn" class="teambtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Choose team"><img src="helmet-gray.svg" alt=""></button>
+        <div id="team-menu" class="teammenu" hidden></div>
+      </div>
+      <div class="hdr-title" id="page-title">Team</div>
       <span class="badge hdr-badge" id="example-badge" hidden>● Example data</span>
       <nav class="tabs" role="tablist" aria-label="Views">
         <button role="tab" id="t-team" aria-controls="v-team" aria-selected="true" data-v="team">
@@ -43,9 +47,6 @@
         <div>
           <div class="sub" id="league-line"></div>
           <h1 id="team-title"></h1>
-          <label class="team-pick" for="team-select">Team
-            <select id="team-select"></select>
-          </label>
         </div>
         <div class="kick" id="kickoff">
           <span class="sub">Next kickoff</span>
@@ -92,6 +93,7 @@
       </div>
     </section>
     <section class="view" id="v-lab" role="tabpanel" aria-labelledby="t-lab" hidden>
+      <div class="brandblock"><img src="auspicia-stacked.svg" alt="AUSPICIA"></div>
       <div class="hero"><div><div class="sub">Model validation</div><h1>Lab</h1></div></div>
       <div id="lab-root"></div>
       <div class="card engine-card">

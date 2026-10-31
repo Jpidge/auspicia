@@ -251,11 +251,10 @@
     $("countdown").textContent = week.countdown_label || "";
     $("kickoff-label").textContent = week.kickoff_label || "";
     $("kickoff").hidden = !week.countdown_label && !week.kickoff_label;
-    var select = $("team-select");
-    select.innerHTML = data.teams.map(function (item) {
-      return '<option value="' + item.team_id + '">' + esc(item.name) + "</option>";
+    var menu = $("team-menu");
+    menu.innerHTML = data.teams.map(function (item) {
+      return '<button type="button" class="tm-item' + (item.team_id === team.team_id ? " cur" : "") + '" data-tid="' + item.team_id + '">' + esc(item.name) + "</button>";
     }).join("");
-    select.value = String(team.team_id);
     var opp = team.opponent_projected_total;
     var wp = team.win_probability;
     var wpPct = wp == null ? null : Math.round(wp * 100);
@@ -454,10 +453,20 @@
     button.parentNode.classList.toggle("open", open);
     button.setAttribute("aria-expanded", open ? "true" : "false");
   });
-  $("team-select").addEventListener("change", function () {
+  $("team-btn").addEventListener("click", function () {
+    var m = $("team-menu");
+    var open = m.hidden;
+    m.hidden = !open;
+    $("team-btn").setAttribute("aria-expanded", open ? "true" : "false");
+  });
+  $("team-menu").addEventListener("click", function (event) {
+    var item = event.target.closest(".tm-item");
+    if (!item) return;
     noteMissing(null);
-    state.teamId = Number($("team-select").value);
+    state.teamId = Number(item.getAttribute("data-tid"));
     try { localStorage.setItem("gl-team", String(state.teamId)); } catch (error) { /* ignore */ }
+    $("team-menu").hidden = true;
+    $("team-btn").setAttribute("aria-expanded", "false");
     renderTeam();
     renderLeague();
     if (state.view === "team") show("team", false);
@@ -491,7 +500,7 @@
   });
   var splashStart = Date.now();
   function hideSplash() {
-    var wait = Math.max(0, 550 - (Date.now() - splashStart));
+    var wait = Math.max(0, 1250 - (Date.now() - splashStart));
     setTimeout(function () {
       var splash = $("splash");
       if (splash) {

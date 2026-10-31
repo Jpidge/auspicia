@@ -494,15 +494,78 @@ def test_site_has_a_single_charcoal_theme() -> None:
         assert hex_value in css
 
 
+def test_site_header_brand_gap_is_wide() -> None:
+    # Superseded by the header redesign (owner, 2026-10-31): the dashboard
+    # header dropped the emblem, so the brand row lives only on the Control
+    # Center, which keeps the wide emblem-to-title gap in its own styles.
+    html = (SITE / "control.html").read_text(encoding="utf-8")
+    assert ".brand { display: flex; align-items: center; gap: 30px;" in html
+
+
+def test_site_splash_lasts_long_enough_to_read() -> None:
+    script = (SITE / "app.js").read_text(encoding="utf-8")
+    # Owner call (2026-10-31): the AUSPICIA splash flash runs a couple of
+    # beats longer than the original 550ms — long enough to read, not long
+    # enough to annoy. The 4s failsafe stays as the outer bound.
+    assert "1250 - (Date.now() - splashStart)" in script
+    assert "setTimeout(hideSplash, 4000)" in script
+
+
+def test_site_header_is_helmet_button_centered_title_no_emblem() -> None:
+    html = (SITE / "index.html").read_text(encoding="utf-8")
+    css = (SITE / "app.css").read_text(encoding="utf-8")
+    script = (SITE / "app.js").read_text(encoding="utf-8")
+    # Owner design (2026-10-31, after the reference-app study): the header
+    # carries no emblem; the page title is centered; team switching hides
+    # behind a helmet button (owner-supplied gray helmet asset) — left on
+    # desktop, right on mobile — opening a team menu. The old hero dropdown
+    # and its short-lived top-right placement are both gone.
+    assert 'id="team-btn"' in html
+    assert 'src="helmet-gray.svg"' in html
+    assert 'id="team-menu"' in html
+    assert 'class="hdr-title" id="page-title"' in html
+    assert 'class="brand"' not in html
+    assert 'id="team-select"' not in html
+    assert ".hdr-title { position: absolute; left: 50%;" in css
+    assert ".teammenu { position: absolute; left: 0;" in css
+    assert ".teampick-wrap { margin-left: auto; }" in css
+    # Owner calls (2026-10-31): the lighter #2E3136 disc, and on desktop the
+    # helmet flips to face into the page (the button sits at the left edge).
+    helmet = (SITE / "helmet-gray.svg").read_text(encoding="utf-8")
+    assert 'fill="#2E3136"' in helmet
+    assert ".teambtn img { transform: scaleX(-1); }" in css
+    assert '"team-menu"' in script
+    # The big lockup gets its own spot at the top of the Lab view.
+    lab = html.split('id="v-lab"', 1)[1].split("</section>", 1)[0]
+    assert 'class="brandblock"' in lab
+    assert 'src="auspicia-stacked.svg"' in lab
+
+
 def test_site_control_center_states_the_engine_record() -> None:
     html = (SITE / "control.html").read_text(encoding="utf-8")
     assert "Control Center" in html
+    # Owner call (2026-10-31): the back-link to the dashboard says AUSPICIA.
+    assert 'class="cc-back" href="index.html">AUSPICIA</a>' in html
+    assert "Dashboard →" not in html
     assert 'href="app.css"' in html
     assert 'src="workflow.svg"' in html
     assert (SITE / "workflow.svg").exists()
     # The dashboard footer links to it; it is a separate page, not a tab.
     index = (SITE / "index.html").read_text(encoding="utf-8")
     assert 'href="control.html"' in index
+    # The page explains what promotion is: a title, not a usage switch.
+    assert "a title, not a switch" in html
+    assert "already runs this model's projections" in html
+    assert "<dt>Promoted</dt>" in html
+    # LightGBM is defined, and defined terms link down to their definitions.
+    assert 'id="def-lightgbm"' in html
+    assert "gradient boosting" in html
+    assert 'href="#def-lightgbm"' in html
+    assert 'id="def-mae"' in html
+    assert 'id="def-bias"' in html
+    assert "systematic lean" in html
+    assert "Mean absolute error" in html
+    assert 'class="deflink"' in html
     # Gate status is stated honestly: not promoted, bias is the failure.
     assert "Promoted:" in html
     assert '<span class="fail">No</span>' in html
