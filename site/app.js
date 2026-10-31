@@ -259,7 +259,7 @@
     var opp = team.opponent_projected_total;
     var wp = team.win_probability;
     var wpPct = wp == null ? null : Math.round(wp * 100);
-    $("matchup").innerHTML = '<div class="mu"><div class="t me"><span class="sub">' + esc(team.name) + " (" + esc(team.record) + ')</span><span class="pts num">' + fmt(team.projected_total) + '</span><span class="sub">' + defLabel("projTotal", "Gridiron Lab proj.") + '</span></div><span class="vs">VS</span><div class="t r"><span class="sub">' + esc(team.opponent_name || "No opponent") + '</span><span class="pts num">' + (opp == null ? "–" : fmt(opp)) + '</span><span class="sub">' + defLabel("projTotal", "Gridiron Lab proj.") + '</span></div></div>' +
+    $("matchup").innerHTML = '<div class="mu"><div class="t me"><span class="sub">' + esc(team.name) + " (" + esc(team.record) + ')</span><span class="pts num">' + fmt(team.projected_total) + '</span><span class="sub">' + defLabel("projTotal", "Auspicia proj.") + '</span></div><span class="vs">VS</span><div class="t r"><span class="sub">' + esc(team.opponent_name || "No opponent") + '</span><span class="pts num">' + (opp == null ? "–" : fmt(opp)) + '</span><span class="sub">' + defLabel("projTotal", "Auspicia proj.") + '</span></div></div>' +
       (wpPct == null ? "" : '<div class="wp"><div class="wpbar" role="img" aria-label="Win probability ' + wpPct + ' percent"><i style="width:' + wpPct + '%"></i></div><div class="wplab"><span>' + defLabel("winProb", "Win probability") + ' <b class="num">' + wpPct + '%</b></span><span><b class="num">' + (100 - wpPct) + "%</b></span></div></div>");
     var calls = team.calls || [];
     var tough = $("tough-card");
@@ -390,8 +390,11 @@
     if (hash === "waivers" || hash === "league" || hash === "lab") show(hash, false);
   });
 
+  var VIEW_TITLES = { team: "Team", waivers: "Waivers", league: "League", lab: "Lab" };
+
   function show(view, focus) {
     state.view = view;
+    $("page-title").textContent = VIEW_TITLES[view] || "Team";
     var tabs = document.querySelectorAll("[role=tab]");
     for (var i = 0; i < tabs.length; i += 1) {
       var tab = tabs[i];
@@ -410,12 +413,13 @@
 
   function boot(data) {
     state.data = data;
-    document.title = "Gridiron Lab · " + data.league.name;
+    document.title = "AUSPICIA · " + data.league.name;
     var badge = data.example;
     $("example-badge").hidden = !badge;
     $("footer-badge").hidden = !badge;
     $("footer-text").textContent = data.disclaimer || "";
     $("status").hidden = true;
+    hideSplash();
     var hash = (location.hash || "").replace(/^#/, "");
     var teamMatch = /^team=(\d+)$/.exec(hash);
     var stored = null;
@@ -498,6 +502,19 @@
   var savedTheme = null;
   try { savedTheme = localStorage.getItem("gl-theme"); } catch (error) { savedTheme = null; }
   applyTheme(THEME_MODES.indexOf(savedTheme) !== -1 ? savedTheme : "dark");
+
+  var splashStart = Date.now();
+  function hideSplash() {
+    var wait = Math.max(0, 550 - (Date.now() - splashStart));
+    setTimeout(function () {
+      var splash = $("splash");
+      if (splash) {
+        splash.classList.add("done");
+        setTimeout(function () { splash.remove(); }, 600);
+      }
+    }, wait);
+  }
+  setTimeout(hideSplash, 4000);
 
   fetch("dashboard.json")
     .then(function (response) {
