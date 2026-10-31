@@ -521,6 +521,8 @@ def test_site_control_center_states_the_engine_record() -> None:
     assert 'id="def-lightgbm"' in html
     assert "gradient boosting" in html
     assert 'href="#def-lightgbm"' in html
+    assert 'id="def-mae"' in html
+    assert "Mean absolute error" in html
     assert 'class="deflink"' in html
     # Gate status is stated honestly: not promoted, bias is the failure.
     assert "Promoted:" in html
