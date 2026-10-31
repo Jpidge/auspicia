@@ -80,6 +80,7 @@
           <span class="verdict">Promoted: <span class="fail">No</span></span>
           <span class="sub">Model <span class="num">lgbm_skill_v1</span> · fails on bias only · the fix is the model, never the ruler</span>
         </div>
+        <p><b>What is being promoted is the model itself — from "in use" to "proven." It is a title, not a switch.</b> The dashboard already runs this model's projections: every number on the Team page this week is the machine's, not a placeholder and not Yahoo's. Promotion doesn't decide whether the model gets used. It decides whether it has <i>earned the claim</i> "proven" — the way a pilot flies the plane long before the checkride, and passing the checkride is what makes it official. This model works without the title because it hasn't passed yet, and this page says so in the open. Calling it proven first and checking later would be grading our own homework.</p>
         <ul class="crit">
           <li><span>1 · Accuracy beats the legacy baseline (q50 MAE, at least 3 of 4 seasons)</span><span class="pass">PASS</span></li>
           <li><span>2 · No position left behind vs the baseline</span><span class="pass">PASS</span></li>
@@ -165,6 +166,8 @@
           <div><dt>Projected total</dt><dd>The sum of the recommended starters' mean projections.</dd></div>
           <div><dt>Win probability</dt><dd>Chance of outscoring the opponent, computed from the two projected totals assuming a typical spread of outcomes around them.</dd></div>
           <div><dt>Yahoo chip</dt><dd>Our median minus Yahoo's projection for him. Green = we are higher, red = Yahoo is higher.</dd></div>
+          <div><dt>Promotion gate</dt><dd>One of five pass/fail checks the model must clear to earn the title "proven": accuracy beats the baseline; no position left behind; bias within ±0.3 points at every position; interval coverage inside its band; and lineup points gained not negative. All five must pass — failing one gate is enough to stay unpromoted.</dd></div>
+          <div><dt>Promoted</dt><dd>The model's title, not its job. A promoted model has passed all five gates and earned the claim "proven." The dashboard runs the current model's numbers whether it holds the title or not: promotion changes what we claim, not what we use.</dd></div>
         </dl>
       </section>
 

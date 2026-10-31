@@ -513,6 +513,10 @@ def test_site_control_center_states_the_engine_record() -> None:
     # The dashboard footer links to it; it is a separate page, not a tab.
     index = (SITE / "index.html").read_text(encoding="utf-8")
     assert 'href="control.html"' in index
+    # The page explains what promotion is: a title, not a usage switch.
+    assert "a title, not a switch" in html
+    assert "already runs this model's projections" in html
+    assert "<dt>Promoted</dt>" in html
     # Gate status is stated honestly: not promoted, bias is the failure.
     assert "Promoted:" in html
     assert '<span class="fail">No</span>' in html
