@@ -504,10 +504,10 @@ def test_site_header_brand_gap_is_wide() -> None:
 
 def test_site_splash_lasts_long_enough_to_read() -> None:
     script = (SITE / "app.js").read_text(encoding="utf-8")
-    # Owner call (2026-10-31): the AUSPICIA splash flash runs a couple of
-    # beats longer than the original 550ms — long enough to read, not long
-    # enough to annoy. The 4s failsafe stays as the outer bound.
-    assert "1250 - (Date.now() - splashStart)" in script
+    # Owner calls (2026-10-31): the splash first lengthened 550ms → 1250ms,
+    # then the owner judged that too long and set it to 66% of 1250 = 825ms.
+    # The 4s failsafe stays as the outer bound.
+    assert "825 - (Date.now() - splashStart)" in script
     assert "setTimeout(hideSplash, 4000)" in script
 
 
@@ -529,6 +529,12 @@ def test_site_header_is_helmet_button_centered_title_no_emblem() -> None:
     assert ".hdr-title { position: absolute; left: 50%;" in css
     assert ".teammenu { position: absolute; left: 0;" in css
     assert ".teampick-wrap { margin-left: auto; }" in css
+    # Owner call (2026-10-31): desktop drops the centred page title — the
+    # tabs at the top already name the view. Mobile keeps the title.
+    assert ".hdr-title { display: none; }" in css
+    # The team menu closes on view switch, outside click, or Escape (the
+    # first live check found it lingering over the Lab view).
+    assert "closeTeamMenu" in script
     # Owner calls (2026-10-31): the lighter #2E3136 disc, and on desktop the
     # helmet flips to face into the page (the button sits at the left edge).
     helmet = (SITE / "helmet-gray.svg").read_text(encoding="utf-8")
@@ -538,15 +544,29 @@ def test_site_header_is_helmet_button_centered_title_no_emblem() -> None:
     # The big lockup gets its own spot at the top of the Lab view.
     lab = html.split('id="v-lab"', 1)[1].split("</section>", 1)[0]
     assert 'class="brandblock"' in lab
-    assert 'src="auspicia-stacked.svg"' in lab
+    # The lockup's word is live text in the embedded wordmark font (owner
+    # call, 2026-10-31): Archivo SemiBold, subset to a few KB, self-hosted.
+    assert 'class="wordmark brandblock-word">AUSPICIA<' in lab
+    assert 'src="emblem.svg"' in lab
+    assert "@font-face" in css and "Archivo" in css
+    font_file = SITE / "archivo-600.woff2"
+    assert font_file.exists() and font_file.stat().st_size < 20000
 
 
 def test_site_control_center_states_the_engine_record() -> None:
     html = (SITE / "control.html").read_text(encoding="utf-8")
     assert "Control Center" in html
-    # Owner call (2026-10-31): the back-link to the dashboard says AUSPICIA.
-    assert 'class="cc-back" href="index.html">AUSPICIA</a>' in html
-    assert "Dashboard →" not in html
+    # Owner call (2026-10-31): the page's full name is AUSPICIA Control
+    # Center — header title and document title both carry it.
+    assert "<title>AUSPICIA Control Center</title>" in html
+    assert "<span>AUSPICIA Control Center</span>" in html
+    # The milestones list records shipped versions, 0.5.27 included (it was
+    # missing until the 0.5.28 batch).
+    assert "<b>0.5.27</b>" in html
+    assert "<b>0.5.28</b>" in html
+    # Owner calls (2026-10-31): the back-link read AUSPICIA for one release
+    # (0.5.27), then the owner reverted it to the original wording.
+    assert 'class="cc-back" href="index.html">Dashboard →</a>' in html
     assert 'href="app.css"' in html
     assert 'src="workflow.svg"' in html
     assert (SITE / "workflow.svg").exists()

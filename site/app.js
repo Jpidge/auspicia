@@ -392,6 +392,7 @@
   var VIEW_TITLES = { team: "Team", waivers: "Waivers", league: "League", lab: "Lab" };
 
   function show(view, focus) {
+    closeTeamMenu();
     state.view = view;
     $("page-title").textContent = VIEW_TITLES[view] || "Team";
     var tabs = document.querySelectorAll("[role=tab]");
@@ -453,6 +454,19 @@
     button.parentNode.classList.toggle("open", open);
     button.setAttribute("aria-expanded", open ? "true" : "false");
   });
+  function closeTeamMenu() {
+    var m = $("team-menu");
+    if (m && !m.hidden) {
+      m.hidden = true;
+      $("team-btn").setAttribute("aria-expanded", "false");
+    }
+  }
+  document.addEventListener("click", function (event) {
+    if (!event.target.closest(".teampick-wrap")) closeTeamMenu();
+  });
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") closeTeamMenu();
+  });
   $("team-btn").addEventListener("click", function () {
     var m = $("team-menu");
     var open = m.hidden;
@@ -500,7 +514,7 @@
   });
   var splashStart = Date.now();
   function hideSplash() {
-    var wait = Math.max(0, 1250 - (Date.now() - splashStart));
+    var wait = Math.max(0, 825 - (Date.now() - splashStart));
     setTimeout(function () {
       var splash = $("splash");
       if (splash) {
