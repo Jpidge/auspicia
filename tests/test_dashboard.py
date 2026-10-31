@@ -504,6 +504,9 @@ def test_site_header_brand_gap_is_wide() -> None:
 def test_site_control_center_states_the_engine_record() -> None:
     html = (SITE / "control.html").read_text(encoding="utf-8")
     assert "Control Center" in html
+    # Owner call (2026-10-31): the back-link to the dashboard says AUSPICIA.
+    assert 'class="cc-back" href="index.html">AUSPICIA</a>' in html
+    assert "Dashboard →" not in html
     assert 'href="app.css"' in html
     assert 'src="workflow.svg"' in html
     assert (SITE / "workflow.svg").exists()
