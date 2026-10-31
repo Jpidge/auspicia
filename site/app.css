@@ -199,11 +199,14 @@ header.top {
   gap: 16px;
 }
 .brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; white-space: nowrap; }
-.logo {
-  width: 32px; height: 32px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent), #5b6cff);
-  display: grid; place-items: center; color: #06121f; font-weight: 900; font-size: 14px;
+.brand-mark { height: 30px; width: auto; display: block; }
+#splash {
+  position: fixed; inset: 0; z-index: 2000; background: #0d0e0f;
+  display: grid; place-items: center;
+  transition: opacity 0.45s ease, visibility 0.45s;
 }
+#splash img { width: min(300px, 78vw); height: auto; }
+#splash.done { opacity: 0; visibility: hidden; pointer-events: none; }
 .badge {
   display: inline-flex; align-items: center; gap: 4px;
   font-size: 11px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase;

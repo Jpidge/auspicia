@@ -4,6 +4,21 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.24] — 2026-10-31
+
+### Added
+
+- Splash screen: the stacked AUSPICIA lockup (emblem over wordmark) flashes on the charcoal brand background while the dashboard loads, then fades.
+- `site/emblem.svg` (header mark, cropped from the production emblem) and `site/auspicia-stacked.svg` (splash lockup), built from the verified Blue-Amber-Coral asset suite.
+
+### Changed
+
+- The app is now **AUSPICIA** (repository renamed from `gridiron-lab`; the Python package and CLI keep their internal names). Page title, browser-tab title, and the matchup projection labels ("Auspicia proj.") follow.
+- Header: the "GL" placeholder box and "Gridiron Lab" wordmark are replaced by the eye emblem plus the current page title (Team / Waivers / League / Lab), which updates as views change — the pattern modern app UI uses.
+- Favicon set and apple-touch-icon replaced with the Blue-Amber-Coral emblem assets; `theme-color` meta added.
+- README: new name, new clone URL, and the stale `gridiron-lab-data` reference removed (that repo was deleted; it was empty and never used).
+
+
 ## [0.5.23] — 2026-10-29
 
 ### Changed

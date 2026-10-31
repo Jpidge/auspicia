@@ -1,10 +1,10 @@
-# Gridiron Lab
+# AUSPICIA
 
-Fantasy-football analytics for the Yahoo league **Fantasy Football Coalition** (ID 893771: 12-team H2H, non-PPR, custom scoring). It forecasts weekly player distributions with point-in-time-correct NFLverse, Vegas and Yahoo data, then recommends start/sit and waiver moves. Every claim is benchmarked against Yahoo's own projections ("The Gridiron Lab Challenge").
+Fantasy-football analytics for the Yahoo league **Fantasy Football Coalition** (ID 893771: 12-team H2H, non-PPR, custom scoring). It forecasts weekly player distributions with point-in-time-correct NFLverse, Vegas and Yahoo data, then recommends start/sit and waiver moves. Every claim is benchmarked against Yahoo's own projections ("The AUSPICIA Challenge").
 
-This is a ground-up rebuild of the previous tool ([Jpidge/Fandromeda2](https://github.com/Jpidge/Fandromeda2)). That tool remains in production until Gridiron Lab beats it on the plan in [`docs/DESIGN.md`](docs/DESIGN.md).
+This is a ground-up rebuild of the previous tool ([Jpidge/Fandromeda2](https://github.com/Jpidge/Fandromeda2)). That tool remains in production until AUSPICIA beats it on the plan in [`docs/DESIGN.md`](docs/DESIGN.md).
 
-This public repository holds the code and the GitHub Pages site. Weekly capture data belongs in the private repo `Jpidge/gridiron-lab-data` and is not committed here.
+This public repository holds the code and the GitHub Pages site; weekly capture data is not committed here.
 
 ## Status
 
@@ -13,7 +13,7 @@ This public repository holds the code and the GitHub Pages site. Weekly capture 
 ## Quick start
 
 ```bash
-git clone https://github.com/Jpidge/gridiron-lab && cd gridiron-lab
+git clone https://github.com/Jpidge/auspicia && cd auspicia
 python -m venv .venv && source .venv/bin/activate     # Python 3.11+
 pip install -e ".[dev]"
 pytest
