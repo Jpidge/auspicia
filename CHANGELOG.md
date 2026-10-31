@@ -12,6 +12,7 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 - The Control Center's back-link to the dashboard now reads "AUSPICIA" instead of "Dashboard →" (owner call, 2026-10-31). (This entry also carries the header-gap change, which the owner directed to ride along with the next edit rather than ship as its own PR — the standalone PR #45 was closed unmerged.)
 - The Control Center's Promotion gates card now explains what is being promoted (owner call, 2026-10-31): the model itself, from "in use" to "proven" — a title, not a usage switch; the dashboard already runs the model's projections. Definitions gain "Promotion gate" and "Promoted" entries saying the same in glossary form.
 - Definitions gain a "LightGBM" entry (what the ML is and how gradient boosting works), and defined terms throughout the Control Center now link down to their definition — LightGBM, mean, median, the range, win probability, Vegas implied, gates, promoted (owner call, 2026-10-31).
+- "How the engine works" drops its step 6 (owner call, 2026-10-31): the promotion-gates bullet was a definition sitting in a process list — steps 1–5 explain the process; the gate is defined in Definitions and detailed in its own card.
 
 ## [0.5.26] — 2026-10-31
 
