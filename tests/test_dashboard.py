@@ -494,6 +494,13 @@ def test_site_has_a_single_charcoal_theme() -> None:
         assert hex_value in css
 
 
+def test_site_header_brand_gap_is_wide() -> None:
+    css = (SITE / "app.css").read_text(encoding="utf-8")
+    # Owner call (2026-10-31): roughly four to five spaces of air between
+    # the emblem and the page title in the header brand row.
+    assert ".brand { display: flex; align-items: center; gap: 30px;" in css
+
+
 def test_site_control_center_states_the_engine_record() -> None:
     html = (SITE / "control.html").read_text(encoding="utf-8")
     assert "Control Center" in html

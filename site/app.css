@@ -57,7 +57,7 @@ header.top {
   align-items: center;
   gap: 16px;
 }
-.brand { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; white-space: nowrap; }
+.brand { display: flex; align-items: center; gap: 30px; font-weight: 800; font-size: 18px; white-space: nowrap; }
 .brand-mark { height: 30px; width: auto; display: block; }
 #splash {
   position: fixed; inset: 0; z-index: 2000; background: #0d0e0f;

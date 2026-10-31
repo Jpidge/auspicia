@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.27] — 2026-10-31
+
+### Changed
+
+- Header brand spacing (owner call, 2026-10-31): the gap between the emblem and the page title widens from 8px to 30px — roughly four to five spaces of air. Applies to both the dashboard and Control Center headers (one shared `.brand` rule).
+
 ## [0.5.26] — 2026-10-31
 
 ### Added
