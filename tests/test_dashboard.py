@@ -529,6 +529,11 @@ def test_site_header_is_helmet_button_centered_title_no_emblem() -> None:
     assert ".hdr-title { position: absolute; left: 50%;" in css
     assert ".teammenu { position: absolute; left: 0;" in css
     assert ".teampick-wrap { margin-left: auto; }" in css
+    # Owner calls (2026-10-31): the lighter #2E3136 disc, and on desktop the
+    # helmet flips to face into the page (the button sits at the left edge).
+    helmet = (SITE / "helmet-gray.svg").read_text(encoding="utf-8")
+    assert 'fill="#2E3136"' in helmet
+    assert ".teambtn img { transform: scaleX(-1); }" in css
     assert '"team-menu"' in script
     # The big lockup gets its own spot at the top of the Lab view.
     lab = html.split('id="v-lab"', 1)[1].split("</section>", 1)[0]
