@@ -501,6 +501,18 @@ def test_site_header_brand_gap_is_wide() -> None:
     assert ".brand { display: flex; align-items: center; gap: 30px;" in css
 
 
+def test_site_team_picker_sits_top_right_without_a_label() -> None:
+    html = (SITE / "index.html").read_text(encoding="utf-8")
+    css = (SITE / "app.css").read_text(encoding="utf-8")
+    # Owner calls (2026-10-31): the team dropdown moves to the top of the
+    # Team view, right-aligned, and its visible "Team" label text is gone
+    # (the label survives screen-reader-only, for accessibility).
+    assert 'class="hero-side"' in html
+    assert ".hero-side { display: flex; flex-direction: column;" in css
+    assert '<span class="sr">Team</span>' in html
+    assert 'for="team-select">Team' not in html
+
+
 def test_site_control_center_states_the_engine_record() -> None:
     html = (SITE / "control.html").read_text(encoding="utf-8")
     assert "Control Center" in html

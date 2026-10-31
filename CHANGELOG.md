@@ -15,6 +15,7 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 - "How the engine works" drops its step 6 (owner call, 2026-10-31): the promotion-gates bullet was a definition sitting in a process list — steps 1–5 explain the process; the gate is defined in Definitions and detailed in its own card.
 - Definitions gain an "MAE" entry (mean absolute error) — it was used in the gates list and the benchmark table but defined nowhere (owner catch, 2026-10-31); its mentions now link to the definition like the other terms.
 - Definitions gain a "Bias" entry (the model's systematic lean, vs MAE's scatter), linked from the gates card (owner call, 2026-10-31).
+- Team view: the team dropdown moves to the top of the page, right-aligned above the kickoff countdown, and its visible "Team" label text is removed (the label remains for screen readers) (owner calls, 2026-10-31).
 
 ## [0.5.26] — 2026-10-31
 

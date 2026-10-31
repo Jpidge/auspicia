@@ -100,6 +100,8 @@ h2 { font-size: 15px; margin: 0 0 8px; text-transform: uppercase; letter-spacing
 .sub { color: var(--muted); font-size: 13px; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 16px; }
 .hero { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.hero-side { display: flex; flex-direction: column; gap: 12px; align-items: flex-end; margin-left: auto; }
+.hero-side .team-pick { text-align: right; }
 .team-pick { display: flex; flex-direction: column; gap: 4px; font-size: 12px; font-weight: 700; color: var(--muted); }
 .team-pick select {
   min-height: 44px; min-width: 240px; border-radius: 12px; border: 1px solid var(--line);
@@ -327,6 +329,7 @@ footer a { color: var(--muted); font-weight: 600; margin-left: auto; }
   .pill { flex: none; }
   .tbl .hide-s { display: none; }
   .opp-line { display: block; }
+  .hero-side { width: 100%; align-items: stretch; }
   .team-pick select { min-width: 0; width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
