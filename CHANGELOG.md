@@ -4,6 +4,21 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.29]
+### Added
+- Two brand assets in `site/`: `auspicia-lockup.svg` (the stock horizontal lockup, light ink) and `helmet-glyph.svg` (the helmet glyph without its disc), for the desktop header below.
+### Changed
+- Desktop header redesigned (owner design, mocked 2026-10-31 and approved 2026-11-01; mobile header unchanged): the horizontal AUSPICIA lockup returns at the left as the stock brand SVG — its baked-in proportions (word caps ~0.59x the emblem height) are the owner's chosen ratio. The team-switch helmet moves to the right of the tabs in a rounded-square button matched to the tabs card (54px, same surface, radius, and border), showing the glyph only — no disc, no flip — and the team menu now drops right-aligned from it.
+
+### Changed
+- Position colours move to the text only (owner design pass, 2026-10-31): the position chips keep the flat gray rectangle, bars, dots and range bands stay gray, and the position label itself takes a colour from the emblem palette — QB blue #219EBC, RB amber #FFB703, WR coral #F17470, TE pale blue (blue tinted toward the palette light ink), K pale coral, DEF light ink #F5F3EC.
+
+### Removed
+- The "Tap a row for details" hint
+
+### Fixed
+- Expanding a player card no longer flashes blue on tap: the browser's default tap-highlight colour is now transparent site-wide (the flash was the platform's tap feedback over the full-card button, not a site colour). beside the Recommended lineup heading (owner call, 2026-10-31).
+
 ## [0.5.28] — 2026-10-31
 
 ### Changed
