@@ -17,18 +17,18 @@
   --badSoft: rgba(255, 107, 107, 0.15);
   --warn: #ffc24b;
   --warnSoft: rgba(255, 194, 75, 0.16);
-  --qb: #ff7a90;
-  --rb: #4fd1a5;
-  --wr: #6aa8ff;
-  --te: #ffb357;
-  --k: #c59bff;
-  --def: #9aa7bd;
+  --qb: #9aa0a6;
+  --rb: #9aa0a6;
+  --wr: #9aa0a6;
+  --te: #9aa0a6;
+  --k: #9aa0a6;
+  --def: #9aa0a6;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   --r: 16px;
   --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
-* { box-sizing: border-box; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 [hidden] { display: none !important; }
 svg[hidden] { display: none; }
 html, body { margin: 0; }
@@ -57,14 +57,26 @@ header.top {
   align-items: center;
   gap: 16px;
 }
+.hdr-logo { display: none; }
 .hdr-title { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-weight: 800; font-size: 18px; white-space: nowrap; pointer-events: none; }
 .teampick-wrap { position: relative; }
 .teambtn { width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: var(--card2); border: 1px solid var(--line); display: grid; place-items: center; cursor: pointer; padding: 0; }
 .teambtn img { width: 100%; height: 100%; display: block; }
 @media (min-width: 721px) {
-  /* Desktop: the button sits at the left edge, so the helmet is flipped to
-     face into the page. On mobile (button at the right) it already does. */
-  .teambtn img { transform: scaleX(-1); }
+  /* Desktop header (owner design: mocked 2026-10-31, approved 2026-11-01):
+     the horizontal lockup returns at the left as the stock brand SVG — its
+     baked-in proportions (word caps ~0.59x the emblem height) are the
+     owner's chosen ratio, so no live-text lockup is composed here. The
+     helmet moves right of the tabs in a rounded-square button matched to
+     the tabs card (54px, --card surface, same radius and border), showing
+     the glyph only — no disc, no flip; at the right edge it already faces
+     into the page. The team menu drops right-aligned from it. Mobile keeps
+     the earlier header: centered title, round disc helmet at the right. */
+  .hdr-logo { display: flex; align-items: center; }
+  .hdr-logo img { height: 56px; width: auto; display: block; }
+  .teambtn { border-radius: 12px; width: 54px; height: 54px; background: var(--card); }
+  .teambtn img { transform: none; content: url("helmet-glyph.svg"); width: 36px; height: 36px; }
+  .teammenu { left: auto; right: 0; }
   /* Desktop drops the centered page title: the tabs at the top already name
      the current view. Mobile keeps it — its tabs live at the bottom. */
   .hdr-title { display: none; }
@@ -156,7 +168,7 @@ h2 { font-size: 15px; margin: 0 0 8px; text-transform: uppercase; letter-spacing
 .pos {
   display: inline-grid; place-items: center; min-width: 44px; height: 28px; padding: 0 8px;
   border-radius: 8px; font-size: 12px; font-weight: 800; letter-spacing: 0.03em;
-  color: var(--c); background: color-mix(in srgb, var(--c) 16%, transparent);
+  color: var(--ct, var(--c)); background: color-mix(in srgb, var(--c) 16%, transparent);
   border: 1px solid color-mix(in srgb, var(--c) 40%, transparent);
 }
 .slot { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }

@@ -511,15 +511,22 @@ def test_site_splash_lasts_long_enough_to_read() -> None:
     assert "setTimeout(hideSplash, 4000)" in script
 
 
-def test_site_header_is_helmet_button_centered_title_no_emblem() -> None:
+def test_site_header_lockup_left_helmet_square_right_on_desktop() -> None:
     html = (SITE / "index.html").read_text(encoding="utf-8")
     css = (SITE / "app.css").read_text(encoding="utf-8")
     script = (SITE / "app.js").read_text(encoding="utf-8")
-    # Owner design (2026-10-31, after the reference-app study): the header
-    # carries no emblem; the page title is centered; team switching hides
-    # behind a helmet button (owner-supplied gray helmet asset) — left on
-    # desktop, right on mobile — opening a team menu. The old hero dropdown
-    # and its short-lived top-right placement are both gone.
+    # Owner design (mocked 2026-10-31, approved 2026-11-01): on desktop the
+    # horizontal lockup returns at the left of the header as the stock brand
+    # SVG — the owner picked its baked-in proportions (word caps ~0.59x the
+    # emblem) over an equal-height live-text composition. Team switching
+    # moves right of the tabs into a rounded-square button matched to the
+    # tabs card, showing the helmet glyph only. Mobile keeps the previous
+    # header: centered title, round disc helmet button at the right.
+    header = html.split('<header class="top">', 1)[1].split("</header>", 1)[0]
+    assert 'class="hdr-logo"' in header
+    assert 'src="auspicia-lockup.svg"' in header
+    assert header.index("hdr-logo") < header.index('class="tabs"')
+    assert header.index('class="tabs"') < header.index("teampick-wrap")
     assert 'id="team-btn"' in html
     assert 'src="helmet-gray.svg"' in html
     assert 'id="team-menu"' in html
@@ -527,7 +534,8 @@ def test_site_header_is_helmet_button_centered_title_no_emblem() -> None:
     assert 'class="brand"' not in html
     assert 'id="team-select"' not in html
     assert ".hdr-title { position: absolute; left: 50%;" in css
-    assert ".teammenu { position: absolute; left: 0;" in css
+    assert ".hdr-logo { display: none; }" in css
+    assert ".hdr-logo { display: flex;" in css
     assert ".teampick-wrap { margin-left: auto; }" in css
     # Owner call (2026-10-31): desktop drops the centred page title — the
     # tabs at the top already name the view. Mobile keeps the title.
@@ -535,12 +543,21 @@ def test_site_header_is_helmet_button_centered_title_no_emblem() -> None:
     # The team menu closes on view switch, outside click, or Escape (the
     # first live check found it lingering over the Lab view).
     assert "closeTeamMenu" in script
-    # Owner calls (2026-10-31): the lighter #2E3136 disc, and on desktop the
-    # helmet flips to face into the page (the button sits at the left edge).
+    # Desktop helmet button: 54px rounded square on the tabs card's surface,
+    # glyph only (no disc), unflipped; the menu drops right-aligned from it.
+    # The mobile disc asset itself is untouched.
     helmet = (SITE / "helmet-gray.svg").read_text(encoding="utf-8")
     assert 'fill="#2E3136"' in helmet
-    assert ".teambtn img { transform: scaleX(-1); }" in css
+    glyph = (SITE / "helmet-glyph.svg").read_text(encoding="utf-8")
+    assert "<circle" not in glyph
+    assert 'fill="#F2F3F4"' in glyph
+    assert ".teambtn { border-radius: 12px; width: 54px; height: 54px;" in css
+    assert 'content: url("helmet-glyph.svg")' in css
+    assert "scaleX(-1)" not in css
+    assert ".teammenu { left: auto; right: 0; }" in css
     assert '"team-menu"' in script
+    # The stock lockup asset ships with the site.
+    assert (SITE / "auspicia-lockup.svg").exists()
     # The big lockup gets its own spot at the top of the Lab view.
     lab = html.split('id="v-lab"', 1)[1].split("</section>", 1)[0]
     assert 'class="brandblock"' in lab

@@ -103,6 +103,8 @@
     return fmt(player.q10) + "–" + fmt(player.q90);
   }
   function posColor(position) { return COLORS[position] || "var(--muted)"; }
+  var POSTEXT = { QB: "#219EBC", RB: "#FFB703", WR: "#F17470", TE: "color-mix(in srgb, #219EBC 55%, #F5F3EC)", K: "color-mix(in srgb, #F17470 55%, #F5F3EC)", DST: "#F5F3EC", DEF: "#F5F3EC" };
+  function posText(position) { return POSTEXT[position] || "var(--muted)"; }
   function knownTeam(id) {
     var teams = state.data.teams;
     for (var i = 0; i < teams.length; i += 1) if (teams[i].team_id === id) return teams[i];
@@ -146,7 +148,7 @@
     if (player.kickoff) where += " · " + esc(player.kickoff);
     return '<div class="row" style="--c:' + color + '">' +
       '<button class="rbtn" type="button" aria-expanded="false">' +
-      '<span class="slot"><span class="pos" style="--c:' + color + '">' + esc(slot) + "</span>" + (showPos ? "<small>" + esc(SLOT[player.position] || player.position) + "</small>" : "") + "</span>" +
+      '<span class="slot"><span class="pos" style="--c:' + color + ';--ct:' + posText(player.position) + '">' + esc(slot) + "</span>" + (showPos ? "<small>" + esc(SLOT[player.position] || player.position) + "</small>" : "") + "</span>" +
       '<span class="who"><span class="pn">' + esc(player.name) + injury + '</span><span class="pm">' + where + "</span></span>" +
       '<span class="proj">' + proj + "</span>" +
       '<span class="meta"><span class="yhw">' + (quiet ? "" : yahooHtml) + '</span><span class="chip v ' + verdictClass + '">' + verdict + '</span>' +
@@ -267,7 +269,7 @@
       return '<div class="tci"><div class="q">' + esc(call.slot) + '</div><div class="pair"><div class="p win">' + esc(call.starter_name) + '<small class="num">' + fmt(call.starter_projection) + ' mean</small></div><span class="or">OR</span><div class="p" style="text-align:right">' + esc(call.alternative_name) + '<small class="num">' + fmt(call.alternative_projection) + ' mean</small></div></div><div class="sub">' + esc(call.starter_name) + " leads by " + fmt(call.margin) + ".</div></div>";
     }).join("") + "</div>" : '<p>Toughest calls: none within ' + data.close_call_margin + " point.</p>";
     var bench = (team.bench || []).concat(team.inactive || []);
-    $("lineup-col").innerHTML = '<div class="sec-h"><h2>Recommended lineup</h2><span class="sub">Tap a row for details</span></div><p class="ylegend">Y! = Yahoo projection; chip = ours minus Yahoo</p><div class="list">' + team.starters.map(row).join("") + '</div><div class="sec-h"><h2>Bench</h2><span class="sub">' + data.lineup.bench + " bench · " + data.lineup.ir + ' IR</span></div><div class="list">' + bench.map(row).join("") + "</div>";
+    $("lineup-col").innerHTML = '<div class="sec-h"><h2>Recommended lineup</h2></div><p class="ylegend">Y! = Yahoo projection; chip = ours minus Yahoo</p><div class="list">' + team.starters.map(row).join("") + '</div><div class="sec-h"><h2>Bench</h2><span class="sub">' + data.lineup.bench + " bench · " + data.lineup.ir + ' IR</span></div><div class="list">' + bench.map(row).join("") + "</div>";
     $("legend-card").innerHTML = '<h2>Definitions</h2><div class="legend"><span><i class="sw"></i>10th–90th pct range</span><span><i class="sw m"></i>Median projection</span><span><span class="chip d-up">+2.1</span> ours minus Yahoo</span></div>' +
       '<dl class="defs">' + DEF_ORDER.map(function (pair) { return "<div><dt>" + esc(pair[1]) + "</dt><dd>" + esc(DEFS[pair[0]]) + "</dd></div>"; }).join("") + "</dl>" +
       '<p class="sub">The lineup maximizes mean (expected) points under the league slots. A player on bye, OUT, or IR is not started when someone else can fill the slot. Labels marked with an i carry the same definition in place — hover, tap, or tab to it.</p>';
@@ -286,7 +288,7 @@
       var color = posColor(item.position);
       var weeks = item.q50_next || [];
       var total = weeks.reduce(function (sum, value) { return sum + Number(value); }, 0);
-      return '<article class="card wc" style="--c:' + color + '"><div class="ad"><div><span class="plus">Add</span>' + esc(item.name) + '</div><div><span class="minus">Drop</span>' + esc(item.drop_name || "—") + (item.drop_position ? " (" + esc(SLOT[item.drop_position] || item.drop_position) + ")" : "") + '</div></div><div class="hd"><span class="pos" style="--c:' + color + '">' + esc(SLOT[item.position] || item.position) + '</span><div class="pm">' + esc(item.nfl_team || "") + " · " + esc(item.note || "") + "</div></div>" +
+      return '<article class="card wc" style="--c:' + color + '"><div class="ad"><div><span class="plus">Add</span>' + esc(item.name) + '</div><div><span class="minus">Drop</span>' + esc(item.drop_name || "—") + (item.drop_position ? " (" + esc(SLOT[item.drop_position] || item.drop_position) + ")" : "") + '</div></div><div class="hd"><span class="pos" style="--c:' + color + ';--ct:' + posText(item.position) + '">' + esc(SLOT[item.position] || item.position) + '</span><div class="pm">' + esc(item.nfl_team || "") + " · " + esc(item.note || "") + "</div></div>" +
         '<div class="next3">' + weeks.map(function (value, index) { return "<div><small>WK " + (data.week.week + index) + '</small><b class="num">' + fmt(value) + "</b></div>"; }).join("") + "</div>" +
         '<div class="wm"><span>Next 3<br><b class="num">' + fmt(total) + "</b></span><span>ROS proj<br><b class=\"num\">" + fmt(item.ros) + "</b></span>" + snapTrend(item) + "</div></article>";
     }).join("") || '<p class="sub">No pickups at this position.</p>';
@@ -358,14 +360,14 @@
     $("lab-root").innerHTML = '<div class="note" role="note">' + esc((lab.notes && lab.notes[0]) || "Backtest") + " Promoted: " + (lab.promoted ? "yes" : "no") + ".</div>" +
       '<div class="lab"><div class="card"><h2>MAE by position</h2><p class="sub">Mean of seasonal q50 MAE, points per game. Lower is better. Compared with the legacy baseline, not Yahoo.</p><div class="mae">' +
       mae.map(function (item) {
-        return '<div class="l"><span class="pos" style="--c:' + posColor(item.position) + '">' + esc(SLOT[item.position] || item.position) + '</span><span class="b"><i style="--c:' + posColor(item.position) + ";width:" + (item.mae / maxMae * 100) + '%"></i></span><b class="num">' + item.mae.toFixed(2) + "</b></div>";
+        return '<div class="l"><span class="pos" style="--c:' + posColor(item.position) + ';--ct:' + posText(item.position) + '">' + esc(SLOT[item.position] || item.position) + '</span><span class="b"><i style="--c:' + posColor(item.position) + ";width:" + (item.mae / maxMae * 100) + '%"></i></span><b class="num">' + item.mae.toFixed(2) + "</b></div>";
       }).join("") + '</div></div><div class="card"><h2>Interval coverage</h2><p class="sub">Share of outcomes inside the calibrated 10–90 range; the shaded band is the 0.77 to 0.83 target. Scale zoomed to 0.70–0.90 so the differences actually show.</p><div class="mae">' +
       Object.keys(coverage).map(function (position) {
         var value = Number(coverage[position]);
         var inside = value >= 0.77 && value <= 0.83;
         var pct = Math.min(96, Math.max(4, (value - 0.70) / 0.20 * 100));
         var status = inside ? "In band" : (value < 0.77 ? ((0.77 - value) * 100).toFixed(1) + " pt low" : ((value - 0.83) * 100).toFixed(1) + " pt high");
-        return '<div class="l cov"><span class="pos" style="--c:' + posColor(position) + '">' + esc(SLOT[position] || position) + '</span><span class="b"><span class="band"></span><i class="dot" style="--c:' + posColor(position) + ";left:" + pct.toFixed(1) + '%"></i></span><span class="num">' + (value * 100).toFixed(1) + '%</span><b class="' + (inside ? "pass" : "fail") + '">' + status + "</b></div>";
+        return '<div class="l cov"><span class="pos" style="--c:' + posColor(position) + ';--ct:' + posText(position) + '">' + esc(SLOT[position] || position) + '</span><span class="b"><span class="band"></span><i class="dot" style="--c:' + posColor(position) + ";left:" + pct.toFixed(1) + '%"></i></span><span class="num">' + (value * 100).toFixed(1) + '%</span><b class="' + (inside ? "pass" : "fail") + '">' + status + "</b></div>";
       }).join("") + '<div class="l cov axis-row"><span></span><span class="ticks num"><span>0.70</span><span>0.80</span><span>0.90</span></span><span></span><span></span></div></div></div><div class="card"><h2>Promotion rule</h2><ul class="crit">' + criteria + '</ul></div><div class="card"><h2>Improvement over baseline</h2><p class="sub">Baseline q50 MAE minus the model. Positive means the model was closer that season.</p><div class="mae">' + bars + '</div><p class="sub">Lineup points versus that baseline: +' + Number(lab.points_gained_vs_baseline).toFixed(1) + ' over the backtest. Not a Yahoo result.</p></div><div class="card wide"><h2>Notes</h2><ul class="why">' + notes + "</ul></div></div>";
   }
 
