@@ -59,7 +59,9 @@ header.top {
 }
 .hdr-logo { display: flex; align-items: center; }
 .hdr-logo img { height: 34px; width: auto; display: block; }
-.hdr-title { margin-left: auto; font-weight: 800; font-size: 18px; white-space: nowrap; }
+/* No page title at any width (owner call, 2026-11-01): the nav already
+   names the current view — bottom bar on mobile, tabs on desktop. */
+.hdr-title { display: none; }
 @media (min-width: 721px) {
   /* Desktop header (owner design: mocked 2026-10-31, approved 2026-11-01):
      the horizontal lockup returns at the left as the stock brand SVG — its
@@ -73,9 +75,6 @@ header.top {
   .hdr-logo { display: flex; align-items: center; }
   .hdr-logo img { height: 56px; width: auto; display: block; }
   .teammenu { left: auto; right: 0; }
-  /* Desktop drops the centered page title: the tabs at the top already name
-     the current view. Mobile keeps it — its tabs live at the bottom. */
-  .hdr-title { display: block; }
 }
 .teammenu { position: absolute; left: 0; top: calc(100% + 8px); background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 6px; min-width: 232px; z-index: 60; box-shadow: 0 16px 40px rgba(0,0,0,.5); }
 .tm-item { display: block; width: 100%; text-align: left; padding: 10px 12px; border-radius: 9px; background: none; border: 0; color: var(--text); font: inherit; cursor: pointer; }
@@ -363,5 +362,6 @@ footer a { color: var(--muted); font-weight: 600; margin-left: auto; }
 @media (min-width: 721px) {
   .hdr-logo img { height: 48px; }
   .hdr-word { font-size: 30px; }
-  .hdr-title { font-size: 20px; }
+  /* Desktop: the tabs sit right-aligned in the header. */
+  nav.tabs { margin-left: auto; }
 }

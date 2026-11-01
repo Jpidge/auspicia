@@ -538,12 +538,14 @@ def test_site_header_lockup_left_title_right_team_name_is_the_selector() -> None
     assert 'class="hdr-title" id="page-title"' in header
     assert "helmet" not in html
     assert 'id="team-select"' not in html
-    assert ".hdr-title { margin-left: auto;" in css
+    # Owner call (2026-11-01, after 0.5.30 shipped): no page title at any
+    # width — the nav names the view — and the desktop tabs right-align.
+    assert ".hdr-title { display: none; }" in css
+    assert "nav.tabs { margin-left: auto; }" in css
     assert ".hdr-logo { gap: 10px; }" in css
     assert ".hdr-logo img { height: 30px; }" in css
     assert ".hdr-logo img { height: 48px; }" in css
     assert ".hdr-word { font-size: 30px; }" in css
-    assert ".hdr-title { font-size: 20px; }" in css
     # The team selector lives in the Team hero now, not the header.
     assert 'id="team-btn" class="teamsel"' in html
     assert 'class="tsel-wrap"' in html
@@ -575,13 +577,25 @@ def test_site_control_center_states_the_engine_record() -> None:
     # Owner call (2026-10-31): the page's full name is AUSPICIA Control
     # Center — header title and document title both carry it.
     assert "<title>AUSPICIA Control Center</title>" in html
-    assert "<span>AUSPICIA Control Center</span>" in html
+    # Owner call (2026-11-01): "Control Center" sits unbolded beside the
+    # bold AUSPICIA in the header lockup.
+    assert '<span>AUSPICIA <span class="brand-sub">Control Center</span></span>' in html
+    assert ".brand-sub { font-weight: 400; }" in html
+    # Owner call (2026-11-01): the opening card wears the standard label
+    # header with a muted subtitle, like every other card on the page.
+    assert "AUSPICIA (aw-SPEE-chee-uh) fantasy football analytics engine" in html
+    assert '<p class="sub">is designed to help manage team rosters' in html
+    # The engine steps are numbered paragraphs: no bullets, no dots.
+    assert 'class="why steps"' in html
+    assert "<b>1 Ingest.</b>" in html
+    assert "· Ingest" not in html
     # The milestones list records shipped versions, 0.5.27 included (it was
     # missing until the 0.5.28 batch).
     assert "<b>0.5.27</b>" in html
     assert "<b>0.5.28</b>" in html
     assert "<b>0.5.29</b>" in html
     assert "<b>0.5.30</b>" in html
+    assert "<b>0.5.31</b>" in html
     # Owner calls: the back-link read AUSPICIA for one release (0.5.27),
     # then reverted to "Dashboard →" — and in the 0.5.30 redesign it left
     # the header entirely: the footer carries a centred "Back to

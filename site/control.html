@@ -13,6 +13,11 @@
     /* The Control Center keeps the emblem header; its brand rules live here
        now that the dashboard header no longer uses them. */
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; white-space: nowrap; }
+    .brand-sub { font-weight: 400; }
+    /* The engine steps are numbered paragraphs, not a bulleted list: no
+       markers, the number sits where the bullet used to be, and the step
+       name flows in line with the rest of the text. */
+    .steps { list-style: none; padding-left: 6px; }
     .brand-mark { height: 30px; width: auto; display: block; }
     .stack { display: flex; flex-direction: column; gap: 24px; }
     .diagram { width: 100%; height: auto; display: block; border-radius: 12px; }
@@ -26,7 +31,6 @@
     a.deflink { color: inherit; text-decoration: underline dotted var(--faint) 1px; text-underline-offset: 3px; }
     a.deflink:hover { color: var(--accent); }
     .card p:first-of-type { margin-top: 0; }
-    .cc-lede { font-size: 19px; text-transform: none; letter-spacing: normal; color: var(--text); font-weight: 700; line-height: 1.4; margin-bottom: 12px; }
     /* The back link gets its own line, centred, under the footer note. */
     footer a { margin-left: 0; flex-basis: 100%; text-align: center; margin-top: 6px; }
     @media (min-width: 721px) {
@@ -41,14 +45,15 @@
 <body>
   <header class="top">
     <div class="top-in">
-      <div class="brand"><img class="brand-mark" src="emblem.svg" alt="AUSPICIA"><span>AUSPICIA Control Center</span></div>
+      <div class="brand"><img class="brand-mark" src="emblem.svg" alt="AUSPICIA"><span>AUSPICIA <span class="brand-sub">Control Center</span></span></div>
     </div>
   </header>
   <main>
     <div class="stack">
 
       <section class="card" aria-label="What AUSPICIA is">
-        <h2 class="cc-lede">AUSPICIA (aw-SPEE-chee-uh) is a fantasy football analytics engine for projecting weekly points, based on the following architecture.</h2>
+        <h2>AUSPICIA (aw-SPEE-chee-uh) fantasy football analytics engine</h2>
+        <p class="sub">is designed to help manage team rosters by projecting weekly fantasy points per player. This page explains the architecture and mechanisms behind the machine.</p>
         <ul class="why">
           <li><b>The engine</b> — backstage. Its only job is to make the projections better: ingest data, build features, train, predict, evaluate, diagnose.</li>
           <li><b>The dashboard</b> — the product. It plugs in the latest model's weekly numbers and shows verdicts, plainly. It does not explain the engine.</li>
@@ -65,12 +70,12 @@
       <section class="card" aria-label="How the engine works">
         <h2>How the engine works</h2>
         <p class="sub">The pipeline, step by step. Every prediction is made using only information that existed before that week's games — no peeking at results.</p>
-        <ul class="why">
-          <li><b>1 · Ingest.</b> NFLverse play-by-play, player stats, schedules, and Vegas lines are loaded into a local store covering 2018 onward. Every row carries the moment it became known, so history can be replayed honestly.</li>
-          <li><b>2 · Features.</b> Raw facts become per-player-week signals: recent form (last game, last 3, last 5, a recency-weighted average, trend direction), opportunity (snap share, target and carry shares, air yards, red-zone work), matchup strength, and the game environment (spread, total, <a class="deflink" href="#def-vegas">implied team points</a>).</li>
-          <li><b>3 · Train.</b> Each skill position gets its own <a class="deflink" href="#def-lightgbm">LightGBM</a> model — one for QB, one for RB, one for WR, one for TE — because each position scores in its own way and is driven by different signals. Each model is trained on past seasons, with every past game scored under this league's exact rules (non-PPR, 6-point passing TDs, the 40+ yard TD bonus), and it projects only its own position's players for the coming week. Kickers and defenses use a simpler regression built mostly on the Vegas lines.</li>
-          <li><b>4 · Predict.</b> Each player gets a distribution, not a single number: a <a class="deflink" href="#def-mean"><b>mean</b></a> (expected points — the lineup is picked on this), a <a class="deflink" href="#def-median"><b>median</b></a> (the typical week, the headline on his card), and a <a class="deflink" href="#def-range"><b>10th–90th range</b></a> (bad week to great week). <a class="deflink" href="#def-winprob">Win probability</a> is arithmetic on the two teams' totals.</li>
-          <li><b>5 · Evaluate.</b> Two kinds of grading. The <i>backtest</i> replays 2022–2025 week by week — 72 rounds, training only on the past each time — and produces the benchmarks below. The <i>weekly scorecard</i> freezes live predictions before kickoff and grades them against actuals and Yahoo once the week is final.</li>
+        <ul class="why steps">
+          <li><b>1 Ingest.</b> NFLverse play-by-play, player stats, schedules, and Vegas lines are loaded into a local store covering 2018 onward. Every row carries the moment it became known, so history can be replayed honestly.</li>
+          <li><b>2 Features.</b> Raw facts become per-player-week signals: recent form (last game, last 3, last 5, a recency-weighted average, trend direction), opportunity (snap share, target and carry shares, air yards, red-zone work), matchup strength, and the game environment (spread, total, <a class="deflink" href="#def-vegas">implied team points</a>).</li>
+          <li><b>3 Train.</b> Each skill position gets its own <a class="deflink" href="#def-lightgbm">LightGBM</a> model — one for QB, one for RB, one for WR, one for TE — because each position scores in its own way and is driven by different signals. Each model is trained on past seasons, with every past game scored under this league's exact rules (non-PPR, 6-point passing TDs, the 40+ yard TD bonus), and it projects only its own position's players for the coming week. Kickers and defenses use a simpler regression built mostly on the Vegas lines.</li>
+          <li><b>4 Predict.</b> Each player gets a distribution, not a single number: a <a class="deflink" href="#def-mean"><b>mean</b></a> (expected points — the lineup is picked on this), a <a class="deflink" href="#def-median"><b>median</b></a> (the typical week, the headline on his card), and a <a class="deflink" href="#def-range"><b>10th–90th range</b></a> (bad week to great week). <a class="deflink" href="#def-winprob">Win probability</a> is arithmetic on the two teams' totals.</li>
+          <li><b>5 Evaluate.</b> Two kinds of grading. The <i>backtest</i> replays 2022–2025 week by week — 72 rounds, training only on the past each time — and produces the benchmarks below. The <i>weekly scorecard</i> freezes live predictions before kickoff and grades them against actuals and Yahoo once the week is final.</li>
         </ul>
         <p class="sub">Known gaps, stated plainly: live weekly predictions use the model's <b>raw</b> ranges — the conformal calibration that holds up in the backtest is not applied live yet (that's M7 work). Win probability assumes a fixed spread of outcomes (standard deviation 25) that has not been fitted to results yet.</p>
       </section>
@@ -151,6 +156,7 @@
           <li><b>0.5.28</b> — splash trimmed to 825ms; desktop drops the centred page title (the tabs already name the view); the team menu learns to close on view switch, outside click, or Escape.</li>
           <li><b>0.5.29</b> — position colours move to the position text only, in the emblem palette; the tap flash fixed; the "Tap a row for details" hint removed; desktop header: stock lockup left, square helmet button right.</li>
           <li><b>0.5.30</b> — the chrome redesign: lockup header at every width, scaled up on desktop; the team name becomes the team selector; splash and Toughest Calls removed; the Control Center retitled, reworded in plain language, and given an animated workflow diagram and a Documentation card.</li>
+          <li><b>0.5.31</b> — header page titles retired at every width, desktop tabs right-aligned; "Control Center" set unbolded in its header; the opening card rewritten in the standard label style; the engine steps lose their bullets and dots.</li>
         </ul>
       </section>
 
