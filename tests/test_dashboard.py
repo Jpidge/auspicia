@@ -343,7 +343,10 @@ def test_site_reads_the_contract_fields() -> None:
     assert "maximizes median" not in script
     assert "maximizes mean (expected) points" in script
     assert "median</small>" not in script
-    assert "mean</small>" in script
+    # Toughest Calls is removed (owner call, 2026-11-01): its rows carried
+    # the "mean</small>" label. Close calls are the user's to judge from
+    # the data shown; the lineup only recommends.
+    assert "tough-card" not in script
     assert "svg[hidden] { display: none; }" in css
     note = (SITE / "index.html").read_text(encoding="utf-8")
     assert 'id="team-note"' in note
@@ -494,81 +497,76 @@ def test_site_has_a_single_charcoal_theme() -> None:
         assert hex_value in css
 
 
-def test_site_header_brand_gap_is_wide() -> None:
-    # Superseded by the header redesign (owner, 2026-10-31): the dashboard
-    # header dropped the emblem, so the brand row lives only on the Control
-    # Center, which keeps the wide emblem-to-title gap in its own styles.
+def test_site_control_center_brand_gap_is_tight() -> None:
+    # History: the Control Center brand row began with a wide 30px gap
+    # (0.5.26–0.5.29). The owner tightened it to 10px (2026-11-01) so the
+    # emblem and title read as one lockup, matching the dashboard header.
     html = (SITE / "control.html").read_text(encoding="utf-8")
-    assert ".brand { display: flex; align-items: center; gap: 30px;" in html
+    assert ".brand { display: flex; align-items: center; gap: 10px;" in html
 
 
-def test_site_splash_lasts_long_enough_to_read() -> None:
+def test_site_has_no_splash() -> None:
+    # Owner call (2026-11-01): the splash is removed entirely — markup,
+    # styles, and timing code — after its 550 → 1250 → 825ms history. The
+    # page lands straight on content.
+    html = (SITE / "index.html").read_text(encoding="utf-8")
     script = (SITE / "app.js").read_text(encoding="utf-8")
-    # Owner calls (2026-10-31): the splash first lengthened 550ms → 1250ms,
-    # then the owner judged that too long and set it to 66% of 1250 = 825ms.
-    # The 4s failsafe stays as the outer bound.
-    assert "825 - (Date.now() - splashStart)" in script
-    assert "setTimeout(hideSplash, 4000)" in script
+    css = (SITE / "app.css").read_text(encoding="utf-8")
+    assert "splash" not in html
+    assert "splash" not in script
+    assert "splash" not in css
 
 
-def test_site_header_lockup_left_helmet_square_right_on_desktop() -> None:
+def test_site_header_lockup_left_title_right_team_name_is_the_selector() -> None:
     html = (SITE / "index.html").read_text(encoding="utf-8")
     css = (SITE / "app.css").read_text(encoding="utf-8")
     script = (SITE / "app.js").read_text(encoding="utf-8")
-    # Owner design (mocked 2026-10-31, approved 2026-11-01): on desktop the
-    # horizontal lockup returns at the left of the header as the stock brand
-    # SVG — the owner picked its baked-in proportions (word caps ~0.59x the
-    # emblem) over an equal-height live-text composition. Team switching
-    # moves right of the tabs into a rounded-square button matched to the
-    # tabs card, showing the helmet glyph only. Mobile keeps the previous
-    # header: centered title, round disc helmet button at the right.
+    # Owner design (mocked and approved 2026-11-01, superseding the 0.5.29
+    # desktop header): the emblem-and-wordmark lockup sits at the left of
+    # the header at EVERY width — compact on mobile (30px emblem, 18px
+    # word), scaled up on desktop (48px, 30px) — and the page title moves
+    # to the right. The helmet button is gone: the team name in the Team
+    # hero is the team selector, its menu drops from the hero, and the
+    # week sits right-aligned on the team-name line. The Lab brandblock
+    # and its embedded wordmark font went with the same redesign.
     header = html.split('<header class="top">', 1)[1].split("</header>", 1)[0]
     assert 'class="hdr-logo"' in header
-    assert 'src="auspicia-lockup.svg"' in header
+    assert 'src="emblem.svg"' in header
+    assert '<span class="hdr-word">AUSPICIA</span>' in header
     assert header.index("hdr-logo") < header.index('class="tabs"')
-    assert header.index('class="tabs"') < header.index("teampick-wrap")
-    assert 'id="team-btn"' in html
-    assert 'src="helmet-gray.svg"' in html
-    assert 'id="team-menu"' in html
-    assert 'class="hdr-title" id="page-title"' in html
-    assert 'class="brand"' not in html
+    assert header.index('class="tabs"') < header.index('id="page-title"')
+    assert 'class="hdr-title" id="page-title"' in header
+    assert "helmet" not in html
     assert 'id="team-select"' not in html
-    assert ".hdr-title { position: absolute; left: 50%;" in css
-    assert ".hdr-logo { display: none; }" in css
-    assert ".hdr-logo { display: flex;" in css
-    assert ".teampick-wrap { margin-left: auto; }" in css
-    # Owner call (2026-10-31): desktop drops the centred page title — the
-    # tabs at the top already name the view. Mobile keeps the title.
-    assert ".hdr-title { display: none; }" in css
-    # The team menu closes on view switch, outside click, or Escape (the
-    # first live check found it lingering over the Lab view).
+    assert ".hdr-title { margin-left: auto;" in css
+    assert ".hdr-logo { gap: 10px; }" in css
+    assert ".hdr-logo img { height: 30px; }" in css
+    assert ".hdr-logo img { height: 48px; }" in css
+    assert ".hdr-word { font-size: 30px; }" in css
+    assert ".hdr-title { font-size: 20px; }" in css
+    # The team selector lives in the Team hero now, not the header.
+    assert 'id="team-btn" class="teamsel"' in html
+    assert 'class="tsel-wrap"' in html
+    assert 'id="team-menu"' in html
+    assert 'id="week-label"' in html
+    assert '$("week-label").textContent = "Week " + week.week;' in script
+    # The team menu closes on view switch, outside click, or Escape.
     assert "closeTeamMenu" in script
-    # Desktop helmet button: 54px rounded square on the tabs card's surface,
-    # glyph only (no disc), unflipped; the menu drops right-aligned from it.
-    # The mobile disc asset itself is untouched.
-    helmet = (SITE / "helmet-gray.svg").read_text(encoding="utf-8")
-    assert 'fill="#2E3136"' in helmet
-    glyph = (SITE / "helmet-glyph.svg").read_text(encoding="utf-8")
-    assert "<circle" not in glyph
-    assert 'fill="#F2F3F4"' in glyph
-    assert ".teambtn { border-radius: 12px; width: 54px; height: 54px;" in css
-    assert 'content: url("helmet-glyph.svg")' in css
-    assert "scaleX(-1)" not in css
-    assert ".teammenu { left: auto; right: 0; }" in css
     assert '"team-menu"' in script
-    # The stock lockup asset ships with the site.
-    assert (SITE / "auspicia-lockup.svg").exists()
-    # The big lockup gets its own spot at the top of the Lab view.
+    # Toughest Calls is gone from the Team view (owner call, 2026-11-01).
+    assert 'id="tough-card"' not in html
+    assert "tough-card" not in script
+    # The next-kickoff line is hidden, ready to return (owner call).
+    assert "#kickoff { display: none; }" in css
+    # The league line moved from the hero to the footer.
+    footer = html.split("<footer>", 1)[1].split("</footer>", 1)[0]
+    assert 'id="league-line"' in footer
+    assert 'href="control.html"' in footer
+    # The Lab brandblock is gone, and its wordmark font with it.
     lab = html.split('id="v-lab"', 1)[1].split("</section>", 1)[0]
-    assert 'class="brandblock"' in lab
-    # The lockup's word is live text in the embedded wordmark font (owner
-    # call, 2026-10-31): Archivo SemiBold, subset to a few KB, self-hosted.
-    assert 'class="wordmark brandblock-word">AUSPICIA<' in lab
-    assert 'src="emblem.svg"' in lab
-    assert "@font-face" in css and "Archivo" in css
-    # The subset rides inside the CSS as a data URI (a few KB), so there is
-    # no binary asset to ship.
-    assert "data:font/woff2;base64," in css
+    assert 'class="brandblock"' not in lab
+    assert ".brandblock" not in css
+    assert "@font-face" not in css
 
 
 def test_site_control_center_states_the_engine_record() -> None:
@@ -582,9 +580,14 @@ def test_site_control_center_states_the_engine_record() -> None:
     # missing until the 0.5.28 batch).
     assert "<b>0.5.27</b>" in html
     assert "<b>0.5.28</b>" in html
-    # Owner calls (2026-10-31): the back-link read AUSPICIA for one release
-    # (0.5.27), then the owner reverted it to the original wording.
-    assert 'class="cc-back" href="index.html">Dashboard →</a>' in html
+    assert "<b>0.5.29</b>" in html
+    assert "<b>0.5.30</b>" in html
+    # Owner calls: the back-link read AUSPICIA for one release (0.5.27),
+    # then reverted to "Dashboard →" — and in the 0.5.30 redesign it left
+    # the header entirely: the footer carries a centred "Back to
+    # Dashboard" text link and nothing else.
+    assert '<a href="index.html">Back to Dashboard</a>' in html
+    assert "cc-back" not in html
     assert 'href="app.css"' in html
     assert 'src="workflow.svg"' in html
     assert (SITE / "workflow.svg").exists()

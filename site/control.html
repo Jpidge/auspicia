@@ -12,15 +12,9 @@
   <style>
     /* The Control Center keeps the emblem header; its brand rules live here
        now that the dashboard header no longer uses them. */
-    .brand { display: flex; align-items: center; gap: 30px; font-weight: 800; font-size: 18px; white-space: nowrap; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; white-space: nowrap; }
     .brand-mark { height: 30px; width: auto; display: block; }
     .stack { display: flex; flex-direction: column; gap: 24px; }
-    .cc-back {
-      margin-left: auto; display: inline-flex; align-items: center; min-height: 44px;
-      padding: 8px 16px; border-radius: 12px; border: 1px solid var(--line);
-      background: var(--card); color: var(--muted); font-weight: 600; text-decoration: none;
-    }
-    .cc-back:hover { color: var(--text); }
     .diagram { width: 100%; height: auto; display: block; border-radius: 12px; }
     .gate-fails { margin: 8px 0 0; padding-left: 20px; color: var(--muted); font-size: 13px; }
     .gate-fails li { margin: 2px 0; }
@@ -32,38 +26,39 @@
     a.deflink { color: inherit; text-decoration: underline dotted var(--faint) 1px; text-underline-offset: 3px; }
     a.deflink:hover { color: var(--accent); }
     .card p:first-of-type { margin-top: 0; }
+    .cc-lede { font-size: 19px; text-transform: none; letter-spacing: normal; color: var(--text); font-weight: 700; line-height: 1.4; margin-bottom: 12px; }
+    /* The back link gets its own line, centred, under the footer note. */
+    footer a { margin-left: 0; flex-basis: 100%; text-align: center; margin-top: 6px; }
+    @media (min-width: 721px) {
+      /* Desktop: the header lockup scales up to match the dashboard's
+         (48px emblem, 30px text). Mobile keeps the compact size. */
+      .brand { font-size: 30px; }
+      .brand-mark { height: 48px; }
+    }
+
   </style>
 </head>
 <body>
   <header class="top">
     <div class="top-in">
       <div class="brand"><img class="brand-mark" src="emblem.svg" alt="AUSPICIA"><span>AUSPICIA Control Center</span></div>
-      <a class="cc-back" href="index.html">Dashboard →</a>
     </div>
   </header>
   <main>
-    <div class="hero">
-      <div>
-        <div class="sub">Behind the scenes · the engine's user manual</div>
-        <h1>Control Center</h1>
-      </div>
-    </div>
     <div class="stack">
 
-      <section class="card" aria-label="What this page is">
-        <h2>What this page is</h2>
-        <p>AUSPICIA is three separate things, and this page is the third one:</p>
+      <section class="card" aria-label="What AUSPICIA is">
+        <h2 class="cc-lede">AUSPICIA (aw-SPEE-chee-uh) is a fantasy football analytics engine for projecting weekly points, based on the following architecture.</h2>
         <ul class="why">
           <li><b>The engine</b> — backstage. Its only job is to make the projections better: ingest data, build features, train, predict, evaluate, diagnose.</li>
           <li><b>The dashboard</b> — the product. It plugs in the latest model's weekly numbers and shows verdicts, plainly. It does not explain the engine.</li>
           <li><b>The Control Center</b> — this page. The manual for the engine: how each feature works, where the project stands, and how the model is actually doing.</li>
         </ul>
-        <p class="sub">This page is read-only. It reads engine outputs — evaluation reports, gate status, benchmarks — and never changes them. There is no write path back from here to the engine or the dashboard.</p>
       </section>
 
       <section class="card" aria-label="How it all fits together">
         <h2>How it all fits together</h2>
-        <img class="diagram" src="workflow.svg" alt="Workflow diagram: NFLverse, Yahoo, Vegas lines, and practice reports feed the engine — ingest, features, train, predict — which exports dashboard.json to the dashboard; evaluate and the promotion gates grade the model, with an improvement loop back to training. The Control Center reads the reports.">
+        <img class="diagram" src="workflow.svg" alt="Workflow diagram: the four raw data inputs — NFLverse, Yahoo, Vegas lines, and practice reports — sit in one box and flow down into the engine: ingest, features, train, predict, export, evaluate, promotion gates. The export sends dashboard.json to the dashboard; the gates send reports to the Control Center; an improvement loop runs from evaluate back up to train.">
         <p class="sub">One contract worth remembering: Yahoo is not training fuel. It supplies the league's rosters (who to predict for) and Yahoo's own projections (the rival the scorecard grades against). Training data is NFLverse history, scored under this league's exact rules.</p>
       </section>
 
@@ -73,7 +68,7 @@
         <ul class="why">
           <li><b>1 · Ingest.</b> NFLverse play-by-play, player stats, schedules, and Vegas lines are loaded into a local store covering 2018 onward. Every row carries the moment it became known, so history can be replayed honestly.</li>
           <li><b>2 · Features.</b> Raw facts become per-player-week signals: recent form (last game, last 3, last 5, a recency-weighted average, trend direction), opportunity (snap share, target and carry shares, air yards, red-zone work), matchup strength, and the game environment (spread, total, <a class="deflink" href="#def-vegas">implied team points</a>).</li>
-          <li><b>3 · Train.</b> A separate <a class="deflink" href="#def-lightgbm">LightGBM</a> model per skill position — QB, RB, WR, TE — trained on past seasons under this league's scoring (non-PPR, 6-point passing TDs, the 40+ yard TD bonus). Kickers and defenses use a simpler regression built mostly on the Vegas lines.</li>
+          <li><b>3 · Train.</b> Each skill position gets its own <a class="deflink" href="#def-lightgbm">LightGBM</a> model — one for QB, one for RB, one for WR, one for TE — because each position scores in its own way and is driven by different signals. Each model is trained on past seasons, with every past game scored under this league's exact rules (non-PPR, 6-point passing TDs, the 40+ yard TD bonus), and it projects only its own position's players for the coming week. Kickers and defenses use a simpler regression built mostly on the Vegas lines.</li>
           <li><b>4 · Predict.</b> Each player gets a distribution, not a single number: a <a class="deflink" href="#def-mean"><b>mean</b></a> (expected points — the lineup is picked on this), a <a class="deflink" href="#def-median"><b>median</b></a> (the typical week, the headline on his card), and a <a class="deflink" href="#def-range"><b>10th–90th range</b></a> (bad week to great week). <a class="deflink" href="#def-winprob">Win probability</a> is arithmetic on the two teams' totals.</li>
           <li><b>5 · Evaluate.</b> Two kinds of grading. The <i>backtest</i> replays 2022–2025 week by week — 72 rounds, training only on the past each time — and produces the benchmarks below. The <i>weekly scorecard</i> freezes live predictions before kickoff and grades them against actuals and Yahoo once the week is final.</li>
         </ul>
@@ -104,12 +99,12 @@
           <li>K 2025 · <span class="num">−0.55</span></li>
           <li>DST 2025 · <span class="num">−1.51</span></li>
         </ul>
-        <p class="sub">The diagnosis so far: the quarterback overprediction is real but not a constant offset (QB 2024 sits at −0.05), and the K/DST 2025 failures are recent and tail-driven. The next engine step is a pre-registered, mechanism-level fix — written down as DESIGN §22 before it runs. One loose end is recorded openly first: the bias figures reproduce across reruns to about a thousandth of a point, but one rerun produced a different report digest and the cause is not yet pinned down. No fix gets built on an unexplained digest.</p>
+        <p class="sub">The diagnosis so far: the quarterback overprediction is real but not a constant offset (QB 2024 sits at −0.05), and the K/DST 2025 failures are recent and tail-driven. The next engine step is a pre-registered, mechanism-level fix — written down as <a class="deflink" href="#def-design22">DESIGN §22</a> before it runs. One loose end is recorded openly first: the bias figures reproduce across reruns to about a thousandth of a point, but one rerun produced a different report digest and the cause is not yet pinned down. No fix gets built on an unexplained digest.</p>
       </section>
 
       <section class="card" aria-label="Benchmarks">
         <h2>Benchmarks — the 2022–2025 backtest</h2>
-        <p class="sub">Rolling-origin replay: 72 weekly folds, each trained only on what came before it. Accuracy is q50 <a class="deflink" href="#def-mae">MAE</a> — lower is better. The baseline is the legacy projection method.</p>
+        <p class="sub">How the model was graded: history was replayed week by week — 72 weeks across 2022–2025. For each week, a fresh model was trained using only games played before that week, then asked to project that week sight unseen. Accuracy is <a class="deflink" href="#def-mae">MAE</a> on the median projection: on average, how many points the headline number missed what each player actually scored by. The baseline is the older, simpler projector this model replaced — a fixed blend of a player's own recent scoring averages, with no learning and no matchup or Vegas inputs.</p>
         <div class="table-card" style="padding: 0; overflow-x: auto;">
           <table class="tbl">
             <thead>
@@ -141,7 +136,7 @@
           <li><b>M3 · Models + evaluation — done.</b> Per-position models, the fold harness, and the promotion report above.</li>
           <li><b>M4 · Site — done.</b> The dashboard, its JSON contract, and this page's predecessor, the Lab.</li>
           <li><b>M6 · Decisions + Challenge — in progress.</b> Lineup decisions and the weekly scorecard against Yahoo. Week 8, 2026 is the first fully comparable Challenge week.</li>
-          <li><b>M7 · Intervals + QB — next.</b> Conformal intervals live, and the bias work behind the digest note and DESIGN §22.</li>
+          <li><b>M7 · Intervals + QB — next.</b> Conformal intervals live, and the bias work behind the digest note and <a class="deflink" href="#def-design22">DESIGN §22</a>.</li>
           <li><b>M5 · Yahoo automation — blocked.</b> Waiting on Yahoo developer provisioning; the manual capture fallback is proven and is what the frozen scorecards use.</li>
         </ul>
         <p style="margin-bottom: 0;">Recent shipped versions:</p>
@@ -154,6 +149,21 @@
           <li><b>0.5.26</b> — this Control Center.</li>
           <li><b>0.5.27</b> — the header redesign (no emblem, centred title, helmet team menu, lockup on the Lab) and this page's definitions completed and cross-linked.</li>
           <li><b>0.5.28</b> — splash trimmed to 825ms; desktop drops the centred page title (the tabs already name the view); the team menu learns to close on view switch, outside click, or Escape.</li>
+          <li><b>0.5.29</b> — position colours move to the position text only, in the emblem palette; the tap flash fixed; the "Tap a row for details" hint removed; desktop header: stock lockup left, square helmet button right.</li>
+          <li><b>0.5.30</b> — the chrome redesign: lockup header at every width, scaled up on desktop; the team name becomes the team selector; splash and Toughest Calls removed; the Control Center retitled, reworded in plain language, and given an animated workflow diagram and a Documentation card.</li>
+        </ul>
+      </section>
+
+      <section class="card" aria-label="Documentation">
+        <h2>Documentation</h2>
+        <p class="sub">The architecture and design philosophy in the project's own documents, all in the public repo.</p>
+        <ul class="why">
+          <li><a class="deflink" href="https://github.com/Jpidge/auspicia/blob/main/README.md"><b>README</b></a> — what AUSPICIA is, how the repo is laid out, and how to run it.</li>
+          <li><a class="deflink" href="https://github.com/Jpidge/auspicia/blob/main/docs/DESIGN.md"><b>DESIGN</b></a> — the design document: the three-part architecture, the roadmap (milestones M0–M7), the promotion gates (§20), and the pre-registration rule for model fixes (§22).</li>
+          <li><a class="deflink" href="https://github.com/Jpidge/auspicia/blob/main/docs/FEATURES.md"><b>FEATURES</b></a> — every signal the engine builds for each player-week, defined: form, usage shares, matchup, and game environment.</li>
+          <li><a class="deflink" href="https://github.com/Jpidge/auspicia/blob/main/docs/SCHEMA.md"><b>SCHEMA</b></a> — the data store: what tables exist and what each one holds.</li>
+          <li><a class="deflink" href="https://github.com/Jpidge/auspicia/blob/main/docs/DASHBOARD_JSON.md"><b>DASHBOARD_JSON</b></a> — the one-file contract between the engine and the dashboard: every field the dashboard is allowed to read.</li>
+          <li><a class="deflink" href="https://github.com/Jpidge/auspicia/blob/main/CHANGELOG.md"><b>CHANGELOG</b></a> — what changed in every version, in order.</li>
         </ul>
       </section>
 
@@ -177,15 +187,18 @@
           <div id="def-bias"><dt>Bias</dt><dd>The model's systematic lean: on average, how far its projections sit above or below what players actually score, sign included. Positive bias means it habitually over-projects (QB 2025 at +0.72 = quarterbacks penciled in for about seven-tenths of a point too many, week after week); negative means it under-projects. Where MAE measures scatter in both directions, bias measures drift in one — a model can be close on average and still lean. Gate 3 is the bias gate: no position, in any season, may lean more than ±0.3.</dd></div>
           <div id="def-mae"><dt>MAE</dt><dd>Mean absolute error — on average, how many points a projection missed by, counting over- and under-projections equally. A q50 MAE of 3.65 means the median projection typically landed within about 3.65 points of what the player actually scored. Lower is better; MAE is the yardstick behind the accuracy gate and the benchmark table.</dd></div>
           <div id="def-lightgbm"><dt>LightGBM</dt><dd>The machine-learning library the engine's models are built with. It grows many small decision trees in sequence — each new tree is trained to correct the mistakes the trees before it made, a technique called gradient boosting — until their combined judgment settles. Here, one LightGBM model per skill position learns from thousands of past player-weeks how form, opportunity, matchup, and game environment turned into fantasy points under this league's scoring. This is the ML in the machine; kickers and defenses are the exception, projected by a simpler Vegas-based regression instead.</dd></div>
+          <div id="def-candidate"><dt>Candidate model</dt><dd>A newly built version of the projection model — carrying a fix, a change, or a retrain — that has not earned the job yet. It changes nothing the dashboard shows. First it is run through the full evaluation and the five promotion gates; only if it passes all five does it replace the model in use (see <a class="deflink" href="#def-promoted">Promoted</a>).</dd></div>
           <div id="def-gate"><dt>Promotion gate</dt><dd>One of five pass/fail checks the model must clear to earn the title "proven": accuracy beats the baseline; no position left behind; bias within ±0.3 points at every position; interval coverage inside its band; and lineup points gained not negative. All five must pass — failing one gate is enough to stay unpromoted.</dd></div>
           <div id="def-promoted"><dt>Promoted</dt><dd>The model's title, not its job. A promoted model has passed all five gates and earned the claim "proven." The dashboard runs the current model's numbers whether it holds the title or not: promotion changes what we claim, not what we use.</dd></div>
+          <div id="def-design20"><dt>DESIGN §20</dt><dd>The promotion gates as written in the project's design document: the five pass/fail checks a candidate model must clear to earn the title "proven" — accuracy, no position left behind, bias, coverage, and lineup value — listed in full in the gates card on this page. When this page says the model fails §20, it fails those five checks, nothing vaguer.</dd></div>
+          <div id="def-design22"><dt>DESIGN §22</dt><dd>The design document's pre-registration rule for model fixes: before a mechanism-level change is allowed to run, its hypothesis and what would count as success are written down — so a result cannot be explained away afterward, and a failed idea stays failed on paper. The bias fix will be the first entry under it.</dd></div>
         </dl>
       </section>
 
     </div>
   </main>
   <footer>
-    <span>Control Center · AUSPICIA — read-only. Numbers: 2022–2025 backtest report and the promotion gates in DESIGN §20.</span>
+    <a href="index.html">Back to Dashboard</a>
   </footer>
 </body>
 </html>

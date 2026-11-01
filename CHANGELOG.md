@@ -4,6 +4,34 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.30] — 2026-11-01
+
+### Added
+
+- Control Center: a Documentation card linking the project's fundamental documents (README, DESIGN, FEATURES, SCHEMA, DASHBOARD_JSON, CHANGELOG) in the public repo.
+- Control Center Definitions: "Candidate model", "DESIGN §20", and "DESIGN §22" entries; every bare § mention on the page now links to its definition.
+- The league line ("Fantasy Football Coalition · 12-team H2H · Non-PPR") now lives in the dashboard footer.
+
+### Changed
+
+- Header redesign (owner design, mocked and approved 2026-11-01): the emblem-and-wordmark lockup sits at the left at every width — compact on mobile, scaled up on desktop (48px emblem, 30px word) — and the page title moves to the right. The helmet button is gone. The Control Center's header lockup matches at desktop size.
+- The team name in the hero is now the team selector (plain text with a caret; the menu drops from the hero), and the week sits right-aligned on the team-name line. The "next kickoff" line is hidden (kept in the page, ready to return).
+- The Control Center opens on a new title card — "AUSPICIA (aw-SPEE-chee-uh) is a fantasy football analytics engine for projecting weekly points, based on the following architecture." — followed by the three parts. Its back link is now a centred "Back to Dashboard" in the footer, and its footer provenance sentence is removed.
+- The workflow diagram is redrawn and animated: the four raw inputs boxed together, straight flow lines into the engine chain, one dashed improvement loop. The animation honours prefers-reduced-motion.
+- Plain-language pass on the Control Center: the benchmarks intro now explains the 72-week replay, MAE, and the legacy baseline in full sentences; the Train step and several definitions are rewritten as complete sentences.
+- The Definitions card moved to the bottom of Lab.
+
+### Removed
+
+- The splash screen (markup, styles, and timing code) — the page lands straight on content.
+- The Toughest Calls card from the Team view, together with its rendering code.
+- The Lab hero and the Lab brandblock logo; the Control Center hero.
+- The Control Center's read-only paragraph.
+
+### Fixed
+
+- A section heading after a player list (e.g. BENCH) no longer sits flush against the last card: lists now leave breathing room before the next heading.
+
 ## [0.5.29]
 ### Added
 - Two brand assets in `site/`: `auspicia-lockup.svg` (the stock horizontal lockup, light ink) and `helmet-glyph.svg` (the helmet glyph without its disc), for the desktop header below.

@@ -11,11 +11,9 @@
   <link rel="stylesheet" href="app.css">
 </head>
 <body>
-  <div id="splash" aria-hidden="true"><img src="auspicia-stacked.svg" alt=""></div>
   <header class="top">
     <div class="top-in">
-      <div class="hdr-logo"><img src="auspicia-lockup.svg" alt="AUSPICIA"></div>
-      <div class="hdr-title" id="page-title">Team</div>
+      <div class="hdr-logo"><img src="emblem.svg" alt=""><span class="hdr-word">AUSPICIA</span></div>
       <span class="badge hdr-badge" id="example-badge" hidden>● Example data</span>
       <nav class="tabs" role="tablist" aria-label="Views">
         <button role="tab" id="t-team" aria-controls="v-team" aria-selected="true" data-v="team">
@@ -35,20 +33,18 @@
           Lab
         </button>
       </nav>
-      <div class="teampick-wrap">
-        <button id="team-btn" class="teambtn" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Choose team"><img src="helmet-gray.svg" alt=""></button>
-        <div id="team-menu" class="teammenu" hidden></div>
-      </div>
+      <div class="hdr-title" id="page-title">Team</div>
     </div>
   </header>
   <main>
     <p class="sub" id="status" role="status">Loading dashboard…</p>
     <section class="view on" id="v-team" role="tabpanel" aria-labelledby="t-team" hidden>
       <div class="hero">
-        <div>
-          <div class="sub" id="league-line"></div>
-          <h1 id="team-title"></h1>
+        <div class="tsel-wrap">
+          <button id="team-btn" class="teamsel" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Choose team"><span id="team-title"></span><span class="tsel-caret" aria-hidden="true">▾</span></button>
+          <div id="team-menu" class="teammenu" hidden></div>
         </div>
+        <div class="week-label" id="week-label"></div>
         <div class="kick" id="kickoff">
           <span class="sub">Next kickoff</span>
           <b class="num" id="countdown"></b>
@@ -61,10 +57,7 @@
           <div class="card matchup" id="matchup" aria-label="Matchup projection"></div>
           <div class="lineup-col" id="lineup-col"></div>
         </div>
-        <div class="side-col">
-          <div class="card tough" id="tough-card"></div>
-          <div class="card legend-card" id="legend-card"></div>
-        </div>
+
       </div>
     </section>
     <section class="view" id="v-waivers" role="tabpanel" aria-labelledby="t-waivers" hidden>
@@ -94,8 +87,6 @@
       </div>
     </section>
     <section class="view" id="v-lab" role="tabpanel" aria-labelledby="t-lab" hidden>
-      <div class="brandblock"><img class="brandblock-emblem" src="emblem.svg" alt=""><div class="wordmark brandblock-word">AUSPICIA</div></div>
-      <div class="hero"><div><div class="sub">Model validation</div><h1>Lab</h1></div></div>
       <div id="lab-root"></div>
       <div class="card engine-card">
         <h2>How the engine works</h2>
@@ -111,10 +102,12 @@
           <li><b>Graded in public.</b> The scores above come from replaying history week by week and comparing predictions with what actually happened. Live predictions currently use the model's raw range; the calibrated range from the backtest is the next upgrade.</li>
         </ul>
       </div>
+      <div class="card legend-card" id="legend-card"></div>
     </section>
   </main>
   <footer>
     <span class="badge" id="footer-badge" hidden>● Example data</span>
+    <span class="sub" id="league-line"></span>
     <span id="footer-text"></span>
     <a href="control.html">Control Center</a>
   </footer>
