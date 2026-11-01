@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 656" font-family="Segoe UI, Helvetica, Arial, sans-serif">
-  <rect x="0" y="0" width="760" height="656" fill="#16181a"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 730" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <rect x="0" y="0" width="980" height="730" fill="#16181a"/>
   <defs>
     <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0,0 L10,5 L0,10 z" fill="#2EE6A8"/>
@@ -8,102 +8,123 @@
       <path d="M0,0 L10,5 L0,10 z" fill="#9AA0A6"/>
     </marker>
   </defs>
+  <style>
+    .base { fill: none; stroke: #454b52; stroke-width: 2; }
+    .flow { fill: none; stroke: #2EE6A8; stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 0.1 9; animation: chase 0.9s linear infinite; }
+    .loopbase { fill: none; stroke: #454b52; stroke-width: 2; stroke-dasharray: 5 5; }
+    .loopflow { fill: none; stroke: #2EE6A8; stroke-width: 2.4; stroke-linecap: round; stroke-dasharray: 0.1 11; animation: chase2 1.3s linear infinite; }
+    @keyframes chase { to { stroke-dashoffset: -9.1; } }
+    @keyframes chase2 { to { stroke-dashoffset: -11.1; } }
+    @media (prefers-reduced-motion: reduce) { .flow, .loopflow { animation: none; } }
+  </style>
 
-  <!-- INPUTS -->
-  <g>
-    <rect x="8" y="8" width="180" height="56" rx="8" fill="#1e2023" stroke="#2e3136"/>
-    <text x="98" y="30" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#F2F3F4">NFLVERSE</text>
-    <text x="98" y="48" text-anchor="middle" font-size="10" fill="#9AA0A6">play-by-play · stats · schedules</text>
+  <!-- RAW DATA INPUTS : one big box around the four sources -->
+  <rect x="70" y="8" width="502" height="86" rx="12" fill="#1e2023" stroke="#454b52" stroke-width="1.5"/>
+  <text x="82" y="27" font-size="11" font-weight="bold" letter-spacing="2" fill="#9AA0A6">RAW DATA INPUTS</text>
 
-    <rect x="196" y="8" width="180" height="56" rx="8" fill="#1e2023" stroke="#2e3136"/>
-    <text x="286" y="30" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#F2F3F4">YAHOO</text>
-    <text x="286" y="48" text-anchor="middle" font-size="10" fill="#9AA0A6">league rosters · Yahoo projections</text>
+  <rect x="82" y="36" width="112" height="46" rx="8" fill="#26282c" stroke="#2e3136"/>
+  <text x="138" y="56" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#F2F3F4">NFLVERSE</text>
+  <text x="138" y="72" text-anchor="middle" font-size="8.5" fill="#9AA0A6">play-by-play · stats</text>
 
-    <rect x="384" y="8" width="180" height="56" rx="8" fill="#1e2023" stroke="#2e3136"/>
-    <text x="474" y="30" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#F2F3F4">VEGAS LINES</text>
-    <text x="474" y="48" text-anchor="middle" font-size="10" fill="#9AA0A6">spreads · totals · team totals</text>
+  <rect x="204" y="36" width="112" height="46" rx="8" fill="#26282c" stroke="#2e3136"/>
+  <text x="260" y="56" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#F2F3F4">YAHOO</text>
+  <text x="260" y="72" text-anchor="middle" font-size="8.5" fill="#9AA0A6">rosters · projections</text>
 
-    <rect x="572" y="8" width="180" height="56" rx="8" fill="#1e2023" stroke="#2e3136"/>
-    <text x="662" y="30" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#F2F3F4">PRACTICE REPORTS</text>
-    <text x="662" y="48" text-anchor="middle" font-size="10" fill="#9AA0A6">injury reports · FP / LP / DNP</text>
-  </g>
-  <line x1="98" y1="64" x2="98" y2="140" stroke="#9AA0A6" stroke-width="1.5" marker-end="url(#arrG)"/>
-  <line x1="286" y1="64" x2="286" y2="86" stroke="#9AA0A6" stroke-width="1.5"/>
-  <line x1="474" y1="64" x2="474" y2="86" stroke="#9AA0A6" stroke-width="1.5"/>
+  <rect x="326" y="36" width="112" height="46" rx="8" fill="#26282c" stroke="#2e3136"/>
+  <text x="382" y="56" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#F2F3F4">VEGAS LINES</text>
+  <text x="382" y="72" text-anchor="middle" font-size="8.5" fill="#9AA0A6">spreads · totals</text>
 
-  <!-- ENGINE ZONE -->
-  <rect x="8" y="88" width="470" height="524" rx="12" fill="#26282c" stroke="#2EE6A8" stroke-dasharray="6 4"/>
-  <text x="24" y="114" font-size="15" font-weight="bold" fill="#2EE6A8">THE ENGINE</text>
-  <text x="150" y="114" font-size="11" fill="#9AA0A6">— sole job: make the projections better</text>
+  <rect x="448" y="36" width="112" height="46" rx="8" fill="#26282c" stroke="#2e3136"/>
+  <text x="504" y="56" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#F2F3F4">PRACTICE REPORTS</text>
+  <text x="504" y="72" text-anchor="middle" font-size="8.5" fill="#9AA0A6">injuries · FP/LP/DNP</text>
 
-  <!-- chain boxes -->
-  <g font-size="10.5" fill="#9AA0A6">
-    <rect x="28" y="142" width="264" height="56" rx="8" fill="#1e2023" stroke="#2e3136"/>
-    <text x="40" y="163" font-size="12.5" font-weight="bold" fill="#F2F3F4">1 · INGEST</text>
-    <text x="40" y="180"><tspan x="40">Pull raw facts into the store (DuckDB),</tspan><tspan x="40" dy="12">dated and frozen. Nothing learned yet.</tspan></text>
+  <!-- inputs -> engine : four straight vertical lines, one per source -->
+  <path class="base" d="M138,94 V134" marker-end="url(#arrG)"/>
+  <path class="flow" d="M138,94 V134"/>
+  <path class="base" d="M260,94 V134" marker-end="url(#arrG)"/>
+  <path class="flow" d="M260,94 V134"/>
+  <path class="base" d="M382,94 V134" marker-end="url(#arrG)"/>
+  <path class="flow" d="M382,94 V134"/>
+  <path class="base" d="M504,94 V134" marker-end="url(#arrG)"/>
+  <path class="flow" d="M504,94 V134"/>
 
-    <rect x="28" y="214" width="264" height="56" rx="8" fill="#1e2023" stroke="#2e3136"/>
-    <text x="40" y="235" font-size="12.5" font-weight="bold" fill="#F2F3F4">2 · FEATURES</text>
-    <text x="40" y="252"><tspan x="40">Facts become signals per player-week:</tspan><tspan x="40" dy="12">form, usage, opponent, Vegas context.</tspan></text>
+  <!-- THE ENGINE -->
+  <rect x="70" y="140" width="502" height="550" rx="12" fill="#1e2023" stroke="#2e3136"/>
+  <text x="90" y="165" font-size="13" font-weight="bold" letter-spacing="2" fill="#F2F3F4">THE ENGINE</text>
+  <text x="552" y="165" text-anchor="end" font-size="10" fill="#9AA0A6">sole job: make the projections better</text>
 
-    <rect x="28" y="286" width="264" height="56" rx="8" fill="#1e2023" stroke="#2e3136"/>
-    <text x="40" y="307" font-size="12.5" font-weight="bold" fill="#F2F3F4">3 · TRAIN</text>
-    <text x="40" y="324"><tspan x="40">LightGBM, one model per position, learns</tspan><tspan x="40" dy="12">signals → points from past seasons.</tspan></text>
+  <rect x="90" y="176" width="462" height="54" rx="8" fill="#26282c" stroke="#2e3136"/>
+  <text x="104" y="197" font-size="12.5" font-weight="bold" fill="#F2F3F4">1 · INGEST</text>
+  <text x="104" y="216" font-size="10" fill="#9AA0A6">Pull raw facts into the store (DuckDB), dated and frozen. Nothing learned yet.</text>
 
-    <rect x="28" y="358" width="264" height="56" rx="8" fill="#1e2023" stroke="#2e3136"/>
-    <text x="40" y="379" font-size="12.5" font-weight="bold" fill="#F2F3F4">4 · PREDICT</text>
-    <text x="40" y="396"><tspan x="40">This week, per player: a distribution —</tspan><tspan x="40" dy="12">mean + q10 / q50 / q90, your league's scoring.</tspan></text>
+  <path class="base" d="M321,230 V242" marker-end="url(#arrG)"/>
+  <path class="flow" d="M321,230 V242"/>
 
-    <rect x="28" y="430" width="264" height="40" rx="8" fill="#1e2023" stroke="#2EE6A8"/>
-    <text x="40" y="447" font-size="12" font-weight="bold" fill="#F2F3F4">EXPORT → dashboard.json</text>
-    <text x="40" y="462" font-size="10">one frozen file of this week's numbers</text>
+  <rect x="90" y="248" width="462" height="54" rx="8" fill="#26282c" stroke="#2e3136"/>
+  <text x="104" y="269" font-size="12.5" font-weight="bold" fill="#F2F3F4">2 · FEATURES</text>
+  <text x="104" y="288" font-size="10" fill="#9AA0A6">Facts become signals per player-week: form, usage, opponent, Vegas context.</text>
 
-    <rect x="28" y="486" width="264" height="52" rx="8" fill="#1e2023" stroke="#2e3136"/>
-    <text x="40" y="506" font-size="12.5" font-weight="bold" fill="#F2F3F4">5 · EVALUATE</text>
-    <text x="40" y="522"><tspan x="40">Replays 2022–25 (72 rounds, past-only)</tspan><tspan x="40" dy="12">and grades live weeks vs actuals + Yahoo.</tspan></text>
+  <path class="base" d="M321,302 V314" marker-end="url(#arrG)"/>
+  <path class="flow" d="M321,302 V314"/>
 
-    <rect x="28" y="554" width="264" height="52" rx="8" fill="#1e2023" stroke="#F59E0B"/>
-    <text x="40" y="574" font-size="12.5" font-weight="bold" fill="#F59E0B">6 · PROMOTION GATES</text>
-    <text x="40" y="590"><tspan x="40">5 pass/fail checks — ALL must pass.</tspan><tspan x="40" dy="12">Fail → diagnose, one written fix, re-test.</tspan></text>
-  </g>
+  <rect x="90" y="320" width="462" height="54" rx="8" fill="#26282c" stroke="#2e3136"/>
+  <text x="104" y="341" font-size="12.5" font-weight="bold" fill="#F2F3F4">3 · TRAIN</text>
+  <text x="104" y="360" font-size="10" fill="#9AA0A6">LightGBM, one model per position, learns from past seasons only.</text>
 
-  <!-- chain arrows -->
-  <g stroke="#2EE6A8" stroke-width="1.5">
-    <line x1="160" y1="198" x2="160" y2="212" marker-end="url(#arr)"/>
-    <line x1="160" y1="270" x2="160" y2="284" marker-end="url(#arr)"/>
-    <line x1="160" y1="342" x2="160" y2="356" marker-end="url(#arr)"/>
-    <line x1="160" y1="414" x2="160" y2="428" marker-end="url(#arr)"/>
-    <line x1="160" y1="470" x2="160" y2="484" marker-end="url(#arr)"/>
-    <line x1="160" y1="538" x2="160" y2="552" marker-end="url(#arr)"/>
-  </g>
+  <path class="base" d="M321,374 V386" marker-end="url(#arrG)"/>
+  <path class="flow" d="M321,374 V386"/>
 
-  <!-- improvement loop -->
-  <path d="M292,580 H452 V314 H294" fill="none" stroke="#2EE6A8" stroke-width="1.5" stroke-dasharray="5 4" marker-end="url(#arr)"/>
-  <text x="446" y="447" font-size="10.5" fill="#2EE6A8" transform="rotate(-90 446 447)" text-anchor="middle">diagnose → written fix → re-test</text>
+  <rect x="90" y="392" width="462" height="54" rx="8" fill="#26282c" stroke="#2e3136"/>
+  <text x="104" y="413" font-size="12.5" font-weight="bold" fill="#F2F3F4">4 · PREDICT</text>
+  <text x="104" y="432" font-size="10" fill="#9AA0A6">This week, per player: a distribution — mean · q10 / q50 / q90.</text>
 
-  <!-- DASHBOARD ZONE -->
-  <rect x="494" y="88" width="258" height="180" rx="12" fill="#26282c" stroke="#2EE6A8"/>
-  <text x="510" y="114" font-size="14" font-weight="bold" fill="#F2F3F4">THE DASHBOARD</text>
-  <text x="510" y="132" font-size="11" fill="#9AA0A6">the product — numbers only</text>
-  <g font-size="11.5" fill="#F2F3F4">
-    <text x="510" y="162">• Start / sit verdicts (by mean)</text>
-    <text x="510" y="186">• Projected totals, win probability</text>
-    <text x="510" y="210">• Four clean tabs</text>
-    <text x="510" y="234">• No explanations, no engine talk</text>
-  </g>
-  <path d="M292,450 H470 V160 H492" fill="none" stroke="#2EE6A8" stroke-width="1.5" marker-end="url(#arr)"/>
+  <path class="base" d="M321,446 V458" marker-end="url(#arrG)"/>
+  <path class="flow" d="M321,446 V458"/>
 
-  <!-- CONTROL CENTER ZONE -->
-  <rect x="494" y="292" width="258" height="180" rx="12" fill="#26282c" stroke="#219EBC" stroke-dasharray="6 4"/>
-  <text x="510" y="318" font-size="14" font-weight="bold" fill="#F2F3F4">CONTROL CENTER</text>
-  <text x="510" y="336" font-size="11" fill="#9AA0A6">the manual — reads reports only</text>
-  <g font-size="11.5" fill="#F2F3F4">
-    <text x="510" y="366">• How every engine feature works</text>
-    <text x="510" y="390">• Milestones and progress, bulleted</text>
-    <text x="510" y="414">• Benchmarks: MAE, coverage, bias</text>
-    <text x="510" y="438">• Gate status + weekly scorecards</text>
-  </g>
-  <path d="M292,512 H470 V382 H492" fill="none" stroke="#219EBC" stroke-width="1.5"/>
+  <rect x="90" y="464" width="462" height="54" rx="8" fill="#26282c" stroke="#2EE6A8" stroke-opacity="0.45"/>
+  <text x="104" y="485" font-size="12.5" font-weight="bold" fill="#F2F3F4">5 · EXPORT</text>
+  <text x="104" y="504" font-size="10" fill="#9AA0A6">dashboard.json — one frozen file of this week's numbers.</text>
 
-  <text x="380" y="640" text-anchor="middle" font-size="11" fill="#9AA0A6">Arrows = data flow. The dashboard and control center only READ — nothing writes back into the engine.</text>
+  <path class="base" d="M321,518 V530" marker-end="url(#arrG)"/>
+  <path class="flow" d="M321,518 V530"/>
+
+  <rect x="90" y="536" width="462" height="54" rx="8" fill="#26282c" stroke="#2e3136"/>
+  <text x="104" y="557" font-size="12.5" font-weight="bold" fill="#F2F3F4">6 · EVALUATE</text>
+  <text x="104" y="576" font-size="10" fill="#9AA0A6">Backtest replays history; scorecards grade frozen weeks vs actuals + Yahoo.</text>
+
+  <path class="base" d="M321,590 V602" marker-end="url(#arrG)"/>
+  <path class="flow" d="M321,590 V602"/>
+
+  <rect x="90" y="608" width="462" height="54" rx="8" fill="#26282c" stroke="#2e3136"/>
+  <text x="104" y="629" font-size="12.5" font-weight="bold" fill="#F2F3F4">7 · PROMOTION GATES</text>
+  <text x="104" y="648" font-size="10" fill="#9AA0A6">Five pass/fail gates — all must pass; promotion is human-signed.</text>
+
+  <!-- improvement loop : one dashed line up the far left, nothing crosses it -->
+  <path class="loopbase" d="M90,563 H34 V347 H84" marker-end="url(#arr)"/>
+  <path class="loopflow" d="M90,563 H34 V347 H84"/>
+  <text x="24" y="455" text-anchor="middle" font-size="10" letter-spacing="2" fill="#9AA0A6" transform="rotate(-90 24 455)">IMPROVEMENT LOOP</text>
+
+  <!-- export -> dashboard -->
+  <path class="base" d="M552,491 H634" marker-end="url(#arrG)"/>
+  <path class="flow" d="M552,491 H634"/>
+  <text x="596" y="480" text-anchor="middle" font-size="9.5" fill="#9AA0A6">dashboard.json</text>
+
+  <rect x="640" y="440" width="310" height="120" rx="12" fill="#1e2023" stroke="#2e3136"/>
+  <text x="656" y="466" font-size="12" font-weight="bold" letter-spacing="2" fill="#F2F3F4">THE DASHBOARD</text>
+  <text x="656" y="490" font-size="10.5" fill="#9AA0A6">The product — numbers only</text>
+  <text x="656" y="510" font-size="10.5" fill="#9AA0A6">Start / sit verdicts (by mean)</text>
+  <text x="656" y="530" font-size="10.5" fill="#9AA0A6">Projected totals · win probability</text>
+  <text x="656" y="550" font-size="10.5" fill="#9AA0A6">Four clean tabs · no explanations</text>
+
+  <!-- gates -> control center (this page) -->
+  <path class="base" d="M552,635 H634" marker-end="url(#arrG)"/>
+  <path class="flow" d="M552,635 H634"/>
+  <text x="596" y="624" text-anchor="middle" font-size="9.5" fill="#9AA0A6">reports</text>
+
+  <rect x="640" y="590" width="310" height="120" rx="12" fill="#1e2023" stroke="#2e3136"/>
+  <text x="656" y="616" font-size="12" font-weight="bold" letter-spacing="2" fill="#F2F3F4">CONTROL CENTER</text>
+  <text x="656" y="640" font-size="10.5" fill="#9AA0A6">This page — the engine's user manual</text>
+  <text x="656" y="660" font-size="10.5" fill="#9AA0A6">How every feature works</text>
+  <text x="656" y="680" font-size="10.5" fill="#9AA0A6">Milestones · benchmarks · gate status</text>
+  <text x="656" y="700" font-size="10.5" fill="#9AA0A6">Weekly scorecards · definitions</text>
 </svg>

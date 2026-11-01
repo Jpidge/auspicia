@@ -249,7 +249,8 @@
     var team = teamById(state.teamId);
     var week = data.week;
     $("league-line").textContent = data.league.name + " · " + data.league.teams + "-team " + String(data.league.format || "").toUpperCase() + " · " + (data.league.ppr ? "PPR" : "Non-PPR");
-    $("team-title").textContent = team.name + " · Week " + week.week;
+    $("team-title").textContent = team.name;
+    $("week-label").textContent = "Week " + week.week;
     $("countdown").textContent = week.countdown_label || "";
     $("kickoff-label").textContent = week.kickoff_label || "";
     $("kickoff").hidden = !week.countdown_label && !week.kickoff_label;
@@ -262,12 +263,6 @@
     var wpPct = wp == null ? null : Math.round(wp * 100);
     $("matchup").innerHTML = '<div class="mu"><div class="t me"><span class="sub">' + esc(team.name) + " (" + esc(team.record) + ')</span><span class="pts num">' + fmt(team.projected_total) + '</span><span class="sub">' + defLabel("projTotal", "Auspicia proj.") + '</span></div><span class="vs">VS</span><div class="t r"><span class="sub">' + esc(team.opponent_name || "No opponent") + '</span><span class="pts num">' + (opp == null ? "–" : fmt(opp)) + '</span><span class="sub">' + defLabel("projTotal", "Auspicia proj.") + '</span></div></div>' +
       (wpPct == null ? "" : '<div class="wp"><div class="wpbar" role="img" aria-label="Win probability ' + wpPct + ' percent"><i style="width:' + wpPct + '%"></i></div><div class="wplab"><span>' + defLabel("winProb", "Win probability") + ' <b class="num">' + wpPct + '%</b></span><span><b class="num">' + (100 - wpPct) + "%</b></span></div></div>");
-    var calls = team.calls || [];
-    var tough = $("tough-card");
-    tough.classList.toggle("is-empty", !calls.length);
-    tough.innerHTML = calls.length ? "<h2>Toughest calls</h2>" + '<div class="tc">' + calls.map(function (call) {
-      return '<div class="tci"><div class="q">' + esc(call.slot) + '</div><div class="pair"><div class="p win">' + esc(call.starter_name) + '<small class="num">' + fmt(call.starter_projection) + ' mean</small></div><span class="or">OR</span><div class="p" style="text-align:right">' + esc(call.alternative_name) + '<small class="num">' + fmt(call.alternative_projection) + ' mean</small></div></div><div class="sub">' + esc(call.starter_name) + " leads by " + fmt(call.margin) + ".</div></div>";
-    }).join("") + "</div>" : '<p>Toughest calls: none within ' + data.close_call_margin + " point.</p>";
     var bench = (team.bench || []).concat(team.inactive || []);
     $("lineup-col").innerHTML = '<div class="sec-h"><h2>Recommended lineup</h2></div><p class="ylegend">Y! = Yahoo projection; chip = ours minus Yahoo</p><div class="list">' + team.starters.map(row).join("") + '</div><div class="sec-h"><h2>Bench</h2><span class="sub">' + data.lineup.bench + " bench · " + data.lineup.ir + ' IR</span></div><div class="list">' + bench.map(row).join("") + "</div>";
     $("legend-card").innerHTML = '<h2>Definitions</h2><div class="legend"><span><i class="sw"></i>10th–90th pct range</span><span><i class="sw m"></i>Median projection</span><span><span class="chip d-up">+2.1</span> ours minus Yahoo</span></div>' +
@@ -421,7 +416,6 @@
     $("footer-badge").hidden = !badge;
     $("footer-text").textContent = data.disclaimer || "";
     $("status").hidden = true;
-    hideSplash();
     var hash = (location.hash || "").replace(/^#/, "");
     var teamMatch = /^team=(\d+)$/.exec(hash);
     var stored = null;
@@ -464,7 +458,7 @@
     }
   }
   document.addEventListener("click", function (event) {
-    if (!event.target.closest(".teampick-wrap")) closeTeamMenu();
+    if (!event.target.closest(".tsel-wrap")) closeTeamMenu();
   });
   document.addEventListener("keydown", function (event) {
     if (event.key === "Escape") closeTeamMenu();
@@ -514,18 +508,6 @@
       show(tabs[(next + tabs.length) % tabs.length].getAttribute("data-v"), true);
     });
   });
-  var splashStart = Date.now();
-  function hideSplash() {
-    var wait = Math.max(0, 825 - (Date.now() - splashStart));
-    setTimeout(function () {
-      var splash = $("splash");
-      if (splash) {
-        splash.classList.add("done");
-        setTimeout(function () { splash.remove(); }, 600);
-      }
-    }, wait);
-  }
-  setTimeout(hideSplash, 4000);
 
   fetch("dashboard.json")
     .then(function (response) {
