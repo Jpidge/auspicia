@@ -4,6 +4,15 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.31] — 2026-11-01
+
+### Changed
+
+- No page title in the header at any width (owner call, 2026-11-01): the nav already names the current view — bottom bar on mobile, tabs on desktop — and the desktop tabs now sit right-aligned. The title had returned on desktop with the 0.5.30 scale-up, against the standing decision from 0.5.28.
+- Control Center header: "Control Center" is set in regular weight beside the bold AUSPICIA.
+- Control Center opening card rewritten (owner copy): the standard label header "AUSPICIA (aw-SPEE-chee-uh) fantasy football analytics engine" with the muted subtitle "is designed to help manage team rosters by projecting weekly fantasy points per player. This page explains the architecture and mechanisms behind the machine."
+- The engine-manual steps are numbered paragraphs now: bullets and the "·" separators removed, numbers aligned where the bullets were, step names in line with the text.
+
 ## [0.5.30] — 2026-11-01
 
 ### Added
