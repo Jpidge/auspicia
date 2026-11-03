@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.32] — 2026-11-03
+
+### Changed
+
+- Header emblem sliced (owner design call, 2026-11-03, mocked first): the football's lower point is cut flat at local y=455 and the emblem's viewBox bottom sits exactly on that cut, so in the header the mark's flat base shares the AUSPICIA wordmark's baseline (`.hdr-logo` now aligns on the baseline instead of centring). The small coral triangle at the emblem's right tip is blue (#219EBC) now, matching the bars. The full unsliced mark is unchanged in the favicon, the stacked lockup, and the horizontal lockup assets.
+
 ## [0.5.31] — 2026-11-01
 
 ### Changed
