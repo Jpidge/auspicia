@@ -352,6 +352,7 @@ footer a { color: var(--muted); font-weight: 600; margin-left: auto; }
    column now that its side column is empty. --- */
 #v-team .cols { grid-template-columns: minmax(0, 1fr); }
 .hdr-logo { gap: 10px; }
+.hdr-logo { align-items: baseline; } /* sliced emblem: its flat base shares the wordmark baseline (owner, 2026-11-03) */
 .hdr-logo img { height: 30px; }
 .hdr-word { font-weight: 800; font-size: 18px; white-space: nowrap; }
 #v-lab .legend-card { margin-top: 24px; }
