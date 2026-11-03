@@ -545,7 +545,7 @@ def test_site_header_lockup_left_title_right_team_name_is_the_selector() -> None
     assert ".hdr-logo { gap: 10px; }" in css
     assert ".hdr-logo img { height: 30px; }" in css
     assert ".hdr-logo img { height: 48px; }" in css
-    assert ".hdr-word { font-size: 30px; }" in css
+    assert ".hdr-word { font-size: 46px; }" in css
     # The team selector lives in the Team hero now, not the header.
     assert 'id="team-btn" class="teamsel"' in html
     assert 'class="tsel-wrap"' in html

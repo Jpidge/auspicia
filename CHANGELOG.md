@@ -4,6 +4,13 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.33] — 2026-11-03
+
+### Changed
+
+- Header wordmark sized to the official lockup's proportion (owner, 2026-11-03, mocked first): the slice mock was drawn from the lockup file, whose letters sit at cap height 0.59x the emblem's full height, but the live header composes the emblem beside system text that landed far smaller (30px desktop / 18px mobile). The wordmark is now 46px on desktop with the lockup's 16px emblem gap, and 29px on mobile — the emblem itself is unchanged.
+- Favicon: the small triangle at the emblem's right tip is blue (#219EBC), matching the header emblem (owner catch, 2026-11-03). The favicon carries the full emblem, which PR #51's recolor of `emblem.svg` never touched; the big coral swoosh is unchanged. `favicon-32.png` follows the same art (uploaded separately — the connector cannot push binaries).
+
 ## [0.5.32] — 2026-11-03
 
 ### Changed

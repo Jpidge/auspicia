@@ -354,15 +354,18 @@ footer a { color: var(--muted); font-weight: 600; margin-left: auto; }
 .hdr-logo { gap: 10px; }
 .hdr-logo { align-items: baseline; } /* sliced emblem: its flat base shares the wordmark baseline (owner, 2026-11-03) */
 .hdr-logo img { height: 30px; }
-.hdr-word { font-weight: 800; font-size: 18px; white-space: nowrap; line-height: 0.85; }
+.hdr-word { font-weight: 800; font-size: 29px; white-space: nowrap; line-height: 0.85; }
 #v-lab .legend-card { margin-top: 24px; }
 
 /* --- chrome mock round 3 (2026-11-01): the compact header is MOBILE ONLY
    (owner's scope call). On desktop the same emblem+text lockup scales up —
-   48px emblem, 30px wordmark — so the header keeps its presence. --- */
+   48px emblem, 46px wordmark (owner, 2026-11-03: sized to the official
+   lockup's proportion, caps at 0.59x the emblem's full height, with the
+   lockup's 16px gap) — so the header keeps its presence. --- */
 @media (min-width: 721px) {
+  .hdr-logo { gap: 16px; }
   .hdr-logo img { height: 48px; }
-  .hdr-word { font-size: 30px; }
+  .hdr-word { font-size: 46px; }
   /* Desktop: the tabs sit right-aligned in the header. */
   nav.tabs { margin-left: auto; }
 }
