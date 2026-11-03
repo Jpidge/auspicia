@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.34] — 2026-11-03
+
+### Changed
+
+- Mobile player rows rearranged (owner, 2026-11-03, mocked first): the position chip now rides the name row alongside the Start/Sit pill instead of sitting in a left rail; below it, the matchup line, then the range bar with the numbers to its right — the arrangement the figures already had, minus the rail, so the bar runs wider. The position letters are centred in their chip on both axes. Desktop rows are untouched (mobile media query only, via grid areas and `display: contents` on the name wrapper — no markup change).
+
 ## [0.5.33] — 2026-11-03
 
 ### Changed

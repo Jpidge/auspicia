@@ -143,7 +143,7 @@ h2 { font-size: 15px; margin: 0 0 8px; text-transform: uppercase; letter-spacing
 .rbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
 .rbtn:hover { background: color-mix(in srgb, var(--card2) 50%, transparent); }
 .pos {
-  display: inline-grid; place-items: center; min-width: 44px; height: 28px; padding: 0 8px;
+  display: inline-flex; align-items: center; justify-content: center; line-height: 1; min-width: 44px; height: 28px; padding: 0 8px;
   border-radius: 8px; font-size: 12px; font-weight: 800; letter-spacing: 0.03em;
   color: var(--ct, var(--c)); background: color-mix(in srgb, var(--c) 16%, transparent);
   border: 1px solid color-mix(in srgb, var(--c) 40%, transparent);
@@ -304,11 +304,16 @@ footer a { color: var(--muted); font-weight: 600; margin-left: auto; }
   .matchup { order: 1; }
   .lineup-col { order: 2; }
   .legend-card { order: 4; }
-  .rbtn { grid-template-columns: 46px minmax(0, 1fr) auto; grid-template-areas: "s p m" "s r r"; gap: 8px 12px; padding: 12px; }
-  .rbtn .slot { grid-area: s; }
-  .rbtn .who { grid-area: p; }
+  /* Mobile rows (owner, 2026-11-03): the position chip rides the name row
+     with the verdict pill; the matchup line and the figures (bar with the
+     numbers to its right) sit below. Desktop keeps the rail layout. */
+  .rbtn { grid-template-columns: auto minmax(0, 1fr) auto; grid-template-areas: "s p m" "w w w" "r r r"; gap: 8px 12px; padding: 12px; }
+  .rbtn .slot { grid-area: s; align-self: center; flex-direction: row; align-items: center; }
+  .rbtn .who { display: contents; }
+  .rbtn .pn { grid-area: p; align-self: center; min-width: 0; }
+  .rbtn .pm { grid-area: w; }
   .rbtn .proj { grid-area: r; }
-  .rbtn .meta { grid-area: m; align-self: start; }
+  .rbtn .meta { grid-area: m; align-self: center; }
   .rbtn .meta .yhw { display: none; }
   .yhm { display: flex; }
   .chev { display: block; }
