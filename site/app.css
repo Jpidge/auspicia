@@ -54,7 +54,7 @@ header.top {
   margin: 0 auto;
   padding: 12px 24px;
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 16px;
 }
 .hdr-logo { display: flex; align-items: center; }
@@ -354,7 +354,7 @@ footer a { color: var(--muted); font-weight: 600; margin-left: auto; }
 .hdr-logo { gap: 10px; }
 .hdr-logo { align-items: baseline; } /* sliced emblem: its flat base shares the wordmark baseline (owner, 2026-11-03) */
 .hdr-logo img { height: 30px; }
-.hdr-word { font-weight: 800; font-size: 18px; white-space: nowrap; }
+.hdr-word { font-weight: 800; font-size: 18px; white-space: nowrap; line-height: 0.85; }
 #v-lab .legend-card { margin-top: 24px; }
 
 /* --- chrome mock round 3 (2026-11-01): the compact header is MOBILE ONLY
