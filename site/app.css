@@ -164,6 +164,14 @@ h2 { font-size: 15px; margin: 0 0 8px; text-transform: uppercase; letter-spacing
 .rngline { font-size: 12px; color: var(--muted); }
 .yhw, .yhm { display: flex; align-items: center; gap: 8px; }
 .yhm { display: none; }
+/* Row v3 on desktop too (owner, 2026-11-04): the same stack as mobile —
+   Yahoo's number as a smaller version of ours, the diff as plain muted
+   text under it, no pill. The verdict chip beside it keeps its colours:
+   that one IS a verdict. */
+.yhw { flex-direction: column; align-items: flex-end; gap: 1px; }
+.yhw .yh b { font-size: 15px; font-weight: 800; color: var(--text); letter-spacing: -0.02em; }
+.yhw .chip { background: none; padding: 0; min-height: 0; font-size: 12.5px; color: var(--muted); }
+.yhw .dlabel { display: none; }
 .meta { display: flex; align-items: center; gap: 8px; justify-content: flex-end; }
 .yh { font-size: 12px; color: var(--muted); text-align: right; line-height: 1.2; white-space: nowrap; }
 .chip { display: inline-flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 999px; white-space: nowrap; min-height: 28px; }

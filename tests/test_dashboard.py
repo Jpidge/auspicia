@@ -530,6 +530,18 @@ def test_mobile_row_yahoo_stacks_with_diff_no_pill() -> None:
     chip_rule = ".yhm .chip { background: none; padding: 0; min-height: 0;"
     chip_rule += " font-size: 12.5px; color: var(--muted); }"
     assert chip_rule in css
+    # Same treatment on desktop (owner, 2026-11-04, same build): the .yhw
+    # stack mirrors the mobile one, and the definition + legend no longer
+    # describe a coloured chip.
+    assert ".yhw { flex-direction: column; align-items: flex-end; gap: 1px; }" in css
+    assert ".yhw .yh b { font-size: 15px; font-weight: 800; color: var(--text)" in css
+    yhw_chip = ".yhw .chip { background: none; padding: 0; min-height: 0;"
+    yhw_chip += " font-size: 12.5px; color: var(--muted); }"
+    assert yhw_chip in css
+    script = (SITE / "app.js").read_text(encoding="utf-8")
+    assert "Green = we are higher" not in script
+    assert '"Yahoo difference"' in script
+    assert "the plain figure under it is ours minus Yahoo" in script
 
 
 def test_site_header_lockup_left_title_right_team_name_is_the_selector() -> None:
