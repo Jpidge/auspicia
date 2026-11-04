@@ -119,6 +119,11 @@ def test_lab_has_a_report_card_slot_and_renderer() -> None:
     assert index.index('id="report-root"') < index.index('id="lab-root"')
     assert 'fetch("scorecards.json")' in app
     assert "function renderReport()" in app
+    # Owner call (2026-11-04): MAE carries its definition hover everywhere
+    # the Lab mentions it — he can never remember what it means.
+    assert 'mae: "Mean absolute error' in app
+    assert 'defLabel("mae", "MAE")' in app
+    assert "function defMae(" in app
 
 
 def test_shipped_scorecards_cover_weeks_7_and_8() -> None:

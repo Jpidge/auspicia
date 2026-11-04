@@ -15,6 +15,7 @@
     range: "The model's 10th–90th percentile range: a bad week lands near the low end, a great week near the high end. Live ranges are the model's raw quantiles, not yet calibrated.",
     median: "The typical week: half his outcomes land above it, half below. It is the big number on his row — but the lineup is picked on the mean, not the median.",
     mean: "Expected points: his average outcome across many similar weeks. The recommended lineup is the one that maximizes total mean.",
+    mae: "Mean absolute error: on average, how many points a projection missed by, counting over- and under-projections equally. Lower is better.",
     boomBust: "How wide his range is versus the same position this week, by percentile of the 10th–90th width: Steady under 34, Balanced 34–66, Boom/bust 67 and over. Wide means more swing week to week — not more points.",
     oppRank: "Toughness of the opposing defense against his position, by fantasy points allowed per game this season in this league's scoring. 1 = toughest (allows the fewest).",
     vegas: "Points Vegas implies his NFL team will score, from the spread and the game total. Higher team totals usually mean more scoring to go around.",
@@ -46,6 +47,12 @@
   function defLabel(key, label) {
     if (!DEFS[key]) return esc(label);
     return '<span class="def" tabindex="0" data-def="' + esc(DEFS[key]) + '" aria-label="' + esc(label + ": " + DEFS[key]) + '">' + esc(label) + ' <span class="def-i" aria-hidden="true">i</span></span>';
+  }
+  // Wrap every standalone "MAE" in an already-escaped HTML string with its
+  // definition label, so data-driven Lab text (notes, criteria) gets the
+  // same hover as the hand-written strings.
+  function defMae(html) {
+    return html.replace(/\bMAE\b/g, defLabel("mae", "MAE"));
   }
   // One shared tooltip for every .def label. It is position:fixed and
   // clamped to the viewport because a per-label ::after gets clipped by the
@@ -399,10 +406,10 @@
       '<button type="button" id="rep-next" aria-label="Later week"' + (idx >= weeks.length - 1 ? " disabled" : "") + ">›</button>" +
       "</div></div>" +
       '<p class="rep-verdict">' + esc(verdict) + "</p>" + lines +
-      '<table class="tbl rep-tbl"><thead><tr><th>Forecaster</th><th class="r">MAE</th><th class="r">Bias</th></tr></thead><tbody>' +
+      '<table class="tbl rep-tbl"><thead><tr><th>Forecaster</th><th class="r">' + defLabel("mae", "MAE") + '</th><th class="r">Bias</th></tr></thead><tbody>' +
       headRow("Model (mean)", "mean") + headRow("Model (median)", "q50") + headRow("Yahoo", "yahoo") +
       "</tbody></table>" +
-      '<table class="tbl rep-tbl"><thead><tr><th>Position</th><th class="r">Model MAE</th><th class="r">Yahoo MAE</th><th class="r">Players</th></tr></thead><tbody>' +
+      '<table class="tbl rep-tbl"><thead><tr><th>Position</th><th class="r">Model ' + defLabel("mae", "MAE") + '</th><th class="r">Yahoo ' + defLabel("mae", "MAE") + '</th><th class="r">Players</th></tr></thead><tbody>' +
       posRows + "</tbody></table>" +
       '<p class="sub rep-prov">' + esc(card.provenance) + " " + card.graded + " players graded.</p>" +
       "</div>";
@@ -423,17 +430,17 @@
     var maxMae = mae.reduce(function (max, item) { return Math.max(max, item.mae); }, 1);
     var coverage = lab.pooled_coverage || {};
     function labText(value) { return esc(value).replace(/DST/g, "DEF"); }
-    var notes = (lab.notes || []).map(function (note) { return "<li>" + labText(note) + "</li>"; }).join("");
+    var notes = (lab.notes || []).map(function (note) { return "<li>" + defMae(labText(note)) + "</li>"; }).join("");
     var criteria = (lab.criteria || []).map(function (item) {
-      return "<li><span>" + labText(item.detail) + '</span><span class="' + (item.pass ? "pass" : "fail") + '">' + (item.pass ? "Pass" : "Fail") + "</span></li>";
+      return "<li><span>" + defMae(labText(item.detail)) + '</span><span class="' + (item.pass ? "pass" : "fail") + '">' + (item.pass ? "Pass" : "Fail") + "</span></li>";
     }).join("");
     var bars = (lab.mae_diff_by_season || []).map(function (item) {
       var gain = -Number(item.mae_diff);
       var label = (gain > 0 ? "+" : "") + gain.toFixed(3);
       return '<div class="l"><span class="num">' + item.season + '</span><span class="b"><i style="width:' + Math.min(100, Math.max(0, gain) / 0.6 * 100) + '%;background:var(--accent)"></i></span><b class="num">' + label + "</b></div>";
     }).join("");
-    $("lab-root").innerHTML = '<div class="note" role="note">' + esc((lab.notes && lab.notes[0]) || "Backtest") + " Promoted: " + (lab.promoted ? "yes" : "no") + ".</div>" +
-      '<div class="lab"><div class="card"><h2>MAE by position</h2><p class="sub">Mean of seasonal q50 MAE, points per game. Lower is better. Compared with the legacy baseline, not Yahoo.</p><div class="mae">' +
+    $("lab-root").innerHTML = '<div class="note" role="note">' + defMae(esc((lab.notes && lab.notes[0]) || "Backtest")) + " Promoted: " + (lab.promoted ? "yes" : "no") + ".</div>" +
+      '<div class="lab"><div class="card"><h2>' + defLabel("mae", "MAE") + ' by position</h2><p class="sub">Mean of seasonal q50 ' + defLabel("mae", "MAE") + ', points per game. Lower is better. Compared with the legacy baseline, not Yahoo.</p><div class="mae">' +
       mae.map(function (item) {
         return '<div class="l"><span class="pos" style="--c:' + posColor(item.position) + ';--ct:' + posText(item.position) + '">' + esc(SLOT[item.position] || item.position) + '</span><span class="b"><i style="--c:' + posColor(item.position) + ";width:" + (item.mae / maxMae * 100) + '%"></i></span><b class="num">' + item.mae.toFixed(2) + "</b></div>";
       }).join("") + '</div></div><div class="card"><h2>Interval coverage</h2><p class="sub">Share of outcomes inside the calibrated 10–90 range; the shaded band is the 0.77 to 0.83 target. Scale zoomed to 0.70–0.90 so the differences actually show.</p><div class="mae">' +
@@ -443,7 +450,7 @@
         var pct = Math.min(96, Math.max(4, (value - 0.70) / 0.20 * 100));
         var status = inside ? "In band" : (value < 0.77 ? ((0.77 - value) * 100).toFixed(1) + " pt low" : ((value - 0.83) * 100).toFixed(1) + " pt high");
         return '<div class="l cov"><span class="pos" style="--c:' + posColor(position) + ';--ct:' + posText(position) + '">' + esc(SLOT[position] || position) + '</span><span class="b"><span class="band"></span><i class="dot" style="--c:' + posColor(position) + ";left:" + pct.toFixed(1) + '%"></i></span><span class="num">' + (value * 100).toFixed(1) + '%</span><b class="' + (inside ? "pass" : "fail") + '">' + status + "</b></div>";
-      }).join("") + '<div class="l cov axis-row"><span></span><span class="ticks num"><span>0.70</span><span>0.80</span><span>0.90</span></span><span></span><span></span></div></div></div><div class="card"><h2>Promotion rule</h2><ul class="crit">' + criteria + '</ul></div><div class="card"><h2>Improvement over baseline</h2><p class="sub">Baseline q50 MAE minus the model. Positive means the model was closer that season.</p><div class="mae">' + bars + '</div><p class="sub">Lineup points versus that baseline: +' + Number(lab.points_gained_vs_baseline).toFixed(1) + ' over the backtest. Not a Yahoo result.</p></div><div class="card wide"><h2>Notes</h2><ul class="why">' + notes + "</ul></div></div>";
+      }).join("") + '<div class="l cov axis-row"><span></span><span class="ticks num"><span>0.70</span><span>0.80</span><span>0.90</span></span><span></span><span></span></div></div></div><div class="card"><h2>Promotion rule</h2><ul class="crit">' + criteria + '</ul></div><div class="card"><h2>Improvement over baseline</h2><p class="sub">Baseline q50 ' + defLabel("mae", "MAE") + ' minus the model. Positive means the model was closer that season.</p><div class="mae">' + bars + '</div><p class="sub">Lineup points versus that baseline: +' + Number(lab.points_gained_vs_baseline).toFixed(1) + ' over the backtest. Not a Yahoo result.</p></div><div class="card wide"><h2>Notes</h2><ul class="why">' + notes + "</ul></div></div>";
   }
 
   window.addEventListener("hashchange", function () {

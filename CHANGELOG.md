@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.38] — 2026-11-04
+
+### Changed
+
+- Every MAE mention on the Lab now carries the definition hover (owner, 2026-11-04 — "i can never remember it"): MAE joins the shared definitions dictionary ("Mean absolute error: on average, how many points a projection missed by, counting over- and under-projections equally. Lower is better."), and the label is wired into the report card's table headers, the "MAE by position" card, the improvement card, and — via a wrap pass over the rendered text — the data-driven notes and promotion criteria, so no Lab surface states the acronym bare.
+
 ## [0.5.37] — 2026-11-04
 
 ### Added
