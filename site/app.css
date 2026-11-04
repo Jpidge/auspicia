@@ -245,6 +245,19 @@ h2 { font-size: 15px; margin: 0 0 8px; text-transform: uppercase; letter-spacing
   background: var(--warnSoft); color: var(--warn); font-weight: 600; font-size: 14px;
   border: 1px dashed color-mix(in srgb, var(--warn) 50%, transparent);
 }
+.report-card { margin-bottom: 24px; }
+.rep-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.rep-head h2 { margin: 0; }
+.rep-pager { display: flex; align-items: center; gap: 10px; }
+.rep-pager button { min-width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); background: var(--card2); color: var(--text); font-size: 22px; line-height: 1; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.rep-pager button:disabled { opacity: 0.35; cursor: default; }
+.rep-week { font-weight: 700; white-space: nowrap; }
+.rep-verdict { line-height: 1.55; }
+.report-card p { line-height: 1.55; }
+.rep-tbl { margin: 10px 0 4px; }
+.rep-tbl td { padding: 9px 8px; }
+.rep-tbl th { padding: 0 8px; }
+.rep-prov { margin-top: 10px; }
 .lab { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 .lab .wide { grid-column: 1 / -1; }
 .engine-card { margin-top: 24px; }

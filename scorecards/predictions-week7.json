@@ -1,0 +1,1336 @@
+{
+  "season": 2026,
+  "week": 7,
+  "generated_by": "gridiron_lab.predict",
+  "model_version": "lgbm_skill_v1",
+  "trained_through": "2026-W06",
+  "as_of_policy": "simulated_capture",
+  "conformal_adjusted": false,
+  "scope": "rostered players only; waivers excluded",
+  "players": [
+    {
+      "player_id": "yh-t6-kyler-murray",
+      "gsis_id": "00-0035228",
+      "q10": 3.33,
+      "q50": 15.17,
+      "q90": 28.7,
+      "mean": 16.64,
+      "yahoo": 20.88
+    },
+    {
+      "player_id": "yh-t6-bijan-robinson",
+      "gsis_id": "00-0038542",
+      "q10": 4.39,
+      "q50": 12.21,
+      "q90": 23.41,
+      "mean": 13.23,
+      "yahoo": 19.96
+    },
+    {
+      "player_id": "yh-t6-tony-pollard",
+      "gsis_id": "00-0035261",
+      "q10": 2.42,
+      "q50": 7.4,
+      "q90": 18.77,
+      "mean": 9.58,
+      "yahoo": 10.27
+    },
+    {
+      "player_id": "yh-t6-chris-olave",
+      "gsis_id": "00-0037239",
+      "q10": 1.98,
+      "q50": 7.84,
+      "q90": 18.37,
+      "mean": 10.11,
+      "yahoo": 10.63
+    },
+    {
+      "player_id": "yh-t6-drake-london",
+      "gsis_id": "00-0037238",
+      "q10": 2.11,
+      "q50": 9.2,
+      "q90": 20.45,
+      "mean": 10.9,
+      "yahoo": 11.72
+    },
+    {
+      "player_id": "yh-t6-t-j-hockenson",
+      "gsis_id": "00-0035229",
+      "q10": 0.56,
+      "q50": 3.35,
+      "q90": 10.78,
+      "mean": 4.67,
+      "yahoo": 6.11
+    },
+    {
+      "player_id": "yh-t6-garrett-wilson",
+      "gsis_id": "00-0037740",
+      "q10": 1.88,
+      "q50": 7.54,
+      "q90": 17.88,
+      "mean": 9.56,
+      "yahoo": 9.98
+    },
+    {
+      "player_id": "yh-t6-tyler-loop",
+      "gsis_id": "00-0040074",
+      "q10": 2.39,
+      "q50": 8.52,
+      "q90": 14.64,
+      "mean": 8.52,
+      "yahoo": 8.42
+    },
+    {
+      "player_id": "yh-t6-vikings",
+      "gsis_id": "DEF:MIN",
+      "q10": 3.61,
+      "q50": 11.24,
+      "q90": 18.87,
+      "mean": 11.24,
+      "yahoo": 12.49
+    },
+    {
+      "player_id": "yh-t6-rome-odunze",
+      "gsis_id": "00-0039919",
+      "q10": 0.75,
+      "q50": 4.92,
+      "q90": 14.43,
+      "mean": 7.35,
+      "yahoo": 7.18
+    },
+    {
+      "player_id": "yh-t3-brock-purdy",
+      "gsis_id": "00-0037834",
+      "q10": 7.89,
+      "q50": 23.56,
+      "q90": 36.65,
+      "mean": 23.87,
+      "yahoo": 22.26
+    },
+    {
+      "player_id": "yh-t3-bucky-irving",
+      "gsis_id": "00-0039361",
+      "q10": 4.17,
+      "q50": 11.55,
+      "q90": 22.21,
+      "mean": 12.06,
+      "yahoo": 13.12
+    },
+    {
+      "player_id": "yh-t3-woody-marks",
+      "gsis_id": "00-0040583",
+      "q10": 1.6,
+      "q50": 7.71,
+      "q90": 18.11,
+      "mean": 9.23,
+      "yahoo": 14.18
+    },
+    {
+      "player_id": "yh-t3-jaxon-smith-njigba",
+      "gsis_id": "00-0038543",
+      "q10": 2.44,
+      "q50": 9.63,
+      "q90": 21.01,
+      "mean": 11.16,
+      "yahoo": 15.47
+    },
+    {
+      "player_id": "yh-t3-nico-collins",
+      "gsis_id": "00-0036554",
+      "q10": 1.93,
+      "q50": 7.65,
+      "q90": 18.95,
+      "mean": 9.94,
+      "yahoo": 11.91
+    },
+    {
+      "player_id": "yh-t3-tucker-kraft",
+      "gsis_id": "00-0038996",
+      "q10": 1.27,
+      "q50": 6.4,
+      "q90": 14.63,
+      "mean": 7.21,
+      "yahoo": 7.89
+    },
+    {
+      "player_id": "yh-t3-quinshon-judkins",
+      "gsis_id": "00-0040784",
+      "q10": 2.63,
+      "q50": 7.53,
+      "q90": 18.7,
+      "mean": 9.18,
+      "yahoo": 9.77
+    },
+    {
+      "player_id": "yh-t3-chase-mclaughlin",
+      "gsis_id": "00-0035358",
+      "q10": 2.99,
+      "q50": 9.11,
+      "q90": 15.23,
+      "mean": 9.11,
+      "yahoo": 9.11
+    },
+    {
+      "player_id": "yh-t3-jets",
+      "gsis_id": "DEF:NYJ",
+      "q10": 2.15,
+      "q50": 9.78,
+      "q90": 17.4,
+      "mean": 9.78,
+      "yahoo": 15.4
+    },
+    {
+      "player_id": "yh-t3-denzel-boston",
+      "gsis_id": "00-0041037",
+      "q10": 1.09,
+      "q50": 5.92,
+      "q90": 16.23,
+      "mean": 8.04,
+      "yahoo": 7.76
+    },
+    {
+      "player_id": "yh-t3-jared-goff",
+      "gsis_id": "00-0033106",
+      "q10": 6.93,
+      "q50": 22.17,
+      "q90": 34.44,
+      "mean": 21.03,
+      "yahoo": 23.01
+    },
+    {
+      "player_id": "yh-t3-dameon-pierce",
+      "gsis_id": "00-0037258",
+      "q10": 1.24,
+      "q50": 6.64,
+      "q90": 18.59,
+      "mean": 8.39,
+      "yahoo": 4.97
+    },
+    {
+      "player_id": "yh-t3-tyrone-tracy-jr",
+      "gsis_id": "00-0039384",
+      "q10": 0.86,
+      "q50": 4.71,
+      "q90": 13.6,
+      "mean": 6.3,
+      "yahoo": 5.01
+    },
+    {
+      "player_id": "yh-t11-c-j-stroud",
+      "gsis_id": "00-0039163",
+      "q10": 6.36,
+      "q50": 21.22,
+      "q90": 33.99,
+      "mean": 21.09,
+      "yahoo": 22.95
+    },
+    {
+      "player_id": "yh-t11-d-andre-swift",
+      "gsis_id": "00-0036275",
+      "q10": 3.04,
+      "q50": 10.59,
+      "q90": 21.19,
+      "mean": 11.72,
+      "yahoo": 12.84
+    },
+    {
+      "player_id": "yh-t11-chuba-hubbard",
+      "gsis_id": "00-0036555",
+      "q10": 3.88,
+      "q50": 10.48,
+      "q90": 23.73,
+      "mean": 14.22,
+      "yahoo": 13.91
+    },
+    {
+      "player_id": "yh-t11-tre-tucker",
+      "gsis_id": "00-0038563",
+      "q10": 1.18,
+      "q50": 6.13,
+      "q90": 14.82,
+      "mean": 7.03,
+      "yahoo": 7.09
+    },
+    {
+      "player_id": "yh-t11-jameson-williams",
+      "gsis_id": "00-0037240",
+      "q10": 1.29,
+      "q50": 5.97,
+      "q90": 16.83,
+      "mean": 7.9,
+      "yahoo": 8.2
+    },
+    {
+      "player_id": "yh-t11-george-kittle",
+      "gsis_id": "00-0033288",
+      "q10": 1.58,
+      "q50": 7.23,
+      "q90": 17.62,
+      "mean": 9.9,
+      "yahoo": 10.7
+    },
+    {
+      "player_id": "yh-t11-keenan-allen",
+      "gsis_id": "00-0030279",
+      "q10": 1.62,
+      "q50": 5.05,
+      "q90": 13.29,
+      "mean": 6.44,
+      "yahoo": 6.46
+    },
+    {
+      "player_id": "yh-t11-cairo-santos",
+      "gsis_id": "00-0031203",
+      "q10": 2.14,
+      "q50": 8.26,
+      "q90": 14.39,
+      "mean": 8.26,
+      "yahoo": 9.48
+    },
+    {
+      "player_id": "yh-t11-titans",
+      "gsis_id": "DEF:TEN",
+      "q10": 2.91,
+      "q50": 10.54,
+      "q90": 18.17,
+      "mean": 10.54,
+      "yahoo": 14.86
+    },
+    {
+      "player_id": "yh-t9-aaron-rodgers",
+      "gsis_id": "00-0023459",
+      "q10": 6.52,
+      "q50": 19.28,
+      "q90": 32.36,
+      "mean": 19.33,
+      "yahoo": 20.82
+    },
+    {
+      "player_id": "yh-t9-ashton-jeanty",
+      "gsis_id": "00-0040122",
+      "q10": 3.7,
+      "q50": 10.63,
+      "q90": 21.16,
+      "mean": 11.5,
+      "yahoo": 11.57
+    },
+    {
+      "player_id": "yh-t9-jahmyr-gibbs",
+      "gsis_id": "00-0039139",
+      "q10": 4.83,
+      "q50": 15.07,
+      "q90": 28.95,
+      "mean": 17.03,
+      "yahoo": 20.59
+    },
+    {
+      "player_id": "yh-t9-tetairoa-mcmillan",
+      "gsis_id": "00-0040124",
+      "q10": 1.85,
+      "q50": 8.32,
+      "q90": 18.09,
+      "mean": 9.4,
+      "yahoo": 9.83
+    },
+    {
+      "player_id": "yh-t9-dk-metcalf",
+      "gsis_id": "00-0035640",
+      "q10": 1.83,
+      "q50": 7.03,
+      "q90": 17.26,
+      "mean": 8.58,
+      "yahoo": 9.07
+    },
+    {
+      "player_id": "yh-t9-dallas-goedert",
+      "gsis_id": "00-0034351",
+      "q10": 0.93,
+      "q50": 4.68,
+      "q90": 13.81,
+      "mean": 6.39,
+      "yahoo": 8.83
+    },
+    {
+      "player_id": "yh-t9-javonte-williams",
+      "gsis_id": "00-0036997",
+      "q10": 4.47,
+      "q50": 11.63,
+      "q90": 23.17,
+      "mean": 12.87,
+      "yahoo": 13.84
+    },
+    {
+      "player_id": "yh-t9-ka-imi-fairbairn",
+      "gsis_id": "00-0032726",
+      "q10": 3.02,
+      "q50": 9.14,
+      "q90": 15.27,
+      "mean": 9.14,
+      "yahoo": 10.64
+    },
+    {
+      "player_id": "yh-t9-steelers",
+      "gsis_id": "DEF:PIT",
+      "q10": 2.31,
+      "q50": 9.94,
+      "q90": 17.57,
+      "mean": 9.94,
+      "yahoo": 11.32
+    },
+    {
+      "player_id": "yh-t9-malik-washington",
+      "gsis_id": "00-0039880",
+      "q10": 1.55,
+      "q50": 6.66,
+      "q90": 16.17,
+      "mean": 8.21,
+      "yahoo": 8.05
+    },
+    {
+      "player_id": "yh-t9-kaelon-black",
+      "gsis_id": "00-0041052",
+      "q10": 0.4,
+      "q50": 2.87,
+      "q90": 10.86,
+      "mean": 4.48,
+      "yahoo": 4.75
+    },
+    {
+      "player_id": "yh-t9-omar-cooper-jr",
+      "gsis_id": "00-0041511",
+      "q10": 0.39,
+      "q50": 3.79,
+      "q90": 12.57,
+      "mean": 6.03,
+      "yahoo": 5.45
+    },
+    {
+      "player_id": "yh-t9-seth-mcgowan",
+      "gsis_id": "00-0041125",
+      "q10": 0.36,
+      "q50": 2.82,
+      "q90": 9.9,
+      "mean": 4.36,
+      "yahoo": 2.54
+    },
+    {
+      "player_id": "yh-t8-drake-maye",
+      "gsis_id": "00-0039851",
+      "q10": 7.75,
+      "q50": 22.49,
+      "q90": 36.08,
+      "mean": 23.83,
+      "yahoo": 23.08
+    },
+    {
+      "player_id": "yh-t8-kenneth-walker-iii",
+      "gsis_id": "00-0038134",
+      "q10": 4.55,
+      "q50": 12.08,
+      "q90": 27.75,
+      "mean": 14.87,
+      "yahoo": 15.67
+    },
+    {
+      "player_id": "yh-t8-aaron-jones-sr",
+      "gsis_id": "00-0033293",
+      "q10": 3.47,
+      "q50": 10.47,
+      "q90": 21.37,
+      "mean": 12.1,
+      "yahoo": 9.34
+    },
+    {
+      "player_id": "yh-t8-tee-higgins",
+      "gsis_id": "00-0036410",
+      "q10": 1.76,
+      "q50": 6.54,
+      "q90": 17.16,
+      "mean": 8.71,
+      "yahoo": 9.42
+    },
+    {
+      "player_id": "yh-t8-jordan-addison",
+      "gsis_id": "00-0038994",
+      "q10": 1.25,
+      "q50": 5.3,
+      "q90": 15.18,
+      "mean": 7.34,
+      "yahoo": 7.01
+    },
+    {
+      "player_id": "yh-t8-tyler-higbee",
+      "gsis_id": "00-0033110",
+      "q10": 0.56,
+      "q50": 3.78,
+      "q90": 11.12,
+      "mean": 5.17,
+      "yahoo": 5.89
+    },
+    {
+      "player_id": "yh-t8-kalif-raymond",
+      "gsis_id": "00-0032464",
+      "q10": 0.19,
+      "q50": 2.98,
+      "q90": 9.87,
+      "mean": 4.36,
+      "yahoo": 5.64
+    },
+    {
+      "player_id": "yh-t8-spencer-shrader",
+      "gsis_id": "00-0039576",
+      "q10": 3.23,
+      "q50": 9.35,
+      "q90": 15.47,
+      "mean": 9.35,
+      "yahoo": 8.69
+    },
+    {
+      "player_id": "yh-t8-broncos",
+      "gsis_id": "DEF:DEN",
+      "q10": 2.93,
+      "q50": 10.56,
+      "q90": 18.19,
+      "mean": 10.56,
+      "yahoo": 10.9
+    },
+    {
+      "player_id": "yh-t8-jaylin-noel",
+      "gsis_id": "00-0040138",
+      "q10": 0.45,
+      "q50": 4.61,
+      "q90": 12.77,
+      "mean": 5.69,
+      "yahoo": 6.58
+    },
+    {
+      "player_id": "yh-t8-jaylen-waddle",
+      "gsis_id": "00-0036613",
+      "q10": 1.14,
+      "q50": 4.79,
+      "q90": 13.03,
+      "mean": 5.76,
+      "yahoo": 8.52
+    },
+    {
+      "player_id": "yh-t8-matthew-stafford",
+      "gsis_id": "00-0026498",
+      "q10": 7.98,
+      "q50": 21.51,
+      "q90": 35.63,
+      "mean": 22.69,
+      "yahoo": 22.17
+    },
+    {
+      "player_id": "yh-t2-dak-prescott",
+      "gsis_id": "00-0033077",
+      "q10": 6.74,
+      "q50": 18.88,
+      "q90": 32.47,
+      "mean": 19.81,
+      "yahoo": 20.34
+    },
+    {
+      "player_id": "yh-t2-christian-mccaffrey",
+      "gsis_id": "00-0033280",
+      "q10": 3.89,
+      "q50": 14.82,
+      "q90": 27.47,
+      "mean": 16.63,
+      "yahoo": 16.32
+    },
+    {
+      "player_id": "yh-t2-tyler-allgeier",
+      "gsis_id": "00-0037263",
+      "q10": 1.02,
+      "q50": 5.4,
+      "q90": 16.22,
+      "mean": 7.76,
+      "yahoo": 8.04
+    },
+    {
+      "player_id": "yh-t2-zay-flowers",
+      "gsis_id": "00-0039064",
+      "q10": 2.23,
+      "q50": 8.67,
+      "q90": 19.41,
+      "mean": 10.48,
+      "yahoo": 11.43
+    },
+    {
+      "player_id": "yh-t2-matthew-golden",
+      "gsis_id": "00-0040667",
+      "q10": 1.9,
+      "q50": 6.49,
+      "q90": 17.09,
+      "mean": 8.35,
+      "yahoo": 12.23
+    },
+    {
+      "player_id": "yh-t2-kyle-pitts-sr",
+      "gsis_id": "00-0036970",
+      "q10": 0.98,
+      "q50": 4.35,
+      "q90": 12.59,
+      "mean": 6.06,
+      "yahoo": 5.77
+    },
+    {
+      "player_id": "yh-t2-a-j-brown",
+      "gsis_id": "00-0035676",
+      "q10": 1.77,
+      "q50": 6.71,
+      "q90": 16.68,
+      "mean": 8.08,
+      "yahoo": 9.87
+    },
+    {
+      "player_id": "yh-t2-jake-bates",
+      "gsis_id": "00-0039172",
+      "q10": 2.69,
+      "q50": 8.81,
+      "q90": 14.94,
+      "mean": 8.81,
+      "yahoo": 9.86
+    },
+    {
+      "player_id": "yh-t2-buccaneers",
+      "gsis_id": "DEF:TB",
+      "q10": 2.11,
+      "q50": 9.74,
+      "q90": 17.36,
+      "mean": 9.74,
+      "yahoo": 9.63
+    },
+    {
+      "player_id": "yh-t2-rj-harvey",
+      "gsis_id": "00-0040730",
+      "q10": 1.19,
+      "q50": 5.31,
+      "q90": 15.21,
+      "mean": 6.79,
+      "yahoo": 7.39
+    },
+    {
+      "player_id": "yh-t2-george-pickens",
+      "gsis_id": "00-0037247",
+      "q10": 1.94,
+      "q50": 7.22,
+      "q90": 18.71,
+      "mean": 9.55,
+      "yahoo": 8.94
+    },
+    {
+      "player_id": "yh-t2-treveyon-henderson",
+      "gsis_id": "00-0040734",
+      "q10": 0.77,
+      "q50": 3.52,
+      "q90": 11.02,
+      "mean": 4.94,
+      "yahoo": 6.38
+    },
+    {
+      "player_id": "yh-t2-rico-dowdle",
+      "gsis_id": "00-0036139",
+      "q10": 1.21,
+      "q50": 5.36,
+      "q90": 15.66,
+      "mean": 6.92,
+      "yahoo": 7.24
+    },
+    {
+      "player_id": "yh-t2-rashid-shaheed",
+      "gsis_id": "00-0037545",
+      "q10": 0.81,
+      "q50": 4.58,
+      "q90": 14.27,
+      "mean": 6.27,
+      "yahoo": 7.19
+    },
+    {
+      "player_id": "yh-t1-bryce-young",
+      "gsis_id": "00-0039150",
+      "q10": 6.15,
+      "q50": 19.6,
+      "q90": 31.99,
+      "mean": 20.36,
+      "yahoo": 20.79
+    },
+    {
+      "player_id": "yh-t1-jonathan-taylor",
+      "gsis_id": "00-0036223",
+      "q10": 4.44,
+      "q50": 12.24,
+      "q90": 23.04,
+      "mean": 13.27,
+      "yahoo": 13.88
+    },
+    {
+      "player_id": "yh-t1-jordan-mason",
+      "gsis_id": "00-0037525",
+      "q10": 0.84,
+      "q50": 4.42,
+      "q90": 15.55,
+      "mean": 7.0,
+      "yahoo": 8.48
+    },
+    {
+      "player_id": "yh-t1-luther-burden-iii",
+      "gsis_id": "00-0040735",
+      "q10": 1.35,
+      "q50": 5.68,
+      "q90": 15.32,
+      "mean": 7.38,
+      "yahoo": 9.07
+    },
+    {
+      "player_id": "yh-t1-demario-douglas",
+      "gsis_id": "00-0038621",
+      "q10": 0.74,
+      "q50": 4.07,
+      "q90": 13.3,
+      "mean": 5.54,
+      "yahoo": 6.36
+    },
+    {
+      "player_id": "yh-t1-brock-bowers",
+      "gsis_id": "00-0039338",
+      "q10": 1.58,
+      "q50": 8.08,
+      "q90": 18.36,
+      "mean": 9.68,
+      "yahoo": 10.6
+    },
+    {
+      "player_id": "yh-t1-germie-bernard",
+      "gsis_id": "00-0041489",
+      "q10": 1.5,
+      "q50": 6.14,
+      "q90": 16.19,
+      "mean": 8.36,
+      "yahoo": 8.05
+    },
+    {
+      "player_id": "yh-t1-will-reichard",
+      "gsis_id": "00-0039404",
+      "q10": 3.39,
+      "q50": 9.52,
+      "q90": 15.64,
+      "mean": 9.52,
+      "yahoo": 10.48
+    },
+    {
+      "player_id": "yh-t1-browns",
+      "gsis_id": "DEF:CLE",
+      "q10": 2.41,
+      "q50": 10.04,
+      "q90": 17.67,
+      "mean": 10.04,
+      "yahoo": 13.28
+    },
+    {
+      "player_id": "yh-t1-emanuel-wilson",
+      "gsis_id": "00-0038797",
+      "q10": 2.05,
+      "q50": 7.06,
+      "q90": 16.74,
+      "mean": 8.58,
+      "yahoo": 8.3
+    },
+    {
+      "player_id": "yh-t1-cam-skattebo",
+      "gsis_id": "00-0040715",
+      "q10": 1.92,
+      "q50": 7.35,
+      "q90": 18.46,
+      "mean": 9.77,
+      "yahoo": 4.64
+    },
+    {
+      "player_id": "yh-t1-kirk-cousins",
+      "gsis_id": "00-0029604",
+      "q10": 5.94,
+      "q50": 18.74,
+      "q90": 30.86,
+      "mean": 19.5,
+      "yahoo": 18.3
+    },
+    {
+      "player_id": "yh-t1-devaughn-vele",
+      "gsis_id": "00-0039424",
+      "q10": 1.33,
+      "q50": 4.93,
+      "q90": 14.41,
+      "mean": 7.23,
+      "yahoo": 6.81
+    },
+    {
+      "player_id": "yh-t1-patriots",
+      "gsis_id": "DEF:NE",
+      "q10": 2.16,
+      "q50": 9.79,
+      "q90": 17.42,
+      "mean": 9.79,
+      "yahoo": 8.76
+    },
+    {
+      "player_id": "yh-t10-jordan-love",
+      "gsis_id": "00-0036264",
+      "q10": 6.68,
+      "q50": 20.97,
+      "q90": 33.74,
+      "mean": 20.39,
+      "yahoo": 23.44
+    },
+    {
+      "player_id": "yh-t10-rhamondre-stevenson",
+      "gsis_id": "00-0036875",
+      "q10": 2.2,
+      "q50": 7.63,
+      "q90": 17.82,
+      "mean": 10.34,
+      "yahoo": 9.28
+    },
+    {
+      "player_id": "yh-t10-jaylen-warren",
+      "gsis_id": "00-0037228",
+      "q10": 4.49,
+      "q50": 11.97,
+      "q90": 23.17,
+      "mean": 14.15,
+      "yahoo": 13.17
+    },
+    {
+      "player_id": "yh-t10-puka-nacua",
+      "gsis_id": "00-0039075",
+      "q10": 2.47,
+      "q50": 10.13,
+      "q90": 21.23,
+      "mean": 12.74,
+      "yahoo": 16.02
+    },
+    {
+      "player_id": "yh-t10-amon-ra-st-brown",
+      "gsis_id": "00-0036963",
+      "q10": 2.42,
+      "q50": 9.08,
+      "q90": 20.1,
+      "mean": 10.8,
+      "yahoo": 13.21
+    },
+    {
+      "player_id": "yh-t10-trey-mcbride",
+      "gsis_id": "00-0037744",
+      "q10": 1.58,
+      "q50": 8.21,
+      "q90": 16.82,
+      "mean": 9.41,
+      "yahoo": 9.37
+    },
+    {
+      "player_id": "yh-t10-malik-nabers",
+      "gsis_id": "00-0039337",
+      "q10": 2.34,
+      "q50": 8.97,
+      "q90": 19.04,
+      "mean": 10.14,
+      "yahoo": 9.62
+    },
+    {
+      "player_id": "yh-t10-brandon-mcmanus",
+      "gsis_id": "00-0029822",
+      "q10": 2.05,
+      "q50": 8.17,
+      "q90": 14.3,
+      "mean": 8.17,
+      "yahoo": 9.29
+    },
+    {
+      "player_id": "yh-t10-cowboys",
+      "gsis_id": "DEF:DAL",
+      "q10": 1.4,
+      "q50": 9.03,
+      "q90": 16.66,
+      "mean": 9.03,
+      "yahoo": 11.64
+    },
+    {
+      "player_id": "yh-t10-isaiah-likely",
+      "gsis_id": "00-0037838",
+      "q10": 1.34,
+      "q50": 6.0,
+      "q90": 16.09,
+      "mean": 7.16,
+      "yahoo": 7.59
+    },
+    {
+      "player_id": "yh-t10-josh-downs",
+      "gsis_id": "00-0038997",
+      "q10": 1.06,
+      "q50": 5.17,
+      "q90": 14.3,
+      "mean": 6.67,
+      "yahoo": 7.04
+    },
+    {
+      "player_id": "yh-t10-wan-dale-robinson",
+      "gsis_id": "00-0038117",
+      "q10": 1.11,
+      "q50": 4.71,
+      "q90": 13.17,
+      "mean": 6.41,
+      "yahoo": 5.72
+    },
+    {
+      "player_id": "yh-t5-joe-burrow",
+      "gsis_id": "00-0036442",
+      "q10": 7.48,
+      "q50": 20.26,
+      "q90": 34.44,
+      "mean": 21.17,
+      "yahoo": 21.88
+    },
+    {
+      "player_id": "yh-t5-josh-jacobs",
+      "gsis_id": "00-0035700",
+      "q10": 1.06,
+      "q50": 5.76,
+      "q90": 14.56,
+      "mean": 7.74,
+      "yahoo": 9.96
+    },
+    {
+      "player_id": "yh-t5-breece-hall",
+      "gsis_id": "00-0038120",
+      "q10": 3.17,
+      "q50": 8.79,
+      "q90": 19.93,
+      "mean": 10.27,
+      "yahoo": 11.07
+    },
+    {
+      "player_id": "yh-t5-marvin-harrison-jr",
+      "gsis_id": "00-0039849",
+      "q10": 0.05,
+      "q50": 2.15,
+      "q90": 8.47,
+      "mean": 3.62,
+      "yahoo": 4.07
+    },
+    {
+      "player_id": "yh-t5-ja-marr-chase",
+      "gsis_id": "00-0036900",
+      "q10": 2.07,
+      "q50": 8.11,
+      "q90": 18.85,
+      "mean": 10.03,
+      "yahoo": 12.0
+    },
+    {
+      "player_id": "yh-t5-sam-laporta",
+      "gsis_id": "00-0039065",
+      "q10": 0.93,
+      "q50": 4.87,
+      "q90": 13.67,
+      "mean": 6.14,
+      "yahoo": 7.81
+    },
+    {
+      "player_id": "yh-t5-bam-knight",
+      "gsis_id": "00-0037157",
+      "q10": 0.58,
+      "q50": 3.86,
+      "q90": 14.66,
+      "mean": 6.67,
+      "yahoo": 6.28
+    },
+    {
+      "player_id": "yh-t5-matt-gay",
+      "gsis_id": "00-0035269",
+      "q10": 2.64,
+      "q50": 8.77,
+      "q90": 14.89,
+      "mean": 8.77,
+      "yahoo": 9.04
+    },
+    {
+      "player_id": "yh-t5-texans",
+      "gsis_id": "DEF:HOU",
+      "q10": 2.34,
+      "q50": 9.97,
+      "q90": 17.6,
+      "mean": 9.97,
+      "yahoo": 12.47
+    },
+    {
+      "player_id": "yh-t5-braelon-allen",
+      "gsis_id": "00-0039794",
+      "q10": 2.91,
+      "q50": 9.12,
+      "q90": 20.15,
+      "mean": 10.06,
+      "yahoo": 6.75
+    },
+    {
+      "player_id": "yh-t5-mark-andrews",
+      "gsis_id": "00-0034753",
+      "q10": 0.83,
+      "q50": 3.6,
+      "q90": 11.1,
+      "mean": 4.63,
+      "yahoo": 5.28
+    },
+    {
+      "player_id": "yh-t7-patrick-mahomes",
+      "gsis_id": "00-0033873",
+      "q10": 6.38,
+      "q50": 17.83,
+      "q90": 30.92,
+      "mean": 18.97,
+      "yahoo": 18.35
+    },
+    {
+      "player_id": "yh-t7-alvin-kamara",
+      "gsis_id": "00-0033906",
+      "q10": 0.72,
+      "q50": 4.28,
+      "q90": 13.28,
+      "mean": 6.03,
+      "yahoo": 5.81
+    },
+    {
+      "player_id": "yh-t7-ollie-gordon-ii",
+      "gsis_id": "00-0040198",
+      "q10": 1.81,
+      "q50": 9.05,
+      "q90": 20.01,
+      "mean": 10.49,
+      "yahoo": 10.19
+    },
+    {
+      "player_id": "yh-t7-ceedee-lamb",
+      "gsis_id": "00-0036358",
+      "q10": 2.5,
+      "q50": 8.53,
+      "q90": 18.74,
+      "mean": 10.21,
+      "yahoo": 11.78
+    },
+    {
+      "player_id": "yh-t7-michael-wilson",
+      "gsis_id": "00-0038559",
+      "q10": 1.77,
+      "q50": 6.72,
+      "q90": 16.46,
+      "mean": 8.44,
+      "yahoo": 7.99
+    },
+    {
+      "player_id": "yh-t7-travis-kelce",
+      "gsis_id": "00-0030506",
+      "q10": 0.83,
+      "q50": 4.18,
+      "q90": 12.3,
+      "mean": 5.54,
+      "yahoo": 7.57
+    },
+    {
+      "player_id": "yh-t7-jalen-coker",
+      "gsis_id": "00-0039491",
+      "q10": 1.66,
+      "q50": 5.88,
+      "q90": 15.06,
+      "mean": 7.37,
+      "yahoo": 9.5
+    },
+    {
+      "player_id": "yh-t7-jason-myers",
+      "gsis_id": "00-0031492",
+      "q10": 2.85,
+      "q50": 8.98,
+      "q90": 15.1,
+      "mean": 8.98,
+      "yahoo": 9.71
+    },
+    {
+      "player_id": "yh-t7-rams",
+      "gsis_id": "DEF:LA",
+      "q10": 1.52,
+      "q50": 9.15,
+      "q90": 16.78,
+      "mean": 9.15,
+      "yahoo": 8.32
+    },
+    {
+      "player_id": "yh-t7-harold-fannin-jr",
+      "gsis_id": "00-0040663",
+      "q10": 0.64,
+      "q50": 4.09,
+      "q90": 12.71,
+      "mean": 5.95,
+      "yahoo": 5.99
+    },
+    {
+      "player_id": "yh-t7-makai-lemon",
+      "gsis_id": "00-0040867",
+      "q10": 0.22,
+      "q50": 2.94,
+      "q90": 11.25,
+      "mean": 4.84,
+      "yahoo": 5.86
+    },
+    {
+      "player_id": "yh-t7-blake-corum",
+      "gsis_id": "00-0039738",
+      "q10": 0.78,
+      "q50": 5.24,
+      "q90": 15.7,
+      "mean": 7.42,
+      "yahoo": 8.25
+    },
+    {
+      "player_id": "yh-t12-bo-nix",
+      "gsis_id": "00-0039732",
+      "q10": 5.85,
+      "q50": 15.69,
+      "q90": 30.72,
+      "mean": 18.11,
+      "yahoo": 21.42
+    },
+    {
+      "player_id": "yh-t12-derrick-henry",
+      "gsis_id": "00-0032764",
+      "q10": 3.85,
+      "q50": 11.95,
+      "q90": 22.61,
+      "mean": 12.67,
+      "yahoo": 16.19
+    },
+    {
+      "player_id": "yh-t12-chase-brown",
+      "gsis_id": "00-0038597",
+      "q10": 3.08,
+      "q50": 7.44,
+      "q90": 19.09,
+      "mean": 9.77,
+      "yahoo": 11.16
+    },
+    {
+      "player_id": "yh-t12-xavier-worthy",
+      "gsis_id": "00-0039894",
+      "q10": 1.31,
+      "q50": 4.81,
+      "q90": 13.93,
+      "mean": 6.69,
+      "yahoo": 7.87
+    },
+    {
+      "player_id": "yh-t12-hunter-henry",
+      "gsis_id": "00-0033090",
+      "q10": 0.77,
+      "q50": 3.78,
+      "q90": 11.66,
+      "mean": 5.73,
+      "yahoo": 5.76
+    },
+    {
+      "player_id": "yh-t12-roschon-johnson",
+      "gsis_id": "00-0039021",
+      "q10": 0.52,
+      "q50": 3.92,
+      "q90": 14.93,
+      "mean": 6.37,
+      "yahoo": 6.56
+    },
+    {
+      "player_id": "yh-t12-brandon-aubrey",
+      "gsis_id": "00-0037692",
+      "q10": 2.1,
+      "q50": 8.22,
+      "q90": 14.34,
+      "mean": 8.22,
+      "yahoo": 10.06
+    },
+    {
+      "player_id": "yh-t12-panthers",
+      "gsis_id": "DEF:CAR",
+      "q10": 2.1,
+      "q50": 9.73,
+      "q90": 17.36,
+      "mean": 9.73,
+      "yahoo": 11.74
+    },
+    {
+      "player_id": "yh-t12-courtland-sutton",
+      "gsis_id": "00-0034348",
+      "q10": 0.42,
+      "q50": 3.71,
+      "q90": 12.29,
+      "mean": 5.03,
+      "yahoo": 6.44
+    },
+    {
+      "player_id": "yh-t12-jake-ferguson",
+      "gsis_id": "00-0038041",
+      "q10": 0.41,
+      "q50": 2.51,
+      "q90": 8.34,
+      "mean": 3.26,
+      "yahoo": 4.16
+    },
+    {
+      "player_id": "yh-t12-chris-godwin-jr",
+      "gsis_id": "00-0033921",
+      "q10": 0.53,
+      "q50": 4.0,
+      "q90": 11.19,
+      "mean": 5.33,
+      "yahoo": 7.47
+    },
+    {
+      "player_id": "yh-t12-seahawks",
+      "gsis_id": "DEF:SEA",
+      "q10": 2.08,
+      "q50": 9.7,
+      "q90": 17.33,
+      "mean": 9.7,
+      "yahoo": 9.79
+    },
+    {
+      "player_id": "yh-t4-caleb-williams",
+      "gsis_id": "00-0039918",
+      "q10": 7.65,
+      "q50": 20.25,
+      "q90": 31.98,
+      "mean": 20.58,
+      "yahoo": 22.55
+    },
+    {
+      "player_id": "yh-t4-kyren-williams",
+      "gsis_id": "00-0037840",
+      "q10": 4.53,
+      "q50": 12.21,
+      "q90": 23.09,
+      "mean": 13.45,
+      "yahoo": 16.09
+    },
+    {
+      "player_id": "yh-t4-j-k-dobbins",
+      "gsis_id": "00-0036158",
+      "q10": 2.55,
+      "q50": 7.93,
+      "q90": 19.11,
+      "mean": 9.7,
+      "yahoo": 8.54
+    },
+    {
+      "player_id": "yh-t4-christian-watson",
+      "gsis_id": "00-0038124",
+      "q10": 1.88,
+      "q50": 8.07,
+      "q90": 18.29,
+      "mean": 9.64,
+      "yahoo": 12.42
+    },
+    {
+      "player_id": "yh-t4-justin-jefferson",
+      "gsis_id": "00-0036322",
+      "q10": 1.59,
+      "q50": 6.59,
+      "q90": 16.53,
+      "mean": 7.96,
+      "yahoo": 12.03
+    },
+    {
+      "player_id": "yh-t4-colston-loveland",
+      "gsis_id": "00-0040126",
+      "q10": 1.13,
+      "q50": 4.74,
+      "q90": 14.14,
+      "mean": 6.94,
+      "yahoo": 6.66
+    },
+    {
+      "player_id": "yh-t4-carnell-tate",
+      "gsis_id": "00-0041438",
+      "q10": 1.47,
+      "q50": 6.78,
+      "q90": 16.07,
+      "mean": 8.1,
+      "yahoo": 7.12
+    },
+    {
+      "player_id": "yh-t4-nick-folk",
+      "gsis_id": "00-0025565",
+      "q10": 2.02,
+      "q50": 8.15,
+      "q90": 14.27,
+      "mean": 8.15,
+      "yahoo": 9.09
+    },
+    {
+      "player_id": "yh-t4-ravens",
+      "gsis_id": "DEF:BAL",
+      "q10": 1.89,
+      "q50": 9.52,
+      "q90": 17.15,
+      "mean": 9.52,
+      "yahoo": 8.07
+    },
+    {
+      "player_id": "yh-t4-mike-washington-jr",
+      "gsis_id": "00-0040878",
+      "q10": 0.59,
+      "q50": 3.59,
+      "q90": 12.46,
+      "mean": 5.55,
+      "yahoo": 5.34
+    },
+    {
+      "player_id": "yh-t4-juwan-johnson",
+      "gsis_id": "00-0036040",
+      "q10": 0.63,
+      "q50": 3.17,
+      "q90": 9.57,
+      "mean": 4.31,
+      "yahoo": 5.94
+    },
+    {
+      "player_id": "yh-t4-tyler-shough",
+      "gsis_id": "00-0040743",
+      "q10": 4.88,
+      "q50": 19.82,
+      "q90": 31.25,
+      "mean": 20.11,
+      "yahoo": 18.88
+    },
+    {
+      "player_id": "yh-t4-kc-concepcion-jr",
+      "gsis_id": "00-0041547",
+      "q10": 0.73,
+      "q50": 4.15,
+      "q90": 12.0,
+      "mean": 5.29,
+      "yahoo": 7.51
+    },
+    {
+      "player_id": "yh-t4-saquon-barkley",
+      "gsis_id": "00-0034844",
+      "q10": 1.04,
+      "q50": 4.2,
+      "q90": 12.69,
+      "mean": 5.9,
+      "yahoo": 12.5
+    },
+    {
+      "player_id": "yh-t4-kenny-gainwell",
+      "gsis_id": "00-0036919",
+      "q10": 0.86,
+      "q50": 3.65,
+      "q90": 11.24,
+      "mean": 5.05,
+      "yahoo": 6.2
+    }
+  ],
+  "unmatched": []
+}

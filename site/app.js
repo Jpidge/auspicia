@@ -32,7 +32,7 @@
     ["last6", "Last 6 weeks"], ["verdicts", "Start · Monitor · Sit"], ["projTotal", "Projected total"],
     ["winProb", "Win probability"], ["yahooDelta", "Yahoo chip"]
   ];
-  var state = { data: null, view: "team", teamId: null, waiver: "ALL", sortKey: "projected_total", sortDir: -1 };
+  var state = { data: null, view: "team", teamId: null, waiver: "ALL", sortKey: "projected_total", sortDir: -1, report: null, reportIdx: 0 };
 
   function $(id) { return document.getElementById(id); }
   function esc(value) {
@@ -332,6 +332,86 @@
     }
   }
 
+  // The weekly report card: last week's grade, with a pager back through
+  // every graded week. Data is scorecards.json, built by the repo's
+  // build-scorecards command from the archived predictions; if the file
+  // is missing the card simply never appears.
+  function renderReport() {
+    var root = $("report-root");
+    var weeks = state.report && state.report.weeks;
+    if (!root || !weeks || !weeks.length) return;
+    var idx = Math.max(0, Math.min(state.reportIdx, weeks.length - 1));
+    state.reportIdx = idx;
+    var card = weeks[idx];
+    function fmt(value) { return Number(value).toFixed(2); }
+    function fmtSigned(value) {
+      var v = Number(value);
+      return (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v).toFixed(2);
+    }
+    var head = card.headline;
+    var verdict;
+    if (head.mean.mae < head.yahoo.mae) {
+      verdict = "We were closer this week — average miss " + fmt(head.mean.mae) + " to Yahoo's " + fmt(head.yahoo.mae) + ".";
+    } else if (head.mean.mae > head.yahoo.mae) {
+      verdict = "Yahoo was closer this week — average miss " + fmt(head.yahoo.mae) + " to our " + fmt(head.mean.mae) + ".";
+    } else {
+      verdict = "Dead even this week — both missed by " + fmt(head.mean.mae) + " on average.";
+    }
+    if (card.coverage != null) {
+      verdict += " Our 10–90 range caught " + Math.round(card.coverage * 100) + "% of actuals; about 80% is the target.";
+    }
+    var lines = "";
+    if (card.final) {
+      var outcome = card.final.focus_total > card.final.opponent_total ? "a win" : card.final.focus_total < card.final.opponent_total ? "a loss" : "a tie";
+      lines += "<p><b>" + esc(card.focus.team) + " " + fmt(card.final.focus_total) + " — " + esc(card.final.opponent) + " " + fmt(card.final.opponent_total) + "</b>, " + outcome + ".</p>";
+    }
+    if (card.focus) {
+      if (card.focus.recommended_total >= card.focus.optimal_total) {
+        lines += "<p>Our recommended lineup scored <b class=\"num\">" + fmt(card.focus.recommended_total) + "</b> — the best possible from the roster. Nothing was left on the bench.</p>";
+      } else {
+        lines += "<p>Our recommended lineup scored <b class=\"num\">" + fmt(card.focus.recommended_total) + "</b>; the best possible lineup would have scored <b class=\"num\">" + fmt(card.focus.optimal_total) + "</b> — " + fmt(card.focus.optimal_total - card.focus.recommended_total) + " left on the bench.</p>";
+      }
+    }
+    if (card.biggest_miss) {
+      lines += "<p>Biggest miss: <b>" + esc(card.biggest_miss.name) + "</b> (" + esc(card.biggest_miss.team) + ") — we projected " + fmt(card.biggest_miss.model) + ", he scored " + fmt(card.biggest_miss.actual) + ".</p>";
+    }
+    if (card.biggest_hit) {
+      lines += "<p>Closest call: <b>" + esc(card.biggest_hit.name) + "</b> (" + esc(card.biggest_hit.team) + ") — projected " + fmt(card.biggest_hit.model) + ", scored " + fmt(card.biggest_hit.actual) + ".</p>";
+    }
+    function headRow(label, key) {
+      var m = head[key];
+      var best = (key === "mean" && head.mean.mae <= head.yahoo.mae) ||
+        (key === "yahoo" && head.yahoo.mae <= head.mean.mae);
+      return "<tr><td>" + label + "</td><td class=\"r num\">" + (best ? "<b>" + fmt(m.mae) + "</b>" : fmt(m.mae)) + "</td><td class=\"r num\">" + fmtSigned(m.bias) + "</td></tr>";
+    }
+    var posRows = card.positions.map(function (item) {
+      var modelBest = item.model.mae <= item.yahoo.mae;
+      return "<tr><td><span class=\"pos\" style=\"--c:" + posColor(item.pos) + ";--ct:" + posText(item.pos) + "\">" + esc(item.pos) + "</span></td>" +
+        "<td class=\"r num\">" + (modelBest ? "<b>" + fmt(item.model.mae) + "</b>" : fmt(item.model.mae)) + "</td>" +
+        "<td class=\"r num\">" + (modelBest ? fmt(item.yahoo.mae) : "<b>" + fmt(item.yahoo.mae) + "</b>") + "</td>" +
+        "<td class=\"r num\">" + item.n + "</td></tr>";
+    }).join("");
+    root.innerHTML = '<div class="card report-card">' +
+      '<div class="rep-head"><h2>Report card</h2>' +
+      '<div class="rep-pager" role="group" aria-label="Choose a week to review">' +
+      '<button type="button" id="rep-prev" aria-label="Earlier week"' + (idx <= 0 ? " disabled" : "") + ">‹</button>" +
+      '<span class="rep-week">Week ' + card.week + "</span>" +
+      '<button type="button" id="rep-next" aria-label="Later week"' + (idx >= weeks.length - 1 ? " disabled" : "") + ">›</button>" +
+      "</div></div>" +
+      '<p class="rep-verdict">' + esc(verdict) + "</p>" + lines +
+      '<table class="tbl rep-tbl"><thead><tr><th>Forecaster</th><th class="r">MAE</th><th class="r">Bias</th></tr></thead><tbody>' +
+      headRow("Model (mean)", "mean") + headRow("Model (median)", "q50") + headRow("Yahoo", "yahoo") +
+      "</tbody></table>" +
+      '<table class="tbl rep-tbl"><thead><tr><th>Position</th><th class="r">Model MAE</th><th class="r">Yahoo MAE</th><th class="r">Players</th></tr></thead><tbody>' +
+      posRows + "</tbody></table>" +
+      '<p class="sub rep-prov">' + esc(card.provenance) + " " + card.graded + " players graded.</p>" +
+      "</div>";
+    var prev = $("rep-prev");
+    var next = $("rep-next");
+    if (prev) prev.addEventListener("click", function () { state.reportIdx -= 1; renderReport(); });
+    if (next) next.addEventListener("click", function () { state.reportIdx += 1; renderReport(); });
+  }
+
   function renderLab() {
     var lab = state.data.lab;
     var positions = lab.positions || [];
@@ -518,4 +598,16 @@
     .catch(function () {
       $("status").textContent = "Could not load dashboard.json. Serve this folder over HTTP, for example: python -m http.server -d site";
     });
+
+  fetch("scorecards.json")
+    .then(function (response) {
+      if (!response.ok) throw new Error("scorecards.json " + response.status);
+      return response.json();
+    })
+    .then(function (payload) {
+      state.report = payload;
+      state.reportIdx = payload.weeks.length - 1;
+      renderReport();
+    })
+    .catch(function () { /* No report cards yet: the Lab renders without one. */ });
 })();
