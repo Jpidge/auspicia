@@ -602,6 +602,7 @@ def test_site_control_center_states_the_engine_record() -> None:
     assert 'id="diagramZoom"' in html
     assert "Tap the diagram to enlarge it." in html
     assert "<b>0.5.36</b>" in html
+    assert "<b>0.5.37</b>" in html
     # Owner calls: the back-link read AUSPICIA for one release (0.5.27),
     # then reverted to "Dashboard →" — and in the 0.5.30 redesign it left
     # the header entirely: the footer carries a centred "Back to

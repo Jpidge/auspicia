@@ -16,6 +16,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from pathlib import Path
@@ -35,6 +36,7 @@ from gridiron_lab.features import FeatureError, build_features
 from gridiron_lab.lineup import LineupError
 from gridiron_lab.logging import configure_logging, get_logger
 from gridiron_lab.predict import PredictError, run_predict
+from gridiron_lab.scorecard import build_scorecards
 from gridiron_lab.scoring import ScoringError
 
 logger = get_logger("cli")
@@ -62,6 +64,8 @@ def run(argv: list[str] | None = None) -> int:
         return _run_predict(args)
     if args.command == "export-dashboard":
         return _run_export_dashboard(args)
+    if args.command == "build-scorecards":
+        return _run_build_scorecards(args)
     parser.print_help()
     return 2
 
@@ -210,6 +214,20 @@ def _run_export_dashboard(args: argparse.Namespace) -> int:
     return 0
 
 
+def _run_build_scorecards(args: argparse.Namespace) -> int:
+    try:
+        data_dir = _data_dir(args.data_dir, args.config)
+        payload = build_scorecards(args.inputs, data_dir)
+        args.output.write_text(
+            json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+        )
+    except OSError as exc:
+        logger.error("Could not write the scorecards file: %s", exc.strerror or exc)
+        return 1
+    logger.info("Wrote scorecards %s", args.output)
+    return 0
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="gridiron-lab")
     sub = parser.add_subparsers(dest="command")
@@ -340,6 +358,24 @@ def _parser() -> argparse.ArgumentParser:
             "Omit to copy those fields from the roster file."
         ),
     )
+    scorecards_parser = sub.add_parser(
+        "build-scorecards",
+        help=(
+            "Grade archived weekly predictions against the store's recorded "
+            "stats and write the Lab report-card JSON."
+        ),
+    )
+    scorecards_parser.add_argument(
+        "--inputs",
+        type=Path,
+        default=Path("data/scorecards"),
+        help="Directory holding manifest.json and the archived week inputs",
+    )
+    scorecards_parser.add_argument(
+        "--output", type=Path, required=True, help="Scorecards JSON path"
+    )
+    scorecards_parser.add_argument("--config", type=Path, help="Path to gridiron_lab.toml")
+    scorecards_parser.add_argument("--data-dir", type=Path, help="Store directory")
     return parser
 
 

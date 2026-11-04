@@ -4,6 +4,13 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.37] — 2026-11-04
+
+### Added
+
+- **The Lab report card** (owner, 2026-11-04): a card at the top of the Lab grading the week's published projections against what actually happened — model mean, model median, and Yahoo MAE/bias side by side, the 10–90 range's coverage, a per-position MAE table, the recommended lineup's score against the best possible, and the week's biggest miss and closest call. A ‹ › pager walks back through earlier graded weeks; Weeks 7 and 8 ship as the first two cards.
+- A `build-scorecards` command and the grading module behind it. Inputs are archived under `data/scorecards/` (the predictions each week published from, the dashboard snapshot that carried them, and a manifest naming each week's actuals source), so any card can be rebuilt and re-checked. Week 7 grades against the store's recorded stats (its projections were rebuilt under pre-kickoff rules — the site launched mid-week, so no live freeze exists); Week 8 grades against Yahoo's published Fan Points captured on Nov 3 (its store defense lines are still incomplete). Week 8 reconciles with the hand-checked markdown scorecard — 149 graded, 6 ungradeable — with one correction: the markdown's slot shortcut misattributed the Bears' 11.80 to Seattle; the capture's bench line gives Seattle's real 8.24, which is what the card grades.
+
 ## [0.5.36] — 2026-11-04
 
 ### Changed
