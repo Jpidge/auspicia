@@ -8759,7 +8759,7 @@
       "Mean-head bias is outside \u00b10.3 in 7 position-seasons.",
       "Calibrated 10/90 coverage is inside 0.77\u20130.83 at every position.",
       "q50 is the primary accuracy metric for this report.",
-      "These figures compare the model with the legacy baseline. They are not a claim against Yahoo.",
+      "These figures compare AUSPICIA with the legacy baseline. They are not a claim against Yahoo.",
       "This Lab block was generated from an evaluation report (model lgbm_skill_v1), not hand-copied constants."
     ]
   }

@@ -144,7 +144,7 @@ def published_m3_lab() -> dict[str, object]:
             "Calibrated 10/90 coverage is inside 80% ± 3 points except at tight end.",
             "q50 remains the primary accuracy metric. The mean head did not win three seasons.",
             (
-                "These figures compare the model with the legacy baseline. "
+                "These figures compare AUSPICIA with the legacy baseline. "
                 "They are not a claim against Yahoo. Yahoo capture is a later milestone."
             ),
             (
@@ -437,7 +437,7 @@ def lab_block_from_report(report: Mapping[str, object]) -> dict[str, object]:
             else "The mean head is the primary accuracy metric for this report."
         ),
         (
-            "These figures compare the model with the legacy baseline. "
+            "These figures compare AUSPICIA with the legacy baseline. "
             "They are not a claim against Yahoo."
         ),
         (

@@ -605,6 +605,7 @@ def test_site_control_center_states_the_engine_record() -> None:
     assert "<b>0.5.37</b>" in html
     assert "<b>0.5.38</b>" in html
     assert "<b>0.5.39</b>" in html
+    assert "<b>0.5.40</b>" in html
     # Owner calls: the back-link read AUSPICIA for one release (0.5.27),
     # then reverted to "Dashboard →" — and in the 0.5.30 redesign it left
     # the header entirely: the footer carries a centred "Back to
