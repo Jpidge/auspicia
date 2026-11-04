@@ -21,6 +21,21 @@
     .brand-mark { height: 30px; width: auto; display: block; }
     .stack { display: flex; flex-direction: column; gap: 24px; }
     .diagram { width: 100%; height: auto; display: block; border-radius: 12px; }
+    /* The diagram is a button: tapping it opens the enlarged view below.
+       The button itself is invisible chrome — no border, no background. */
+    .diagram-btn { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: 12px; -webkit-tap-highlight-color: transparent; }
+    .diagram-hint { margin-top: 8px; }
+    /* Enlarged diagram: a full-screen layer with its own zoom controls.
+       The stage scrolls, so at any zoom past full width the reader pans by
+       dragging or swiping; the buttons (or a double-tap) change the zoom. */
+    .zoom { position: fixed; inset: 0; z-index: 60; background: #050607; display: flex; flex-direction: column; }
+    .zoom[hidden] { display: none; }
+    .zoom-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; }
+    .zoom-title { font-size: 13px; color: var(--muted); }
+    .zoom-btns { display: flex; gap: 8px; }
+    .zoom-btns button { min-width: 44px; height: 44px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--card2); color: var(--text); font-size: 20px; line-height: 1; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .zoom-stage { flex: 1; overflow: auto; -webkit-overflow-scrolling: touch; padding: 4px 10px 18px; }
+    .zoom-stage img { display: block; margin: 0 auto; max-width: none; height: auto; border-radius: 8px; }
     .gate-fails { margin: 8px 0 0; padding-left: 20px; color: var(--muted); font-size: 13px; }
     .gate-fails li { margin: 2px 0; }
     .status-line { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 8px; }
@@ -63,7 +78,10 @@
 
       <section class="card" aria-label="How it all fits together">
         <h2>How it all fits together</h2>
-        <img class="diagram" src="workflow.svg" alt="Workflow diagram: the four raw data inputs — NFLverse, Yahoo, Vegas lines, and practice reports — sit in one box and flow down into the engine: ingest, features, train, predict, export, evaluate, promotion gates. The export sends dashboard.json to the dashboard; the gates send reports to the Control Center; an improvement loop runs from evaluate back up to train.">
+        <button type="button" class="diagram-btn" id="diagramOpen" aria-label="Enlarge the workflow diagram">
+          <img class="diagram" src="workflow.svg" alt="Workflow diagram: the four raw data inputs — NFLverse, Yahoo, Vegas lines, and practice reports — sit in one box and flow down into the engine: ingest, features, train, predict, export, evaluate, promotion gates. The export sends dashboard.json to the dashboard; the gates send reports to the Control Center; an improvement loop runs from evaluate back up to train.">
+        </button>
+        <p class="sub diagram-hint">Tap the diagram to enlarge it.</p>
         <p class="sub">One contract worth remembering: Yahoo is not training fuel. It supplies the league's rosters (who to predict for) and Yahoo's own projections (the rival the scorecard grades against). Training data is NFLverse history, scored under this league's exact rules.</p>
       </section>
 
@@ -156,6 +174,7 @@
           <li><b>0.5.28</b> — splash trimmed to 825ms; desktop drops the centred page title (the tabs already name the view); the team menu learns to close on view switch, outside click, or Escape.</li>
           <li><b>0.5.29</b> — position colours move to the position text only, in the emblem palette; the tap flash fixed; the "Tap a row for details" hint removed; desktop header: stock lockup left, square helmet button right.</li>
           <li><b>0.5.30</b> — the chrome redesign: lockup header at every width, scaled up on desktop; the team name becomes the team selector; splash and Toughest Calls removed; the Control Center retitled, reworded in plain language, and given an animated workflow diagram and a Documentation card.</li>
+          <li><b>0.5.36</b> — the workflow diagram above is now a button: tap it and it opens full-screen with zoom controls, so the chart is readable on a phone.</li>
           <li><b>0.5.35</b> — the live dashboard moves to Week 9: Purple Reign 4–4 after the Week 8 win, hosting Vader's Raiders; the model leans Raiders 99.30–97.21 (46.7%) against Yahoo's early lean the other way; Nabers flexes in off his bye.</li>
           <li><b>0.5.34</b> — mobile player rows rearranged: the position chip rides the name row with the verdict pill, matchup and figures below, the bar wider without its rail; position letters centred in the chip. Desktop rows untouched.</li>
           <li><b>0.5.33</b> — the header wordmark is sized to the official lockup’s proportion (46 px desktop, 29 px mobile, the lockup’s 16 px gap), and the favicon’s small right-tip triangle is blue to match the header emblem.</li>
@@ -210,5 +229,61 @@
   <footer>
     <a href="index.html">Back to Dashboard</a>
   </footer>
+
+  <div class="zoom" id="diagramZoom" hidden role="dialog" aria-modal="true" aria-label="Workflow diagram, enlarged">
+    <div class="zoom-bar">
+      <span class="zoom-title">How it all fits together</span>
+      <div class="zoom-btns">
+        <button type="button" id="zoomOut" aria-label="Zoom out">&minus;</button>
+        <button type="button" id="zoomIn" aria-label="Zoom in">+</button>
+        <button type="button" id="zoomClose" aria-label="Close the enlarged diagram">&times;</button>
+      </div>
+    </div>
+    <div class="zoom-stage" id="zoomStage">
+      <img id="zoomImg" src="workflow.svg" alt="Workflow diagram: the four raw data inputs — NFLverse, Yahoo, Vegas lines, and practice reports — sit in one box and flow down into the engine: ingest, features, train, predict, export, evaluate, promotion gates. The export sends dashboard.json to the dashboard; the gates send reports to the Control Center; an improvement loop runs from evaluate back up to train.">
+    </div>
+  </div>
+
+  <script>
+    // The workflow diagram, enlarged: the card-sized copy is a button that
+    // opens a full-screen layer. Zoom is the image's width as a multiple of
+    // the layer's width; the layer scrolls, so panning is plain dragging.
+    (function () {
+      var openBtn = document.getElementById("diagramOpen");
+      var zoom = document.getElementById("diagramZoom");
+      var stage = document.getElementById("zoomStage");
+      var img = document.getElementById("zoomImg");
+      var closeBtn = document.getElementById("zoomClose");
+      var scale = 1;
+      function apply() { img.style.width = (scale * 100) + "%"; }
+      function show() {
+        scale = 1; apply();
+        zoom.hidden = false;
+        document.body.style.overflow = "hidden";
+        stage.scrollTop = 0; stage.scrollLeft = 0;
+        closeBtn.focus();
+      }
+      function hide() {
+        zoom.hidden = true;
+        document.body.style.overflow = "";
+        openBtn.focus();
+      }
+      openBtn.addEventListener("click", show);
+      closeBtn.addEventListener("click", hide);
+      document.getElementById("zoomIn").addEventListener("click", function () {
+        scale = Math.min(4, scale + 0.5); apply();
+      });
+      document.getElementById("zoomOut").addEventListener("click", function () {
+        scale = Math.max(1, scale - 0.5); apply();
+      });
+      stage.addEventListener("dblclick", function () {
+        scale = scale > 1 ? 1 : 2.5; apply();
+      });
+      zoom.addEventListener("click", function (e) { if (e.target === zoom) hide(); });
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && !zoom.hidden) hide();
+      });
+    })();
+  </script>
 </body>
 </html>
