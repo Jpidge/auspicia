@@ -12,7 +12,7 @@
   // Definitions card both render from this table, so they cannot drift apart.
   var DEFS = {
     last6: "His actual fantasy points in each of the last six weeks he played, oldest to newest.",
-    range: "The model's 10th–90th percentile range: a bad week lands near the low end, a great week near the high end. Live ranges are the model's raw quantiles, not yet calibrated.",
+    range: "Auspicia's 10th–90th percentile range: a bad week lands near the low end, a great week near the high end. Live ranges are Auspicia's raw quantiles, not yet calibrated.",
     median: "The typical week: half his outcomes land above it, half below. It is the big number on his row — but the lineup is picked on the mean, not the median.",
     mean: "Expected points: his average outcome across many similar weeks. The recommended lineup is the one that maximizes total mean.",
     mae: "Mean absolute error: on average, how many points a projection missed by, counting over- and under-projections equally. Lower is better.",
@@ -407,9 +407,9 @@
       "</div></div>" +
       '<p class="rep-verdict">' + esc(verdict) + "</p>" + lines +
       '<table class="tbl rep-tbl"><thead><tr><th>Forecaster</th><th class="r">' + defLabel("mae", "MAE") + '</th><th class="r">Bias</th></tr></thead><tbody>' +
-      headRow("Model (mean)", "mean") + headRow("Model (median)", "q50") + headRow("Yahoo", "yahoo") +
+      headRow("AUSPICIA (mean)", "mean") + headRow("AUSPICIA (median)", "q50") + headRow("Yahoo", "yahoo") +
       "</tbody></table>" +
-      '<table class="tbl rep-tbl"><thead><tr><th>Position</th><th class="r">Model ' + defLabel("mae", "MAE") + '</th><th class="r">Yahoo ' + defLabel("mae", "MAE") + '</th><th class="r">Players</th></tr></thead><tbody>' +
+      '<table class="tbl rep-tbl"><thead><tr><th>Position</th><th class="r">AUSPICIA ' + defLabel("mae", "MAE") + '</th><th class="r">Yahoo ' + defLabel("mae", "MAE") + '</th><th class="r">Players</th></tr></thead><tbody>' +
       posRows + "</tbody></table>" +
       '<p class="sub rep-prov">' + esc(card.provenance) + " " + card.graded + " players graded.</p>" +
       "</div>";
@@ -439,7 +439,7 @@
       var label = (gain > 0 ? "+" : "") + gain.toFixed(3);
       return '<div class="l"><span class="num">' + item.season + '</span><span class="b"><i style="width:' + Math.min(100, Math.max(0, gain) / 0.6 * 100) + '%;background:var(--accent)"></i></span><b class="num">' + label + "</b></div>";
     }).join("");
-    $("lab-root").innerHTML = '<div class="note" role="note">' + defMae(esc((lab.notes && lab.notes[0]) || "Backtest")) + " Promoted: " + (lab.promoted ? "yes" : "no") + ".</div>" +
+    $("lab-root").innerHTML =
       '<div class="lab"><div class="card"><h2>' + defLabel("mae", "MAE") + ' by position</h2><p class="sub">Mean of seasonal q50 ' + defLabel("mae", "MAE") + ', points per game. Lower is better. Compared with the legacy baseline, not Yahoo.</p><div class="mae">' +
       mae.map(function (item) {
         return '<div class="l"><span class="pos" style="--c:' + posColor(item.position) + ';--ct:' + posText(item.position) + '">' + esc(SLOT[item.position] || item.position) + '</span><span class="b"><i style="--c:' + posColor(item.position) + ";width:" + (item.mae / maxMae * 100) + '%"></i></span><b class="num">' + item.mae.toFixed(2) + "</b></div>";
@@ -450,7 +450,7 @@
         var pct = Math.min(96, Math.max(4, (value - 0.70) / 0.20 * 100));
         var status = inside ? "In band" : (value < 0.77 ? ((0.77 - value) * 100).toFixed(1) + " pt low" : ((value - 0.83) * 100).toFixed(1) + " pt high");
         return '<div class="l cov"><span class="pos" style="--c:' + posColor(position) + ';--ct:' + posText(position) + '">' + esc(SLOT[position] || position) + '</span><span class="b"><span class="band"></span><i class="dot" style="--c:' + posColor(position) + ";left:" + pct.toFixed(1) + '%"></i></span><span class="num">' + (value * 100).toFixed(1) + '%</span><b class="' + (inside ? "pass" : "fail") + '">' + status + "</b></div>";
-      }).join("") + '<div class="l cov axis-row"><span></span><span class="ticks num"><span>0.70</span><span>0.80</span><span>0.90</span></span><span></span><span></span></div></div></div><div class="card"><h2>Promotion rule</h2><ul class="crit">' + criteria + '</ul></div><div class="card"><h2>Improvement over baseline</h2><p class="sub">Baseline q50 ' + defLabel("mae", "MAE") + ' minus the model. Positive means the model was closer that season.</p><div class="mae">' + bars + '</div><p class="sub">Lineup points versus that baseline: +' + Number(lab.points_gained_vs_baseline).toFixed(1) + ' over the backtest. Not a Yahoo result.</p></div><div class="card wide"><h2>Notes</h2><ul class="why">' + notes + "</ul></div></div>";
+      }).join("") + '<div class="l cov axis-row"><span></span><span class="ticks num"><span>0.70</span><span>0.80</span><span>0.90</span></span><span></span><span></span></div></div></div><div class="card"><h2>Promotion rule — Promoted: ' + (lab.promoted ? "Yes" : "No") + '</h2><ul class="crit">' + criteria + '</ul></div><div class="card"><h2>Improvement over baseline</h2><p class="sub">Baseline q50 ' + defLabel("mae", "MAE") + ' minus AUSPICIA. Positive means AUSPICIA was closer that season.</p><div class="mae">' + bars + '</div><p class="sub">Lineup points versus that baseline: +' + Number(lab.points_gained_vs_baseline).toFixed(1) + ' over the backtest. Not a Yahoo result.</p></div><div class="card wide"><h2>Notes</h2><ul class="why">' + notes + "</ul></div></div>";
   }
 
   window.addEventListener("hashchange", function () {

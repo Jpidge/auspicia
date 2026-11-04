@@ -129,6 +129,16 @@ def test_lab_has_a_report_card_slot_and_renderer() -> None:
     assert 'class="win"' in app
     css = (SITE / "app.css").read_text(encoding="utf-8")
     assert ".rep-tbl .win { color: var(--good)" in css
+    # Owner call (2026-11-04): the forecaster is named AUSPICIA, not
+    # "Model", on the report card and across the Lab's label surfaces.
+    assert 'headRow("AUSPICIA (mean)"' in app
+    assert 'headRow("AUSPICIA (median)"' in app
+    assert "Model (mean)" not in app
+    assert "minus AUSPICIA. Positive means AUSPICIA was closer" in app
+    # Owner call (2026-11-04): the Lab's top "not promoted" note bar is
+    # gone; the Promotion rule card's title carries the verdict instead.
+    assert 'role="note"' not in app
+    assert "Promotion rule — Promoted: " in app
 
 
 def test_shipped_scorecards_cover_weeks_7_and_8() -> None:

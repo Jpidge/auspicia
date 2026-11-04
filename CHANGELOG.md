@@ -4,6 +4,13 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.40] — 2026-11-04
+
+### Changed
+
+- The forecaster is named AUSPICIA on the Lab (owner, 2026-11-04): the report card's forecaster rows read "AUSPICIA (mean)" / "AUSPICIA (median)" and its per-position column "AUSPICIA MAE"; the range definition, the Improvement-over-baseline text, and the Lab notes' comparison line follow suit. Internal field names and the candidate/promotion terminology are unchanged.
+- The Lab's top note bar ("The candidate in this report was not promoted. Promoted: no.") is removed; the Promotion rule card's title now reads "Promotion rule — Promoted: No". The sentence itself remains in the Notes card.
+
 ## [0.5.39] — 2026-11-04
 
 ### Changed
