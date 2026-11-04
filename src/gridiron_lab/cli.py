@@ -368,7 +368,7 @@ def _parser() -> argparse.ArgumentParser:
     scorecards_parser.add_argument(
         "--inputs",
         type=Path,
-        default=Path("data/scorecards"),
+        default=Path("scorecards"),
         help="Directory holding manifest.json and the archived week inputs",
     )
     scorecards_parser.add_argument(

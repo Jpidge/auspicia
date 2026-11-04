@@ -1,7 +1,7 @@
 """Weekly report cards: grade one week's published projections against
 what actually happened. The Lab's report card renders the output.
 
-Inputs are archived per week under ``data/scorecards/`` (see the manifest
+Inputs are archived per week under ``scorecards/`` (see the manifest
 there): the predictions file the site published from, and the dashboard
 snapshot that carried those numbers to the page. Actuals come from one of
 two recorded sources, named per week in the manifest:
