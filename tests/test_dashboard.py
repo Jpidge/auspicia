@@ -596,6 +596,12 @@ def test_site_control_center_states_the_engine_record() -> None:
     assert "<b>0.5.29</b>" in html
     assert "<b>0.5.30</b>" in html
     assert "<b>0.5.31</b>" in html
+    # Owner call (2026-11-04): the workflow diagram is a button that opens
+    # a full-screen zoom layer, so the chart is readable on a phone.
+    assert 'id="diagramOpen"' in html
+    assert 'id="diagramZoom"' in html
+    assert "Tap the diagram to enlarge it." in html
+    assert "<b>0.5.36</b>" in html
     # Owner calls: the back-link read AUSPICIA for one release (0.5.27),
     # then reverted to "Dashboard →" — and in the 0.5.30 redesign it left
     # the header entirely: the footer carries a centred "Back to

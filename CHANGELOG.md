@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.36] — 2026-11-04
+
+### Changed
+
+- The Control Center's workflow diagram is now a button (owner, 2026-11-04): tapping it opens the chart full-screen in its own layer with zoom-in/zoom-out controls (double-tap toggles between full width and 2.5×; the layer scrolls, so panning is plain dragging or swiping; Esc, the × button, or a tap on the dark surround closes it). At card size the chart's lettering was too small to read on a phone; the dashboard and the diagram itself are unchanged.
+
 ## [0.5.35] — 2026-11-04
 
 ### Changed
