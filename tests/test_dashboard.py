@@ -517,6 +517,21 @@ def test_site_has_no_splash() -> None:
     assert "splash" not in css
 
 
+def test_mobile_row_yahoo_stacks_with_diff_no_pill() -> None:
+    # Owner call (2026-11-04, row v3): on mobile the Yahoo figure stacks
+    # with its diff — Yahoo's number as a smaller version of ours (bright,
+    # bold 15px against our 20px), the diff as plain coloured text under
+    # it, no pill. Scoped to the mobile .yhm block; desktop untouched.
+    css = (SITE / "app.css").read_text(encoding="utf-8")
+    assert ".yhm { flex-direction: column; align-items: flex-end; gap: 1px; }" in css
+    assert ".yhm .yh b { font-size: 15px; font-weight: 800; color: var(--text)" in css
+    # No pill, and muted rather than red/green: a gap between two
+    # projections is information, not a verdict (owner, 2026-11-04).
+    chip_rule = ".yhm .chip { background: none; padding: 0; min-height: 0;"
+    chip_rule += " font-size: 12.5px; color: var(--muted); }"
+    assert chip_rule in css
+
+
 def test_site_header_lockup_left_title_right_team_name_is_the_selector() -> None:
     html = (SITE / "index.html").read_text(encoding="utf-8")
     css = (SITE / "app.css").read_text(encoding="utf-8")
@@ -605,6 +620,7 @@ def test_site_control_center_states_the_engine_record() -> None:
     assert "<b>0.5.37</b>" in html
     assert "<b>0.5.38</b>" in html
     assert "<b>0.5.39</b>" in html
+    assert "<b>0.5.41</b>" in html
     # Owner calls: the back-link read AUSPICIA for one release (0.5.27),
     # then reverted to "Dashboard →" — and in the 0.5.30 redesign it left
     # the header entirely: the footer carries a centred "Back to

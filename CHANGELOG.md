@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.41] — 2026-11-04
+
+### Changed
+
+- Mobile player rows, v3 (owner, 2026-11-04): the Yahoo figure stacks with its difference — Yahoo's number is rendered as a smaller version of ours (bright, bold, 15px against our 20px), and the difference sits under it as plain muted text with no pill. Muted, not red/green: a gap between two projections is information, not a verdict. CSS-only, inside the ≤720px rules; desktop rows unchanged.
+
 ## [0.5.39] — 2026-11-04
 
 ### Changed
