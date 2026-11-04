@@ -10,6 +10,13 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 - Player rows, v3 (owner, 2026-11-04): the Yahoo figure stacks with its difference on phone and desktop alike — Yahoo's number is rendered as a smaller version of ours (bright, bold, 15px against our 20px), and the difference sits under it as plain muted text with no pill. Muted, not red/green: a gap between two projections is information, not a verdict. The Yahoo-difference definition and the lineup legend are rewritten to match (no more "chip", no colour meaning). CSS-only for the rows; the verdict chip keeps its colours — that one is a verdict.
 
+## [0.5.40] — 2026-11-04
+
+### Changed
+
+- The forecaster is named AUSPICIA on the Lab (owner, 2026-11-04): the report card's forecaster rows read "AUSPICIA (mean)" / "AUSPICIA (median)" and its per-position column "AUSPICIA MAE"; the range definition, the Improvement-over-baseline text, and the Lab notes' comparison line follow suit. Internal field names and the candidate/promotion terminology are unchanged.
+- The Lab's top note bar ("The candidate in this report was not promoted. Promoted: no.") is removed; the Promotion rule card's title now reads "Promotion rule — Promoted: No". The sentence itself remains in the Notes card.
+
 ## [0.5.39] — 2026-11-04
 
 ### Changed
