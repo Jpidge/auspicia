@@ -389,13 +389,13 @@
       var m = head[key];
       var best = (key === "mean" && head.mean.mae <= head.yahoo.mae) ||
         (key === "yahoo" && head.yahoo.mae <= head.mean.mae);
-      return "<tr><td>" + label + "</td><td class=\"r num\">" + (best ? "<b>" + fmt(m.mae) + "</b>" : fmt(m.mae)) + "</td><td class=\"r num\">" + fmtSigned(m.bias) + "</td></tr>";
+      return "<tr><td>" + label + "</td><td class=\"r num\">" + (best ? '<span class="win">' + fmt(m.mae) + "</span>" : fmt(m.mae)) + "</td><td class=\"r num\">" + fmtSigned(m.bias) + "</td></tr>";
     }
     var posRows = card.positions.map(function (item) {
       var modelBest = item.model.mae <= item.yahoo.mae;
       return "<tr><td><span class=\"pos\" style=\"--c:" + posColor(item.pos) + ";--ct:" + posText(item.pos) + "\">" + esc(item.pos) + "</span></td>" +
-        "<td class=\"r num\">" + (modelBest ? "<b>" + fmt(item.model.mae) + "</b>" : fmt(item.model.mae)) + "</td>" +
-        "<td class=\"r num\">" + (modelBest ? fmt(item.yahoo.mae) : "<b>" + fmt(item.yahoo.mae) + "</b>") + "</td>" +
+        "<td class=\"r num\">" + (modelBest ? '<span class="win">' + fmt(item.model.mae) + "</span>" : fmt(item.model.mae)) + "</td>" +
+        "<td class=\"r num\">" + (modelBest ? fmt(item.yahoo.mae) : '<span class="win">' + fmt(item.yahoo.mae) + "</span>") + "</td>" +
         "<td class=\"r num\">" + item.n + "</td></tr>";
     }).join("");
     root.innerHTML = '<div class="card report-card">' +

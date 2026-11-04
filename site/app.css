@@ -258,6 +258,9 @@ h2 { font-size: 15px; margin: 0 0 8px; text-transform: uppercase; letter-spacing
 .rep-tbl td { padding: 9px 8px; }
 .rep-tbl th { padding: 0 8px; }
 .rep-prov { margin-top: 10px; }
+/* The winning MAE in a report-card table: the site's green, per the
+   standing rule that colour means data (green = better here). */
+.rep-tbl .win { color: var(--good); font-weight: 700; }
 .lab { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
 .lab .wide { grid-column: 1 / -1; }
 .engine-card { margin-top: 24px; }
