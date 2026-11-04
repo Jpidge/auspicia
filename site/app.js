@@ -23,7 +23,7 @@
     snap: "Share of his team's offensive snaps in his most recent game, and how it moved since the first week shown.",
     projTotal: "Projected total: the sum of the recommended starters' mean projections.",
     winProb: "Chance of outscoring the opponent, computed from the two projected totals assuming a typical spread of outcomes around them.",
-    yahooDelta: "Our median minus Yahoo's projection for him. Green = we are higher, red = Yahoo is higher.",
+    yahooDelta: "Our median minus Yahoo's projection for him, shown as plain text under Yahoo's number. A gap between two projections is information, not a verdict, so it carries no colour.",
     verdicts: "Start = in the recommended lineup. Monitor = a close call, flagged because a legal bench replacement is within the close-call margin. Sit = not in the recommended lineup.",
     shareLeader: "This team's projected total as a share of the highest projected total in the league."
   };
@@ -31,7 +31,7 @@
     ["mean", "Mean"], ["median", "Median"], ["range", "10th–90th range"], ["boomBust", "Boom/bust"],
     ["oppRank", "Opp rank"], ["vegas", "Vegas implied"], ["practice", "Practice"], ["snap", "Snap share"],
     ["last6", "Last 6 weeks"], ["verdicts", "Start · Monitor · Sit"], ["projTotal", "Projected total"],
-    ["winProb", "Win probability"], ["yahooDelta", "Yahoo chip"]
+    ["winProb", "Win probability"], ["yahooDelta", "Yahoo difference"]
   ];
   var state = { data: null, view: "team", teamId: null, waiver: "ALL", sortKey: "projected_total", sortDir: -1, report: null, reportIdx: 0 };
 
@@ -271,7 +271,7 @@
     $("matchup").innerHTML = '<div class="mu"><div class="t me"><span class="sub">' + esc(team.name) + " (" + esc(team.record) + ')</span><span class="pts num">' + fmt(team.projected_total) + '</span><span class="sub">' + defLabel("projTotal", "Auspicia proj.") + '</span></div><span class="vs">VS</span><div class="t r"><span class="sub">' + esc(team.opponent_name || "No opponent") + '</span><span class="pts num">' + (opp == null ? "–" : fmt(opp)) + '</span><span class="sub">' + defLabel("projTotal", "Auspicia proj.") + '</span></div></div>' +
       (wpPct == null ? "" : '<div class="wp"><div class="wpbar" role="img" aria-label="Win probability ' + wpPct + ' percent"><i style="width:' + wpPct + '%"></i></div><div class="wplab"><span>' + defLabel("winProb", "Win probability") + ' <b class="num">' + wpPct + '%</b></span><span><b class="num">' + (100 - wpPct) + "%</b></span></div></div>");
     var bench = (team.bench || []).concat(team.inactive || []);
-    $("lineup-col").innerHTML = '<div class="sec-h"><h2>Recommended lineup</h2></div><p class="ylegend">Y! = Yahoo projection; chip = ours minus Yahoo</p><div class="list">' + team.starters.map(row).join("") + '</div><div class="sec-h"><h2>Bench</h2><span class="sub">' + data.lineup.bench + " bench · " + data.lineup.ir + ' IR</span></div><div class="list">' + bench.map(row).join("") + "</div>";
+    $("lineup-col").innerHTML = '<div class="sec-h"><h2>Recommended lineup</h2></div><p class="ylegend">Y! = Yahoo projection; the plain figure under it is ours minus Yahoo</p><div class="list">' + team.starters.map(row).join("") + '</div><div class="sec-h"><h2>Bench</h2><span class="sub">' + data.lineup.bench + " bench · " + data.lineup.ir + ' IR</span></div><div class="list">' + bench.map(row).join("") + "</div>";
     $("legend-card").innerHTML = '<h2>Definitions</h2><div class="legend"><span><i class="sw"></i>10th–90th pct range</span><span><i class="sw m"></i>Median projection</span><span><span class="chip d-up">+2.1</span> ours minus Yahoo</span></div>' +
       '<dl class="defs">' + DEF_ORDER.map(function (pair) { return "<div><dt>" + esc(pair[1]) + "</dt><dd>" + esc(DEFS[pair[0]]) + "</dd></div>"; }).join("") + "</dl>" +
       '<p class="sub">The lineup maximizes mean (expected) points under the league slots. A player on bye, OUT, or IR is not started when someone else can fill the slot. Labels marked with an i carry the same definition in place — hover, tap, or tab to it.</p>';
