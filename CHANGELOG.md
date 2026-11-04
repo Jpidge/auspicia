@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.35] — 2026-11-04
+
+### Changed
+
+- The live dashboard moves to **Week 9**: model projections trained on every week in the store through 2026-W08, with Yahoo's numbers kept as the comparison. Purple Reign is 4–4 after the Week 8 win over Redzone (119.16–108.04) and hosts Vader's Raiders; the model leans the other way this week, 97.21–99.30 (46.7% win probability), where Yahoo's early totals favoured Purple Reign. The model's lineup calls: Malik Nabers (9.5) flexes in off his bye and Zach Charbonnet (9.5) holds RB2. The capture was taken Tuesday evening, before the waiver run — all 25 listed free agents show as on waivers clearing Nov 4.
+
 ## [0.5.34] — 2026-11-03
 
 ### Changed
