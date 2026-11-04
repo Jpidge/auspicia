@@ -124,6 +124,11 @@ def test_lab_has_a_report_card_slot_and_renderer() -> None:
     assert 'mae: "Mean absolute error' in app
     assert 'defLabel("mae", "MAE")' in app
     assert "function defMae(" in app
+    # Owner call (2026-11-04): the winning MAE in the report card is green
+    # text (the site's --good), not just bold.
+    assert 'class="win"' in app
+    css = (SITE / "app.css").read_text(encoding="utf-8")
+    assert ".rep-tbl .win { color: var(--good)" in css
 
 
 def test_shipped_scorecards_cover_weeks_7_and_8() -> None:

@@ -4,6 +4,12 @@ All notable changes to this project are recorded here. Format: [Keep a Changelog
 
 ## [Unreleased]
 
+## [0.5.39] — 2026-11-04
+
+### Changed
+
+- In the report card's tables, the winning MAE is now green text (the site's `--good`) instead of just bold (owner, 2026-11-04) — both the forecaster table and each row of the per-position table.
+
 ## [0.5.38] — 2026-11-04
 
 ### Changed
