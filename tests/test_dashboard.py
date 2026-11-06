@@ -610,7 +610,7 @@ def test_site_control_center_states_the_engine_record() -> None:
     assert ".brand-sub { font-weight: 400; }" in html
     # Owner call (2026-11-01): the opening card wears the standard label
     # header with a muted subtitle, like every other card on the page.
-    assert "AUSPICIA (aw-SPEE-chee-uh) fantasy football analytics engine" in html
+    assert "AUSPICIA fantasy football analytics engine" in html
     assert '<p class="sub">is designed to help manage team rosters' in html
     # The engine steps are numbered paragraphs: no bullets, no dots.
     assert 'class="why steps"' in html
